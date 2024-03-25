@@ -9,5 +9,5 @@ export default {
   dbCredentials: {
     uri: env.DATABASE_URL,
   },
-  tablesFilter: ["team-sync_*"],
+  tablesFilter: ["team_sync_*"],
 } satisfies Config;

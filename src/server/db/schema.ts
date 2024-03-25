@@ -11,26 +11,75 @@ import {
   int,
 } from "drizzle-orm/mysql-core";
 
-export const createTable = mysqlTableCreator((name) => `team_sync_${name}`);
+export const createTable = mysqlTableCreator((name) => name);
 
 export const userTable = mysqlTable("user", {
   id: varchar("id", {
     length: 256,
   }).primaryKey(),
+  code: varchar("code", { length: 128 }).unique().notNull(),
   name: varchar("name", { length: 256 }).notNull(),
   email: varchar("email", { length: 256 }).notNull(),
   password: varchar("password", { length: 256 }).notNull(),
   role: mysqlEnum("role", ["ADMIN", "EMPLOYEE"]).default("EMPLOYEE").notNull(),
-  imageUrl: text("image_url"),
-  isTeamLead: boolean("is_team_lead").default(false),
+  isTeamLead: boolean("is_team_lead").default(false).notNull(),
+  emailVerified: timestamp("email_verified", { mode: "date" }),
+  twoFactorEnabled: boolean("two_factor_enabled").default(false).notNull(),
 });
 
 export const userTableRelations = relations(userTable, ({ one }) => ({
-  userProfile: one(userProfileTable, {
+  adminProfile: one(adminProfileTable, {
     fields: [userTable.id],
-    references: [userProfileTable.emp_id],
+    references: [adminProfileTable.admin_id],
+  }),
+  employeeProfile: one(employeeProfileTable, {
+    fields: [userTable.id],
+    references: [employeeProfileTable.emp_id],
   }),
 }));
+
+export const adminProfileTable = mysqlTable("admin_profile", {
+  admin_id: varchar("admin_id", { length: 256 })
+    .notNull()
+    .references(() => userTable.id)
+    .primaryKey(),
+});
+
+export const adminProfileTableRelations = relations(
+  adminProfileTable,
+  ({ one }) => ({
+    admin: one(userTable, {
+      fields: [adminProfileTable.admin_id],
+      references: [userTable.id],
+    }),
+  }),
+);
+
+export const employeeProfileTable = mysqlTable("employee_profile", {
+  joining_date: timestamp("joining_date", { mode: "date" }).notNull(),
+  band: mysqlEnum("band", ["U1", "U2", "U3"]).notNull(),
+  dept: varchar("dept", { length: 128 }).notNull(),
+  designation: varchar("designation", { length: 128 }).notNull(),
+  paid_leaves: int("paid_leaves"),
+  salary: int("salary").notNull(),
+  location: varchar("location", { length: 256 }).notNull(),
+  imageUrl: text("image_url"),
+  // FOREIGN KEY RELATIONS
+  emp_id: varchar("emp_id", { length: 256 })
+    .notNull()
+    .references(() => userTable.id)
+    .primaryKey(),
+});
+
+export const employeeProfileTableRelations = relations(
+  employeeProfileTable,
+  ({ one }) => ({
+    employee: one(userTable, {
+      fields: [employeeProfileTable.emp_id],
+      references: [userTable.id],
+    }),
+  }),
+);
 
 export const sessionTable = mysqlTable("session", {
   id: varchar("id", {
@@ -46,29 +95,30 @@ export const sessionTable = mysqlTable("session", {
 });
 
 export const verificationTokenTable = mysqlTable("verification_token", {
+  token: varchar("token", { length: 256 }).primaryKey(),
   email: varchar("email", { length: 256 }).notNull().unique(),
-  token: varchar("token", { length: 256 }).notNull().unique(),
   expiresAt: timestamp("expires_at", { mode: "date" }).notNull(),
 });
 
-export const userProfileTable = mysqlTable("user_profile", {
-  id: varchar("id", { length: 256 }).primaryKey(),
-  emp_id: varchar("emp_id", { length: 256 })
-    .notNull()
-    .references(() => userTable.id),
-  joining_date: timestamp("joining_date", { mode: "date" }).notNull(),
-  dept: varchar("dept", { length: 128 }),
-  designation: varchar("designation", { length: 128 }),
-  location: varchar("location", { length: 256 }),
-  salary: int("salary"),
+export const passwordResetTokenTable = mysqlTable("password_reset_token", {
+  token: varchar("token", { length: 256 }).primaryKey(),
+  email: varchar("email", { length: 256 }).notNull().unique(),
+  expiresAt: timestamp("expires_at", { mode: "date" }).notNull(),
 });
 
-export const userProfileTableRelations = relations(
-  userProfileTable,
-  ({ one }) => ({
-    user: one(userTable, {
-      fields: [userProfileTable.emp_id],
-      references: [userTable.id],
-    }),
-  }),
+export const twoFactorTokenTable = mysqlTable("two_factor_token", {
+  token: varchar("token", { length: 256 }).primaryKey(),
+  email: varchar("email", { length: 256 }).notNull().unique(),
+  expiresAt: timestamp("expires_at", { mode: "date" }).notNull(),
+});
+
+export const twoFactorConfirmationTable = mysqlTable(
+  "two_factor_confirmation",
+  {
+    id: varchar("id", { length: 256 }).primaryKey(),
+    userId: varchar("userId", { length: 256 })
+      .notNull()
+      .unique()
+      .references(() => userTable.id),
+  },
 );

@@ -1,9 +1,183 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "5f7814ab-2c53-4e6a-aa14-f61968f2a071",
+  "id": "a6c51cb5-135f-4c5f-a3d6-cdc9dc3d053c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "admin_profile": {
+      "name": "admin_profile",
+      "columns": {
+        "admin_id": {
+          "name": "admin_id",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "admin_profile_admin_id_user_id_fk": {
+          "name": "admin_profile_admin_id_user_id_fk",
+          "tableFrom": "admin_profile",
+          "tableTo": "user",
+          "columnsFrom": [
+            "admin_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "admin_profile_admin_id": {
+          "name": "admin_profile_admin_id",
+          "columns": [
+            "admin_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "employee_profile": {
+      "name": "employee_profile",
+      "columns": {
+        "joining_date": {
+          "name": "joining_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "band": {
+          "name": "band",
+          "type": "enum('U1','U2','U3')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "dept": {
+          "name": "dept",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "designation": {
+          "name": "designation",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "paid_leaves": {
+          "name": "paid_leaves",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "salary": {
+          "name": "salary",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "location": {
+          "name": "location",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "image_url": {
+          "name": "image_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "emp_id": {
+          "name": "emp_id",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "employee_profile_emp_id_user_id_fk": {
+          "name": "employee_profile_emp_id_user_id_fk",
+          "tableFrom": "employee_profile",
+          "tableTo": "user",
+          "columnsFrom": [
+            "emp_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "employee_profile_emp_id": {
+          "name": "employee_profile_emp_id",
+          "columns": [
+            "emp_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "password_reset_token": {
+      "name": "password_reset_token",
+      "columns": {
+        "token": {
+          "name": "token",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "password_reset_token_token": {
+          "name": "password_reset_token_token",
+          "columns": [
+            "token"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "password_reset_token_email_unique": {
+          "name": "password_reset_token_email_unique",
+          "columns": [
+            "email"
+          ]
+        }
+      }
+    },
     "session": {
       "name": "session",
       "columns": {
@@ -55,8 +229,8 @@
       },
       "uniqueConstraints": {}
     },
-    "user_profile": {
-      "name": "user_profile",
+    "two_factor_confirmation": {
+      "name": "two_factor_confirmation",
       "columns": {
         "id": {
           "name": "id",
@@ -65,57 +239,22 @@
           "notNull": true,
           "autoincrement": false
         },
-        "emp_id": {
-          "name": "emp_id",
+        "userId": {
+          "name": "userId",
           "type": "varchar(256)",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
-        },
-        "joining_date": {
-          "name": "joining_date",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "dept": {
-          "name": "dept",
-          "type": "varchar(128)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "designation": {
-          "name": "designation",
-          "type": "varchar(128)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "location": {
-          "name": "location",
-          "type": "varchar(256)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "salary": {
-          "name": "salary",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": false,
           "autoincrement": false
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "user_profile_emp_id_user_id_fk": {
-          "name": "user_profile_emp_id_user_id_fk",
-          "tableFrom": "user_profile",
+        "two_factor_confirmation_userId_user_id_fk": {
+          "name": "two_factor_confirmation_userId_user_id_fk",
+          "tableFrom": "two_factor_confirmation",
           "tableTo": "user",
           "columnsFrom": [
-            "emp_id"
+            "userId"
           ],
           "columnsTo": [
             "id"
@@ -125,14 +264,65 @@
         }
       },
       "compositePrimaryKeys": {
-        "user_profile_id": {
-          "name": "user_profile_id",
+        "two_factor_confirmation_id": {
+          "name": "two_factor_confirmation_id",
           "columns": [
             "id"
           ]
         }
       },
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "two_factor_confirmation_userId_unique": {
+          "name": "two_factor_confirmation_userId_unique",
+          "columns": [
+            "userId"
+          ]
+        }
+      }
+    },
+    "two_factor_token": {
+      "name": "two_factor_token",
+      "columns": {
+        "token": {
+          "name": "token",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "two_factor_token_token": {
+          "name": "two_factor_token_token",
+          "columns": [
+            "token"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "two_factor_token_email_unique": {
+          "name": "two_factor_token_email_unique",
+          "columns": [
+            "email"
+          ]
+        }
+      }
     },
     "user": {
       "name": "user",
@@ -140,6 +330,13 @@
         "id": {
           "name": "id",
           "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "code": {
+          "name": "code",
+          "type": "varchar(128)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -173,18 +370,26 @@
           "autoincrement": false,
           "default": "'EMPLOYEE'"
         },
-        "image_url": {
-          "name": "image_url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
         "is_team_lead": {
           "name": "is_team_lead",
           "type": "boolean",
           "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "email_verified": {
+          "name": "email_verified",
+          "type": "timestamp",
+          "primaryKey": false,
           "notNull": false,
+          "autoincrement": false
+        },
+        "two_factor_enabled": {
+          "name": "two_factor_enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
           "autoincrement": false,
           "default": false
         }
@@ -199,20 +404,27 @@
           ]
         }
       },
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "user_code_unique": {
+          "name": "user_code_unique",
+          "columns": [
+            "code"
+          ]
+        }
+      }
     },
     "verification_token": {
       "name": "verification_token",
       "columns": {
-        "email": {
-          "name": "email",
+        "token": {
+          "name": "token",
           "type": "varchar(256)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "token": {
-          "name": "token",
+        "email": {
+          "name": "email",
           "type": "varchar(256)",
           "primaryKey": false,
           "notNull": true,
@@ -228,18 +440,19 @@
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "verification_token_token": {
+          "name": "verification_token_token",
+          "columns": [
+            "token"
+          ]
+        }
+      },
       "uniqueConstraints": {
         "verification_token_email_unique": {
           "name": "verification_token_email_unique",
           "columns": [
             "email"
-          ]
-        },
-        "verification_token_token_unique": {
-          "name": "verification_token_token_unique",
-          "columns": [
-            "token"
           ]
         }
       }
