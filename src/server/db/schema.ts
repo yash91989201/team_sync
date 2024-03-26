@@ -39,10 +39,10 @@ export const userTableRelations = relations(userTable, ({ one }) => ({
 }));
 
 export const adminProfileTable = mysqlTable("admin_profile", {
+  // FOREIGN KEY AS PRIMAY KEY - SINCE USER - ADMIN PROFILE IS ONE-ONE RELATIONSHIP
   admin_id: varchar("admin_id", { length: 256 })
-    .notNull()
-    .references(() => userTable.id)
-    .primaryKey(),
+    .primaryKey()
+    .references(() => userTable.id),
 });
 
 export const adminProfileTableRelations = relations(
@@ -56,6 +56,10 @@ export const adminProfileTableRelations = relations(
 );
 
 export const employeeProfileTable = mysqlTable("employee_profile", {
+  // FOREIGN KEY AS PRIMAY KEY - SINCE USER - EMPLOYEE PROFILE IS ONE-ONE RELATIONSHIP
+  emp_id: varchar("emp_id", { length: 256 })
+    .primaryKey()
+    .references(() => userTable.id),
   joining_date: timestamp("joining_date", { mode: "date" }).notNull(),
   band: mysqlEnum("band", ["U1", "U2", "U3"]).notNull(),
   dept: varchar("dept", { length: 128 }).notNull(),
@@ -64,11 +68,7 @@ export const employeeProfileTable = mysqlTable("employee_profile", {
   salary: int("salary").notNull(),
   location: varchar("location", { length: 256 }).notNull(),
   imageUrl: text("image_url"),
-  // FOREIGN KEY RELATIONS
-  emp_id: varchar("emp_id", { length: 256 })
-    .notNull()
-    .references(() => userTable.id)
-    .primaryKey(),
+  isProfileUpdated: boolean("is_profile_updated").default(false).notNull(),
 });
 
 export const employeeProfileTableRelations = relations(

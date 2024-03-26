@@ -43,9 +43,9 @@ import type {
 } from "@/lib/types";
 // CONSTANTS
 import {
-  ADMIN_ROUTES,
+  DEFAULT_ADMIN_ROUTE,
   ADMIN_AUTH_ROUTES,
-  EMPLOYEE_ROUTES,
+  DEFAULT_EMPLOYEE_ROUTE,
   EMPLOYEE_AUTH_ROUTES,
 } from "@/constants/routes";
 
@@ -230,8 +230,8 @@ export async function logIn(
       loggedInRedirect: true,
       loggedInRoute:
         existingUser.role === "ADMIN"
-          ? ADMIN_ROUTES.home
-          : EMPLOYEE_ROUTES.home,
+          ? DEFAULT_ADMIN_ROUTE
+          : DEFAULT_EMPLOYEE_ROUTE,
     };
   } catch (e) {
     return { status: "FAILED", message: "Error occoured." };

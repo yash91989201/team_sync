@@ -1,5 +1,6 @@
 import type { z } from "zod";
 import type { Session } from "lucia";
+import type { LucideIcon } from "lucide-react";
 // SCHEMAS
 import type {
   UserSchema,
@@ -29,3 +30,10 @@ export type UserSessionType =
     user: null;
     session: null;
   };
+
+export type NavLinkProps = {
+  Icon: LucideIcon;
+  label: string;
+  href: string;
+  matchExact: boolean;
+};

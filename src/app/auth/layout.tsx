@@ -4,7 +4,10 @@ import { getUser } from "@/server/helpers";
 // TYPES
 import type { ReactNode } from "react";
 // CONSTANTS
-import { ADMIN_ROUTES, EMPLOYEE_ROUTES } from "@/constants/routes";
+import {
+  DEFAULT_ADMIN_ROUTE,
+  DEFAULT_EMPLOYEE_ROUTE,
+} from "@/constants/routes";
 
 export default async function AuthLayout({
   children,
@@ -15,7 +18,7 @@ export default async function AuthLayout({
 
   if (isLoggedIn) {
     const loggedInRoute =
-      user?.role === "ADMIN" ? ADMIN_ROUTES.home : EMPLOYEE_ROUTES.home;
+      user?.role === "ADMIN" ? DEFAULT_ADMIN_ROUTE : DEFAULT_EMPLOYEE_ROUTE;
     redirect(loggedInRoute);
   }
 
