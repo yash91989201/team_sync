@@ -7,27 +7,47 @@ import { cn } from "@/lib/utils";
 // UI
 import { Button, buttonVariants } from "@/components/ui/button";
 // ICONS
-import { Bell, Bolt, ArrowLeftToLine, ArrowRightToLine } from "lucide-react";
+import { Bell, Bolt, ChevronFirst, ChevronLast } from "lucide-react";
 // CUSTOM COMPONENTS
 import NavLinks from "@/components/admin/side-nav/nav-links";
 import LogoutButton from "./log-out-button";
 
 export default function SideNav() {
-  const sideNavToggle = useToggle(false);
+  const sideNavToggle = useToggle(true);
 
   return (
     <aside
       className={cn(
-        "hidden h-screen flex-shrink-0 flex-col gap-6 border-r p-3 transition-[width] duration-100 ease-in-out lg:flex",
-        sideNavToggle.isOpen ? "w-64" : "w-18",
+        "hidden h-screen flex-shrink-0 origin-left flex-col gap-6 border-r p-3 transition-all duration-150 ease-out md:flex",
+        sideNavToggle.isOpen ? "w-64" : "w-16",
       )}
     >
-      <h1 className="my-1 flex items-center justify-center border-b p-3 text-lg font-bold">
-        {sideNavToggle.isOpen ? "TEAM SYNC" : "TS"}
-      </h1>
+      <div
+        className={cn(
+          "flex items-center justify-between",
+          sideNavToggle.isOpen ? "p-3" : "",
+        )}
+      >
+        <h1
+          className={cn(
+            "text-lg font-bold",
+            sideNavToggle.isOpen ? "" : "w-0 overflow-hidden",
+          )}
+        >
+          TEAM SYNC
+        </h1>
+        <Button variant="secondary" size="icon" onClick={sideNavToggle.toggle}>
+          {sideNavToggle.isOpen ? <ChevronFirst /> : <ChevronLast />}
+        </Button>
+      </div>
 
       <NavLinks sideNavOpen={sideNavToggle.isOpen} />
-      <section className="flex w-full flex-col gap-3">
+      <section
+        className={cn(
+          "flex w-full flex-col gap-3",
+          sideNavToggle.isOpen ? "" : "items-center",
+        )}
+      >
         <Link
           href="/admin/notifications"
           className={cn(
@@ -62,20 +82,6 @@ export default function SideNav() {
           )}
         </Link>
         <LogoutButton sideNavOpen={sideNavToggle.isOpen} />
-        <Button
-          variant="secondary"
-          size={sideNavToggle.isOpen ? "default" : "icon"}
-          className={cn(
-            "flex items-center [&>svg]:size-5",
-            sideNavToggle.isOpen ? "justify-between" : "justify-center",
-          )}
-          onClick={sideNavToggle.toggle}
-        >
-          {sideNavToggle.isOpen && (
-            <p className="text-base font-semibold">Collapse</p>
-          )}
-          {sideNavToggle.isOpen ? <ArrowLeftToLine /> : <ArrowRightToLine />}
-        </Button>
       </section>
     </aside>
   );

@@ -64,7 +64,7 @@ export const employeeProfileTable = mysqlTable("employee_profile", {
   band: mysqlEnum("band", ["U1", "U2", "U3"]).notNull(),
   dept: varchar("dept", { length: 128 }).notNull(),
   designation: varchar("designation", { length: 128 }).notNull(),
-  paid_leaves: int("paid_leaves"),
+  paid_leaves: int("paid_leaves").notNull(),
   salary: int("salary").notNull(),
   location: varchar("location", { length: 256 }).notNull(),
   imageUrl: text("image_url"),

@@ -7,11 +7,12 @@ import { buttonVariants } from "@/components/ui/button";
 import type { NavLinkProps } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-export default function NavLink(props: NavLinkProps) {
+export default function NavLink(
+  props: NavLinkProps & { sideNavOpen: boolean },
+) {
   const pathname = usePathname();
 
-  const { href, label, matchExact, Icon } = props;
-  const sideNavOpen = label.length > 0;
+  const { href, label, matchExact, Icon, sideNavOpen } = props;
   const isActive = matchExact ? pathname === href : pathname.startsWith(href);
 
   return (
@@ -22,12 +23,12 @@ export default function NavLink(props: NavLinkProps) {
           variant: isActive ? "secondary" : "ghost",
           size: sideNavOpen ? "default" : "icon",
         }),
-        "gap-3 [&>svg]:size-5",
+        "flex gap-3 text-base font-medium [&>svg]:size-5",
         sideNavOpen ? "justify-start" : "justify-center",
       )}
     >
       <Icon />
-      {sideNavOpen && <p>{label}</p>}
+      {sideNavOpen && <p className="text-base font-medium">{label}</p>}
     </Link>
   );
 }

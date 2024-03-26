@@ -17,7 +17,7 @@ export default function LogoutButton({
   sideNavOpen: boolean;
 }) {
   return (
-    <form action={logOut} className="w-full">
+    <form action={logOut} className={cn(sideNavOpen ? "w-full" : "")}>
       <LogoutButtonInner sideNavOpen={sideNavOpen} />
     </form>
   );
@@ -30,8 +30,8 @@ function LogoutButtonInner({ sideNavOpen }: { sideNavOpen: boolean }) {
       variant="ghost"
       size={sideNavOpen ? "default" : "icon"}
       className={cn(
-        "flex w-full items-center gap-3 text-base font-medium [&>svg]:size-5",
-        sideNavOpen ? "justify-start" : "justify-center",
+        "flex items-center gap-3 text-base font-medium [&>svg]:size-5",
+        sideNavOpen ? "w-full justify-start" : "justify-center",
       )}
     >
       {pending ? <Loader2 className="animate-spin" /> : <Power />}
