@@ -1,0 +1,30 @@
+name: team_sync prod deployment
+# run when code is pushed to main branch
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    strategy:
+      matrix:
+        node-version: [20.10.0]
+
+    env:
+      NEXT_SITE_URL: ${{secrets.NEXT_SITE_URL}}
+      DATABASE_URL: ${{secrets.DATABASE_URL}}
+      EMAIL_SENDER: ${{secrets.EMAIL_SENDER}}
+      SMTP_HOST: ${{secrets.SMTP_HOST}}
+      SMTP_PASSWORD: ${{secrets.SMTP_PASSWORD}}
+      SMTP_USER: ${{secrets.SMTP_USER}}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{matrix.node-version}}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{matrix.node-version}}
+      - run: bun run build
