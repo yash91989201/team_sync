@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "b364ca11-9b8e-4243-a180-190592d728cf",
+  "id": "7532c235-d4d0-4777-bb26-d7385d33c58a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "admin_profile": {
@@ -69,7 +69,51 @@
           ]
         }
       },
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "department_name_unique": {
+          "name": "department_name_unique",
+          "columns": [
+            "name"
+          ]
+        }
+      }
+    },
+    "designation": {
+      "name": "designation",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "designation_id": {
+          "name": "designation_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "designation_name_unique": {
+          "name": "designation_name_unique",
+          "columns": [
+            "name"
+          ]
+        }
+      }
     },
     "employee_profile": {
       "name": "employee_profile",
@@ -88,8 +132,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "band": {
-          "name": "band",
+        "emp_band": {
+          "name": "emp_band",
           "type": "enum('U1','U2','U3')",
           "primaryKey": false,
           "notNull": true,

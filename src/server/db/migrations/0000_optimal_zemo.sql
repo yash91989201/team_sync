@@ -6,13 +6,21 @@ CREATE TABLE `admin_profile` (
 CREATE TABLE `department` (
 	`id` varchar(256) NOT NULL,
 	`name` varchar(128) NOT NULL,
-	CONSTRAINT `department_id` PRIMARY KEY(`id`)
+	CONSTRAINT `department_id` PRIMARY KEY(`id`),
+	CONSTRAINT `department_name_unique` UNIQUE(`name`)
+);
+--> statement-breakpoint
+CREATE TABLE `designation` (
+	`id` varchar(256) NOT NULL,
+	`name` varchar(128) NOT NULL,
+	CONSTRAINT `designation_id` PRIMARY KEY(`id`),
+	CONSTRAINT `designation_name_unique` UNIQUE(`name`)
 );
 --> statement-breakpoint
 CREATE TABLE `employee_profile` (
 	`emp_id` varchar(256) NOT NULL,
 	`joining_date` timestamp NOT NULL,
-	`band` enum('U1','U2','U3') NOT NULL,
+	`emp_band` enum('U1','U2','U3') NOT NULL,
 	`dept` varchar(128) NOT NULL,
 	`designation` varchar(128) NOT NULL,
 	`paid_leaves` int NOT NULL,

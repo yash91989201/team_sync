@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 // UTILS
 import { api } from "@/trpc/react";
 // SCHEMAS
-import { CreateDepartmentSchema } from "@/lib/schema";
+import { CreateDesignationSchema } from "@/lib/schema";
 // UI
 import {
   Form,
@@ -18,37 +18,37 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 // TYPES
 import type { SubmitHandler } from "react-hook-form";
-import type { CreateDepartmentSchemaType } from "@/lib/types";
+import type { CreateDesignationSchemaType } from "@/lib/types";
 // ICONS
 import { Loader2 } from "lucide-react";
 
-export default function CreateDepartmentForm() {
-  const createDepartmentForm = useForm<CreateDepartmentSchemaType>({
-    resolver: zodResolver(CreateDepartmentSchema),
+export default function CreateDesignationForm() {
+  const createDesignationForm = useForm<CreateDesignationSchemaType>({
+    resolver: zodResolver(CreateDesignationSchema),
   });
 
-  const { control, handleSubmit, formState } = createDepartmentForm;
+  const { control, handleSubmit, formState } = createDesignationForm;
 
-  const { mutateAsync: createDepartment } =
-    api.departmentRouter.createNew.useMutation();
+  const { mutateAsync: createDesignation } =
+    api.designationRouter.createNew.useMutation();
 
-  const createDepartmentAction: SubmitHandler<
-    CreateDepartmentSchemaType
-  > = async (data) => {
-    await createDepartment(data);
+  const createDesignationAction: SubmitHandler<
+    CreateDesignationSchemaType
+  > = async (formData) => {
+    await createDesignation(formData);
   };
 
   return (
-    <Form {...createDepartmentForm}>
-      <form onSubmit={handleSubmit(createDepartmentAction)}>
+    <Form {...createDesignationForm}>
+      <form onSubmit={handleSubmit(createDesignationAction)}>
         <FormField
           control={control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Department Name</FormLabel>
+              <FormLabel>Designation</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Enter department name" />
+                <Input {...field} placeholder="Enter designation" />
               </FormControl>
               <FormMessage />
             </FormItem>

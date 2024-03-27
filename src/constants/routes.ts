@@ -10,6 +10,7 @@ import {
   Building,
   CalendarX2,
   Users,
+  PersonStanding,
 } from "lucide-react";
 
 /* 
@@ -77,6 +78,12 @@ export const ADMIN_ROUTES: NavLinkProps[] = [
     Icon: Building,
     label: "Departments",
     href: "/admin/departments",
+    matchExact: false,
+  },
+  {
+    Icon: PersonStanding,
+    label: "Designations",
+    href: "/admin/designations",
     matchExact: false,
   },
 ] as const;

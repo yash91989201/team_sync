@@ -12,6 +12,9 @@ import type {
   NewVerificationSchema,
   DepartmentSchema,
   CreateDepartmentSchema,
+  DesignationSchema,
+  CreateDesignationSchema,
+  CreateEmployeeSchema,
 } from "@/lib/schema";
 
 // DB TABLE TYPES
@@ -19,6 +22,7 @@ export type UserType = z.infer<typeof UserSchema>;
 export type EmployeeProfileType = z.infer<typeof EmployeeProfileSchema>;
 export type AdminProfileType = z.infer<typeof AdminProfileSchema>;
 export type DepartmentType = z.infer<typeof DepartmentSchema>;
+export type DesignationType = z.infer<typeof DesignationSchema>;
 // AUTH TYPES
 export type AdminSignupSchemaType = z.infer<typeof AdminSignupSchema>;
 export type LoginSchemaType = z.infer<typeof LoginSchema>;
@@ -26,6 +30,10 @@ export type NewVerificationSchemaType = z.infer<typeof NewVerificationSchema>;
 export type ResetPasswordSchemaType = z.infer<typeof ResetPasswordSchema>;
 // FORM TYPES
 export type CreateDepartmentSchemaType = z.infer<typeof CreateDepartmentSchema>;
+export type CreateDesignationSchemaType = z.infer<
+  typeof CreateDesignationSchema
+>;
+export type CreateEmployeeSchemaType = z.infer<typeof CreateEmployeeSchema>;
 // OTHER TYPES
 export type UserSessionType =
   | {

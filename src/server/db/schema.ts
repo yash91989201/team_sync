@@ -34,7 +34,7 @@ export const userTableRelations = relations(userTable, ({ one }) => ({
   }),
   employeeProfile: one(employeeProfileTable, {
     fields: [userTable.id],
-    references: [employeeProfileTable.emp_id],
+    references: [employeeProfileTable.empId],
   }),
 }));
 
@@ -57,14 +57,14 @@ export const adminProfileTableRelations = relations(
 
 export const employeeProfileTable = mysqlTable("employee_profile", {
   // FOREIGN KEY AS PRIMAY KEY - SINCE USER - EMPLOYEE PROFILE IS ONE-ONE RELATIONSHIP
-  emp_id: varchar("emp_id", { length: 256 })
+  empId: varchar("emp_id", { length: 256 })
     .primaryKey()
     .references(() => userTable.id),
-  joining_date: timestamp("joining_date", { mode: "date" }).notNull(),
-  band: mysqlEnum("band", ["U1", "U2", "U3"]).notNull(),
+  joiningDate: timestamp("joining_date", { mode: "date" }).notNull(),
+  empBand: mysqlEnum("emp_band", ["U1", "U2", "U3"]).notNull(),
   dept: varchar("dept", { length: 128 }).notNull(),
   designation: varchar("designation", { length: 128 }).notNull(),
-  paid_leaves: int("paid_leaves").notNull(),
+  paidLeaves: int("paid_leaves").notNull(),
   salary: int("salary").notNull(),
   location: varchar("location", { length: 256 }).notNull(),
   imageUrl: text("image_url"),
@@ -75,13 +75,20 @@ export const employeeProfileTableRelations = relations(
   employeeProfileTable,
   ({ one }) => ({
     employee: one(userTable, {
-      fields: [employeeProfileTable.emp_id],
+      fields: [employeeProfileTable.empId],
       references: [userTable.id],
     }),
   }),
 );
 
 export const departmentTable = mysqlTable("department", {
+  id: varchar("id", {
+    length: 256,
+  }).primaryKey(),
+  name: varchar("name", { length: 128 }).unique().notNull(),
+});
+
+export const designationTable = mysqlTable("designation", {
   id: varchar("id", {
     length: 256,
   }).primaryKey(),
