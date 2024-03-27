@@ -81,6 +81,13 @@ export const employeeProfileTableRelations = relations(
   }),
 );
 
+export const departmentTable = mysqlTable("department", {
+  id: varchar("id", {
+    length: 256,
+  }).primaryKey(),
+  name: varchar("name", { length: 128 }).unique().notNull(),
+});
+
 export const sessionTable = mysqlTable("session", {
   id: varchar("id", {
     length: 256,

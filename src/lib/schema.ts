@@ -3,6 +3,7 @@ import { createSelectSchema } from "drizzle-zod";
 // SCHEMAS
 import {
   adminProfileTable,
+  departmentTable,
   employeeProfileTable,
   userTable,
 } from "@/server/db/schema";
@@ -11,8 +12,9 @@ import {
 export const UserSchema = createSelectSchema(userTable);
 export const EmployeeProfileSchema = createSelectSchema(employeeProfileTable);
 export const AdminProfileSchema = createSelectSchema(adminProfileTable);
+export const DepartmentSchema = createSelectSchema(departmentTable);
 
-// Other schemas
+// Auth schemas
 export const AdminSignupSchema = z.object({
   name: z.string().min(6, { message: "Full name is required." }),
   email: z.string().email(),
@@ -31,4 +33,12 @@ export const NewVerificationSchema = z.object({
 
 export const ResetPasswordSchema = z.object({
   email: z.string().email(),
+});
+
+// department schemas
+export const CreateDepartmentSchema = z.object({
+  name: z
+    .string()
+    .min(2, { message: "Min. allowed length is 2." })
+    .max(128, { message: "Max. allowed length is 128." }),
 });

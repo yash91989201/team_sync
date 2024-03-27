@@ -3,16 +3,23 @@ CREATE TABLE `admin_profile` (
 	CONSTRAINT `admin_profile_admin_id` PRIMARY KEY(`admin_id`)
 );
 --> statement-breakpoint
+CREATE TABLE `department` (
+	`id` varchar(256) NOT NULL,
+	`name` varchar(128) NOT NULL,
+	CONSTRAINT `department_id` PRIMARY KEY(`id`)
+);
+--> statement-breakpoint
 CREATE TABLE `employee_profile` (
+	`emp_id` varchar(256) NOT NULL,
 	`joining_date` timestamp NOT NULL,
 	`band` enum('U1','U2','U3') NOT NULL,
 	`dept` varchar(128) NOT NULL,
 	`designation` varchar(128) NOT NULL,
-	`paid_leaves` int,
+	`paid_leaves` int NOT NULL,
 	`salary` int NOT NULL,
 	`location` varchar(256) NOT NULL,
 	`image_url` text,
-	`emp_id` varchar(256) NOT NULL,
+	`is_profile_updated` boolean NOT NULL DEFAULT false,
 	CONSTRAINT `employee_profile_emp_id` PRIMARY KEY(`emp_id`)
 );
 --> statement-breakpoint

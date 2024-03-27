@@ -4,7 +4,6 @@ import { Inter } from "next/font/google";
 
 import { Toaster } from "@/components/ui/sonner";
 import { TRPCReactProvider } from "@/trpc/react";
-import NextUIProviderWrapper from "@/providers/next-ui-provider-wrapper";
 import SessionProvider from "@/providers/session-provider";
 import { validateRequest } from "@/lib/auth";
 
@@ -30,9 +29,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
         <TRPCReactProvider>
-          <NextUIProviderWrapper>
-            <SessionProvider user={user}>{children}</SessionProvider>
-          </NextUIProviderWrapper>
+          <SessionProvider user={user}>{children}</SessionProvider>
         </TRPCReactProvider>
         <Toaster richColors theme="light" />
       </body>

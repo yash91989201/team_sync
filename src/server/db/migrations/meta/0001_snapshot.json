@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "b364ca11-9b8e-4243-a180-190592d728cf",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "9b3f4e54-eddd-48b5-af31-a8c24f41c73d",
+  "prevId": "b364ca11-9b8e-4243-a180-190592d728cf",
   "tables": {
     "admin_profile": {
       "name": "admin_profile",
@@ -69,7 +69,14 @@
           ]
         }
       },
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "department_name_unique": {
+          "name": "department_name_unique",
+          "columns": [
+            "name"
+          ]
+        }
+      }
     },
     "employee_profile": {
       "name": "employee_profile",
