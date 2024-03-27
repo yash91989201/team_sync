@@ -18,14 +18,14 @@ export default function SideNav() {
   return (
     <aside
       className={cn(
-        "hidden h-screen flex-shrink-0 origin-left flex-col gap-6 border-r p-3 transition-all duration-150 ease-out md:flex",
-        sideNavToggle.isOpen ? "w-64" : "w-16",
+        "hidden h-screen flex-shrink-0 origin-left  flex-col gap-6 border-r transition-all duration-150 ease-out md:flex",
+        sideNavToggle.isOpen ? "w-64 p-6" : "w-20 p-3",
       )}
     >
       <div
         className={cn(
-          "flex items-center justify-between",
-          sideNavToggle.isOpen ? "p-3" : "",
+          "flex items-center",
+          sideNavToggle.isOpen ? "justify-between" : "justify-center",
         )}
       >
         <h1
@@ -36,7 +36,12 @@ export default function SideNav() {
         >
           TEAM SYNC
         </h1>
-        <Button variant="secondary" size="icon" onClick={sideNavToggle.toggle}>
+        <Button
+          variant={sideNavToggle.isOpen ? "secondary" : "default"}
+          size="icon"
+          className="h-12 w-12"
+          onClick={sideNavToggle.toggle}
+        >
           {sideNavToggle.isOpen ? <ChevronFirst /> : <ChevronLast />}
         </Button>
       </div>

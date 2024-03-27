@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { buttonVariants } from "@/components/ui/button";
 // TYPES
 import type { LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type NavLinkProps = {
   Icon: LucideIcon;
@@ -25,7 +26,10 @@ export default function NavLink(props: NavLinkProps) {
       href={href}
       className={buttonVariants({
         variant: isActive ? "default" : "ghost",
-        className: "flex items-center justify-start gap-3",
+        className: cn(
+          "flex items-center justify-start gap-3",
+          isActive ? "bg-primary/50 text-primary" : "",
+        ),
       })}
     >
       {label}
