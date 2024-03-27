@@ -12,6 +12,7 @@ const config = {
     // eslint-disable-next-line
     return config;
   },
+  output: "standalone",
 };
 
 export default config;

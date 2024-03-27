@@ -56,10 +56,9 @@ export default function CreateEmployeeForm() {
 
   const { control, handleSubmit, formState } = createEmployeeForm;
 
-  const { data: departmentList = [], isLoading: departmentsLoading } =
-    api.departmentRouter.getAll.useQuery();
+  const { data: departmentList = [] } = api.departmentRouter.getAll.useQuery();
 
-  const { data: designationList = [], isLoading: designationsLoading } =
+  const { data: designationList = [] } =
     api.designationRouter.getAll.useQuery();
 
   const { mutateAsync: createEmployee } =
