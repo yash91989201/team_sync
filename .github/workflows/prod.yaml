@@ -33,13 +33,15 @@ jobs:
 
       - name: Clear source code folder
         run: |
-          rm -rf /var/www/team_sync/{*,.*}
+          cd /home/yash
+          rm -rf team_sync
+          mkdir team_sync
 
       - name: Copy files for standalone next js app
         run: |
           cp -r ./public ./.next/standalone/public
           cp -r ./.next/static ./.next/standalone/.next/static
-          cp -r ./.next/standalone/{*,.*} /var/www/team_sync
+          cp -r ./.next/standalone/{*,.*} /home/yash/team_sync
 
       - name: Restart pm2
         run: pm2 restart team_sync
