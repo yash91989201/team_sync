@@ -79,17 +79,18 @@ export async function adminSignup(
       name,
       code: `ADMIN_${adminId}_${adminCount + 1}`,
       role: "ADMIN",
+      emailVerified: new Date(),
     });
 
     if (newAdminQuery.affectedRows === 1) {
-      const verificationToken = await generateVerificationToken(email);
+      // const verificationToken = await generateVerificationToken(email);
 
-      await sendVerificationEmail({
-        userName: name,
-        email: verificationToken.email,
-        token: verificationToken.token,
-        subject: "Confirm your SignUp.",
-      });
+      // await sendVerificationEmail({
+      //   userName: name,
+      //   email: verificationToken.email,
+      //   token: verificationToken.token,
+      //   subject: "Confirm your SignUp.",
+      // });
 
       return {
         status: "SUCCESS",
