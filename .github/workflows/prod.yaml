@@ -50,5 +50,8 @@ jobs:
       - name: Copy standalone directory
         run: cp -a ./.next/standalone/. /home/yash/team_sync
 
+      - name: Clear pm2 logs before restart
+        run: pm2 flush
+
       - name: Restart pm2
         run: pm2 restart team_sync --update-env
