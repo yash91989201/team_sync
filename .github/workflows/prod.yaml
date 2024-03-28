@@ -28,6 +28,10 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Run db migration
+        run: |
+          bun run db:migrate
+
       - name: Build team_sync app
         run: bun run build
 
@@ -37,11 +41,14 @@ jobs:
           rm -rf team_sync
           mkdir team_sync
 
-      - name: Copy files for standalone next js app
-        run: |
-          cp -r ./public ./.next/standalone/public
-          cp -r ./.next/static ./.next/standalone/.next/static
-          cp -r ./.next/standalone/{*,.*} /home/yash/team_sync
+      - name: Copy public directory
+        run: cp -r ./public ./.next/standalone/public
+
+      - name: Copy static directory
+        run: cp -r ./.next/static ./.next/standalone/.next/static
+
+      - name: Copy standalone directory
+        run: cp -r ./.next/standalone/{*,.*} /home/yash/team_sync
 
       - name: Restart pm2
         run: pm2 restart team_sync
