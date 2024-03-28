@@ -48,7 +48,7 @@ jobs:
         run: cp -r ./.next/static ./.next/standalone/.next/static
 
       - name: Copy standalone directory
-        run: cp -r ./.next/standalone/{*,.*} /home/yash/team_sync
+        run: cp -a ./.next/standalone/. /home/yash/team_sync
 
       - name: Restart pm2
         run: pm2 restart team_sync
