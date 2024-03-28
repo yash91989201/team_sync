@@ -21,7 +21,7 @@ export default function AuthCardWrapper({
   return (
     <Card className="w-[96vw] border-0 shadow-none md:max-w-[480px]">
       <CardHeader className="flex flex-col items-center justify-center gap-y-3">
-        <Link href="/">LOGO</Link>
+        <Link href="/">Logo</Link>
         <p className="text-xl font-semibold">{headerLabel}</p>
       </CardHeader>
       <CardContent>{children}</CardContent>
