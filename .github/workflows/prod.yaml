@@ -51,4 +51,4 @@ jobs:
         run: cp -a ./.next/standalone/. /home/yash/team_sync
 
       - name: Restart pm2
-        run: pm2 restart team_sync
+        run: pm2 restart team_sync --update-env
