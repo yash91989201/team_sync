@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { EmployeeAttendanceType } from "./types";
+import type { EmployeeAttendanceType } from "@/lib/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
