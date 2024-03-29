@@ -9,7 +9,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 // ICONS
 import { Bell, Bolt, ChevronFirst, ChevronLast } from "lucide-react";
 // CUSTOM COMPONENTS
-import NavLinks from "@/components/admin/side-nav/nav-links";
+import NavLinks from "@/components/employee/side-nav/nav-links";
 import LogoutButton from "./log-out-button";
 
 export default function SideNav() {

@@ -15,6 +15,8 @@ import type {
   DesignationSchema,
   CreateDesignationSchema,
   CreateEmployeeSchema,
+  EmployeeShiftSchema,
+  EmployeeAttendanceSchema,
 } from "@/lib/schema";
 
 // DB TABLE TYPES
@@ -23,6 +25,8 @@ export type EmployeeProfileType = z.infer<typeof EmployeeProfileSchema>;
 export type AdminProfileType = z.infer<typeof AdminProfileSchema>;
 export type DepartmentType = z.infer<typeof DepartmentSchema>;
 export type DesignationType = z.infer<typeof DesignationSchema>;
+export type EmployeeShiftType = z.infer<typeof EmployeeShiftSchema>;
+export type EmployeeAttendanceType = z.infer<typeof EmployeeAttendanceSchema>;
 // AUTH TYPES
 export type AdminSignupSchemaType = z.infer<typeof AdminSignupSchema>;
 export type LoginSchemaType = z.infer<typeof LoginSchema>;

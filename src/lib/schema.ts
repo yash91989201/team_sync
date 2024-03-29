@@ -5,7 +5,9 @@ import {
   adminProfileTable,
   departmentTable,
   designationTable,
+  employeeAttendanceTable,
   employeeProfileTable,
+  employeeShiftTable,
   userTable,
 } from "@/server/db/schema";
 
@@ -15,6 +17,10 @@ export const EmployeeProfileSchema = createSelectSchema(employeeProfileTable);
 export const AdminProfileSchema = createSelectSchema(adminProfileTable);
 export const DepartmentSchema = createSelectSchema(departmentTable);
 export const DesignationSchema = createSelectSchema(designationTable);
+export const EmployeeShiftSchema = createSelectSchema(employeeShiftTable);
+export const EmployeeAttendanceSchema = createSelectSchema(
+  employeeAttendanceTable,
+);
 
 // Auth schemas
 export const AdminSignupSchema = z.object({
@@ -68,4 +74,13 @@ export const CreateEmployeeSchema = z.object({
   location: z.string(),
   salary: z.number(),
   empBand: z.enum(["U1", "U2", "U3"]),
+  shiftStart: z.date(),
+  shiftEnd: z.date(),
+  breakMinutes: z
+    .number()
+    .min(15, { message: "Min. break hours should be 15 min." }),
+});
+
+export const AttendancePunchOutSchema = z.object({
+  attendanceId: z.string(),
 });

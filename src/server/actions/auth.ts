@@ -72,7 +72,7 @@ export async function adminSignup(
     const hashedPassword = await hashPassword(password);
     const adminId = generateId(15);
 
-    const [newAdminQuery] = await db.insert(userTable).values({
+    const [createAdminQuery] = await db.insert(userTable).values({
       id: adminId,
       email,
       password: hashedPassword,
@@ -82,7 +82,7 @@ export async function adminSignup(
       emailVerified: new Date(),
     });
 
-    if (newAdminQuery.affectedRows === 1) {
+    if (createAdminQuery.affectedRows === 1) {
       // const verificationToken = await generateVerificationToken(email);
 
       // await sendVerificationEmail({

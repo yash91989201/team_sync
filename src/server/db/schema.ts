@@ -8,7 +8,9 @@ import {
   timestamp,
   boolean,
   text,
+  time,
   int,
+  date,
 } from "drizzle-orm/mysql-core";
 
 export const createTable = mysqlTableCreator((name) => name);
@@ -28,14 +30,9 @@ export const userTable = mysqlTable("user", {
 });
 
 export const userTableRelations = relations(userTable, ({ one }) => ({
-  adminProfile: one(adminProfileTable, {
-    fields: [userTable.id],
-    references: [adminProfileTable.admin_id],
-  }),
-  employeeProfile: one(employeeProfileTable, {
-    fields: [userTable.id],
-    references: [employeeProfileTable.empId],
-  }),
+  adminProfile: one(adminProfileTable),
+  employeeProfile: one(employeeProfileTable),
+  employeeShift: one(employeeShiftTable),
 }));
 
 export const adminProfileTable = mysqlTable("admin_profile", {
@@ -93,6 +90,38 @@ export const designationTable = mysqlTable("designation", {
     length: 256,
   }).primaryKey(),
   name: varchar("name", { length: 128 }).unique().notNull(),
+});
+
+export const employeeShiftTable = mysqlTable("employee_shift", {
+  // FOREIGN KEY AS PRIMAY KEY - SINCE EMPLOYEE AND EMPLOYEE SHIFT IS ONE-ONE RELATIONSHIP
+  empId: varchar("emp_id", { length: 256 })
+    .primaryKey()
+    .references(() => userTable.id),
+  shiftStart: time("shift_start", { fsp: 0 }).notNull(),
+  shiftEnd: time("shift_end", { fsp: 0 }).notNull(),
+  breakMinutes: int("break_minutes").notNull(),
+});
+
+export const employeeShiftTableRelations = relations(
+  employeeShiftTable,
+  ({ one }) => ({
+    employee: one(userTable, {
+      fields: [employeeShiftTable.empId],
+      references: [userTable.id],
+    }),
+  }),
+);
+
+export const employeeAttendanceTable = mysqlTable("employee_attendance", {
+  id: varchar("id", { length: 256 }).primaryKey(),
+  date: date("date", { mode: "string" }).notNull(),
+  punchIn: time("punchIn").notNull(),
+  punchOut: time("punchOut"),
+  shiftHours: mysqlEnum("shift_hours", ["0", "0.5", "0.75", "1"]),
+  // FOREIGN KEY RELATIONS
+  empId: varchar("emp_id", { length: 256 })
+    .notNull()
+    .references(() => userTable.id),
 });
 
 export const sessionTable = mysqlTable("session", {
