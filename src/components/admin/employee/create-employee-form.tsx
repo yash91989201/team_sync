@@ -33,8 +33,11 @@ import {
 } from "@/components/ui/select";
 import { api } from "@/trpc/react";
 import { Loader2 } from "lucide-react";
+import EmployeeShiftTimePicker from "@/components/admin/employee/employee-shift-time-picker";
 
 export default function CreateEmployeeForm() {
+  const shiftStart = new Date(new Date().setHours(10, 0, 0, 0));
+  const shiftEnd = new Date(new Date().setHours(8, 0, 0, 0));
   const createEmployeeForm = useForm<CreateEmployeeSchemaType>({
     defaultValues: {
       code: "",
@@ -50,6 +53,9 @@ export default function CreateEmployeeForm() {
       location: "",
       salary: 10000,
       empBand: "U3",
+      shiftStart,
+      shiftEnd,
+      breakMinutes: 60,
     },
     resolver: zodResolver(CreateEmployeeSchema),
   });
@@ -255,8 +261,11 @@ export default function CreateEmployeeForm() {
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="No. of paid leaves for employee"
                   type="number"
+                  placeholder="No. of paid leaves for employee"
+                  onChange={(event) =>
+                    field.onChange(Number(event.target.value))
+                  }
                 />
               </FormControl>
               <FormMessage />
@@ -286,6 +295,56 @@ export default function CreateEmployeeForm() {
             </FormItem>
           )}
         />
+        <FormField
+          control={control}
+          name="shiftStart"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Shift start time</FormLabel>
+              <FormControl>
+                <EmployeeShiftTimePicker
+                  date={field.value}
+                  setDate={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={control}
+          name="shiftEnd"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Shift end time</FormLabel>
+              <FormControl>
+                <EmployeeShiftTimePicker
+                  date={field.value}
+                  setDate={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={control}
+          name="breakMinutes"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Break hours (in minutes.)</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="number"
+                  className="w-12 [&::-webkit-inner-spin-button]:appearance-none"
+                  onChange={(event) =>
+                    field.onChange(Number(event.target.value))
+                  }
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
         <Button className="w-fit" disabled={formState.isSubmitting}>
           Create
           {formState.isSubmitting && <Loader2 className="ml-3 animate-spin" />}

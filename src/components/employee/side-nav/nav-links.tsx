@@ -1,7 +1,7 @@
 // CUSTOM COMPONENTS
 import NavLink from "@/components/shared/nav-link";
 // CONSTANTS
-import { ADMIN_ROUTES } from "@/constants/routes";
+import { EMPLOYEE_ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/utils";
 
 export default function NavLinks({ sideNavOpen }: { sideNavOpen: boolean }) {
@@ -12,10 +12,10 @@ export default function NavLinks({ sideNavOpen }: { sideNavOpen: boolean }) {
         sideNavOpen ? "" : "items-center",
       )}
     >
-      {ADMIN_ROUTES.map((adminRoute) => (
+      {EMPLOYEE_ROUTES.map((employeeRoute) => (
         <NavLink
-          key={adminRoute.href}
-          {...adminRoute}
+          key={employeeRoute.href}
+          {...employeeRoute}
           sideNavOpen={sideNavOpen}
         />
       ))}

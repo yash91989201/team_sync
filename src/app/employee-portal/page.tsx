@@ -1,10 +1,11 @@
-import LogoutButton from "@/components/shared/log-out-button";
+import AttendancePunchCard from "@/components/employee/attendance-punch-card";
+import GreetingHeader from "@/components/employee/greeting-header";
 
 export default function EmployeePortalPage() {
   return (
     <>
-      employee portal
-      <LogoutButton />
+      <GreetingHeader />
+      <AttendancePunchCard />
     </>
   );
 }

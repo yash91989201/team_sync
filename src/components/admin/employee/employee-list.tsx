@@ -7,7 +7,10 @@ export default async function EmployeeList() {
     <>
       <h2 className="text-lg font-semibold">Employee List</h2>
       {employeeList.map((employee) => (
-        <div key={employee.id}>{employee.name}</div>
+        <div key={employee.id}>
+          <p>{employee.name}</p>
+          <p>{employee.email}</p>
+        </div>
       ))}
     </>
   );

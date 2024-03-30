@@ -31,10 +31,10 @@ import { Eye, EyeOff, FormInput, Loader2, Mail } from "lucide-react";
 import { ADMIN_AUTH_ROUTES, EMPLOYEE_AUTH_ROUTES } from "@/constants/routes";
 
 export default function LoginForm({ role }: { role: UserType["role"] }) {
+  const router = useRouter();
+
   const showPasswordToggle = useToggle(false);
   const twoFactorAuthenticationField = useToggle(false);
-
-  const router = useRouter();
 
   const loginForm = useForm<LoginSchemaType>({
     shouldUseNativeValidation: true,

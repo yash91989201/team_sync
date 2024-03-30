@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 // ICONS
 import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 
 export default function AuthCardWrapper({
   children,
@@ -21,7 +22,9 @@ export default function AuthCardWrapper({
   return (
     <Card className="w-[96vw] border-0 shadow-none md:max-w-[480px]">
       <CardHeader className="flex flex-col items-center justify-center gap-y-3">
-        <Link href="/">Logo</Link>
+        <div className="relative aspect-square w-20">
+          <Image src="/team_sync_logo.png" alt="team_sync_logo" fill />
+        </div>
         <p className="text-xl font-semibold">{headerLabel}</p>
       </CardHeader>
       <CardContent>{children}</CardContent>

@@ -1,18 +1,20 @@
 import "@/styles/globals.css";
-
 import { Inter } from "next/font/google";
-
 import { Toaster } from "@/components/ui/sonner";
+// UTILS
 import { TRPCReactProvider } from "@/trpc/react";
-import SessionProvider from "@/providers/session-provider";
 import { validateRequest } from "@/lib/auth";
+// PROVIDERS
+import SessionProvider from "@/providers/session-provider";
+// TYPES
+import type { Metadata } from "next";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
 });
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Team Sync",
   description: "Employee management application",
   icons: [{ rel: "icon", url: "/favicon.ico" }],

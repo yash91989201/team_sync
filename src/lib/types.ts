@@ -15,6 +15,12 @@ import type {
   DesignationSchema,
   CreateDesignationSchema,
   CreateEmployeeSchema,
+  EmployeeShiftSchema,
+  EmployeeAttendanceSchema,
+  LeaveTypeSchema,
+  LeaveRequestSchema,
+  CreateLeaveTypeSchema,
+  LeaveApplySchema,
 } from "@/lib/schema";
 
 // DB TABLE TYPES
@@ -23,6 +29,10 @@ export type EmployeeProfileType = z.infer<typeof EmployeeProfileSchema>;
 export type AdminProfileType = z.infer<typeof AdminProfileSchema>;
 export type DepartmentType = z.infer<typeof DepartmentSchema>;
 export type DesignationType = z.infer<typeof DesignationSchema>;
+export type EmployeeShiftType = z.infer<typeof EmployeeShiftSchema>;
+export type EmployeeAttendanceType = z.infer<typeof EmployeeAttendanceSchema>;
+export type LeaveTypeType = z.infer<typeof LeaveTypeSchema>;
+export type LeaveRequest = z.infer<typeof LeaveRequestSchema>;
 // AUTH TYPES
 export type AdminSignupSchemaType = z.infer<typeof AdminSignupSchema>;
 export type LoginSchemaType = z.infer<typeof LoginSchema>;
@@ -34,6 +44,8 @@ export type CreateDesignationSchemaType = z.infer<
   typeof CreateDesignationSchema
 >;
 export type CreateEmployeeSchemaType = z.infer<typeof CreateEmployeeSchema>;
+export type CreateLeaveTypeSchemaType = z.infer<typeof CreateLeaveTypeSchema>;
+export type LeaveApplySchemaType = z.infer<typeof LeaveApplySchema>;
 // OTHER TYPES
 export type UserSessionType =
   | {
