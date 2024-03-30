@@ -7,9 +7,14 @@ import {
   employeeAttendanceTable,
   employeeProfileTable,
   employeeShiftTable,
+  leaveRequestTable,
   userTable,
 } from "@/server/db/schema";
-import { AttendancePunchOutSchema, CreateEmployeeSchema } from "@/lib/schema";
+import {
+  AttendancePunchOutSchema,
+  CreateEmployeeSchema,
+  LeaveApplySchema,
+} from "@/lib/schema";
 import { and, eq } from "drizzle-orm";
 import { calculateShiftHours, getCurrentDate } from "@/lib/utils";
 
@@ -18,6 +23,12 @@ export const employeeRouter = createTRPCRouter({
     return ctx.db.query.userTable.findMany({
       where: eq(userTable.role, "EMPLOYEE"),
     });
+  }),
+  getProfile: protectedProcedure.query(async ({ ctx }) => {
+    const employeeProfile = (await ctx.db.query.employeeProfileTable.findFirst({
+      where: eq(employeeProfileTable.empId, ctx.session.user.id),
+    }))!;
+    return employeeProfile;
   }),
   createNew: protectedProcedure
     .input(CreateEmployeeSchema)
@@ -142,5 +153,23 @@ export const employeeRouter = createTRPCRouter({
       return {
         punchOutSuccess: attendancePunchOutQuery.affectedRows === 1,
       };
+    }),
+  leaveApply: protectedProcedure
+    .input(LeaveApplySchema)
+    .mutation(async ({ ctx, input }) => {
+      const { leaveDate, leaveDays, reason, leaveType, reviewerId } = input;
+
+      await ctx.db.insert(leaveRequestTable).values({
+        id: generateId(15),
+        leaveType,
+        fromDate: leaveDate.from,
+        toDate: leaveDate.to,
+        leaveDays,
+        reason,
+        appliedOn: new Date(),
+        status: "pending",
+        empId: ctx.session.user.id,
+        reviewerId,
+      });
     }),
 });

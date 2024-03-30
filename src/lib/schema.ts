@@ -8,6 +8,8 @@ import {
   employeeAttendanceTable,
   employeeProfileTable,
   employeeShiftTable,
+  leaveRequestTable,
+  leaveTypeTable,
   userTable,
 } from "@/server/db/schema";
 
@@ -21,7 +23,8 @@ export const EmployeeShiftSchema = createSelectSchema(employeeShiftTable);
 export const EmployeeAttendanceSchema = createSelectSchema(
   employeeAttendanceTable,
 );
-
+export const LeaveTypeSchema = createSelectSchema(leaveTypeTable);
+export const LeaveRequestSchema = createSelectSchema(leaveRequestTable);
 // Auth schemas
 export const AdminSignupSchema = z.object({
   name: z.string().min(6, { message: "Full name is required." }),
@@ -84,3 +87,34 @@ export const CreateEmployeeSchema = z.object({
 export const AttendancePunchOutSchema = z.object({
   attendanceId: z.string(),
 });
+
+export const CreateLeaveTypeSchema = z.object({
+  type: z
+    .string()
+    .min(4, { message: "Min. 4 letters is required." })
+    .max(128, { message: "Max. 128 characters is allowed." }),
+  daysAllowed: z.number(),
+});
+
+export const LeaveApplySchema = z
+  .object({
+    leaveType: z.string(),
+    leaveDate: z.object({
+      from: z.date(),
+      to: z.date(),
+    }),
+    leaveDays: z.number(),
+    reviewerId: z.string({ required_error: "Leave reviewer is required." }),
+    reason: z
+      .string()
+      .max(1024, { message: "Max. 1024 characters allowed." })
+      .optional(),
+    daysAllowed: z.number(),
+  })
+  .refine(
+    (schema) => schema.leaveDays < schema.daysAllowed,
+    (schema) => ({
+      message: `You can have max. ${schema.daysAllowed} days of ${schema.leaveType}.`,
+      path: ["leaveDays"],
+    }),
+  );

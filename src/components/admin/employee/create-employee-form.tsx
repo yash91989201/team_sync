@@ -335,7 +335,7 @@ export default function CreateEmployeeForm() {
                 <Input
                   {...field}
                   type="number"
-                  className="w-[48px] [&::-webkit-inner-spin-button]:appearance-none"
+                  className="w-12 [&::-webkit-inner-spin-button]:appearance-none"
                   onChange={(event) =>
                     field.onChange(Number(event.target.value))
                   }

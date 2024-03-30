@@ -96,7 +96,7 @@ export const EMPLOYEE_ROUTES: NavLinkProps[] = [
     Icon: Home,
     label: "Home",
     href: "/employee-portal",
-    matchExact: false,
+    matchExact: true,
   },
   {
     Icon: HandCoins,

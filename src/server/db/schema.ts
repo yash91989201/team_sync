@@ -34,7 +34,12 @@ export const userTableRelations = relations(userTable, ({ one, many }) => ({
   employeeProfile: one(employeeProfileTable),
   employeeShift: one(employeeShiftTable),
   employeeAttendance: many(employeeAttendanceTable),
-  leaveRequest: many(leaveRequestTable),
+  employeeLeaveRequest: many(leaveRequestTable, {
+    relationName: "employeeLeaveRequest",
+  }),
+  leaveRequestReviewer: many(leaveRequestTable, {
+    relationName: "leaveRequestReviewer",
+  }),
 }));
 
 export const adminProfileTable = mysqlTable("admin_profile", {
@@ -140,7 +145,7 @@ export const leaveTypeTable = mysqlTable("leave_type", {
   id: varchar("id", {
     length: 256,
   }).primaryKey(),
-  type: varchar("type", { length: 128 }).notNull(),
+  type: varchar("type", { length: 128 }).notNull().unique(),
   daysAllowed: int("days_allowed").notNull(),
 });
 
@@ -150,12 +155,16 @@ export const leaveRequestTable = mysqlTable("leave_request", {
   }).primaryKey(),
   fromDate: date("from_date", { mode: "date" }).notNull(),
   toDate: date("to_date", { mode: "date" }).notNull(),
-  reason: text("reason").notNull(),
+  leaveDays: int("leave_days").notNull(),
+  reason: text("reason"),
   leaveType: varchar("leave_type", { length: 128 }).notNull(),
   appliedOn: date("applied_on", { mode: "date" }).notNull(),
   status: mysqlEnum("status", ["pending", "approved", "denied"]).notNull(),
-  // FOREIGN KEY REKATIONS
+  // FOREIGN KEY RELATIONS
   empId: varchar("emp_id", { length: 256 })
+    .notNull()
+    .references(() => userTable.id),
+  reviewerId: varchar("reviewer_id", { length: 256 })
     .notNull()
     .references(() => userTable.id),
 });
@@ -166,6 +175,12 @@ export const leaveRequestTableRelations = relations(
     employee: one(userTable, {
       fields: [leaveRequestTable.empId],
       references: [userTable.id],
+      relationName: "employeeLeaveRequest",
+    }),
+    reviewer: one(userTable, {
+      fields: [leaveRequestTable.reviewerId],
+      references: [userTable.id],
+      relationName: "leaveRequestReviewer",
     }),
   }),
 );

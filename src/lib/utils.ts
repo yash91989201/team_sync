@@ -77,7 +77,8 @@ export function getShiftTimeWithPeriod(time: string) {
   const [hour = 0, minute = 0] = time.split(":").map(Number);
 
   if (hour < 12) return `${hour}:${minute} AM`;
-  return `${hour}:${minute} PM`;
+  if (hour === 12) return `${hour}:${minute} PM`;
+  return `${hour - 12}:${minute} PM`;
 }
 
 export function getCurrentTimeWithPeriod() {

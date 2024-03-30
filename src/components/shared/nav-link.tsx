@@ -36,7 +36,7 @@ export default function NavLink(
             ? "w-full justify-start [&>svg]:size-5"
             : "justify-center [&>svg]:size-6",
           isActive
-            ? "bg-primary/15 text-primary hover:bg-primary/15"
+            ? "bg-primary-foreground text-primary hover:bg-primary-foreground"
             : "text-gray-700",
         )}
       >
@@ -61,7 +61,7 @@ export default function NavLink(
                 ? "w-full justify-start [&>svg]:size-5"
                 : "justify-center [&>svg]:size-6",
               isActive
-                ? "bg-primary/15 text-primary hover:bg-primary/15"
+                ? "bg-primary-foreground text-primary hover:bg-primary-foreground"
                 : "text-gray-700",
             )}
           >
