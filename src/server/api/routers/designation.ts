@@ -14,7 +14,7 @@ export const designationRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(designationTable).values({
         id: generateId(15),
-        name: input.name,
+        ...input,
       });
     }),
 });

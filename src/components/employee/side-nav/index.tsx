@@ -39,7 +39,7 @@ export default function SideNav() {
         <Button
           variant={sideNavToggle.isOpen ? "secondary" : "default"}
           size="icon"
-          className="h-12 w-12"
+          className="h-12 w-12 [&>svg]:size-5"
           onClick={sideNavToggle.toggle}
         >
           {sideNavToggle.isOpen ? <ChevronFirst /> : <ChevronLast />}
@@ -61,12 +61,10 @@ export default function SideNav() {
               size: sideNavToggle.isOpen ? "default" : "icon",
             }),
             "h-12 w-12 gap-3 text-gray-700",
-            sideNavToggle.isOpen
-              ? "w-full justify-start [&>svg]:size-5"
-              : "justify-center [&>svg]:size-6",
+            sideNavToggle.isOpen ? "w-full justify-start " : "justify-center",
           )}
         >
-          <Bell />
+          <Bell className="size-5" />
           {sideNavToggle.isOpen && (
             <p className="text-base font-medium">Notifications</p>
           )}
@@ -80,12 +78,10 @@ export default function SideNav() {
               size: sideNavToggle.isOpen ? "default" : "icon",
             }),
             "h-12 w-12 gap-3 text-gray-700",
-            sideNavToggle.isOpen
-              ? "w-full justify-start [&>svg]:size-5"
-              : "justify-center [&>svg]:size-6",
+            sideNavToggle.isOpen ? "w-full justify-start" : "justify-center",
           )}
         >
-          <Bolt />
+          <Bolt className="size-5" />
           {sideNavToggle.isOpen && (
             <p className="text-base font-medium">Settings</p>
           )}

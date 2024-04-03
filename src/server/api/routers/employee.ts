@@ -7,6 +7,7 @@ import {
   employeeAttendanceTable,
   employeeProfileTable,
   employeeShiftTable,
+  leaveBalanceTable,
   leaveRequestTable,
   userTable,
 } from "@/server/db/schema";
@@ -44,7 +45,7 @@ export const employeeRouter = createTRPCRouter({
         dept,
         designation,
         salary,
-        paidLeaves,
+        dob,
         location,
         empBand,
         shiftStart,
@@ -54,6 +55,9 @@ export const employeeRouter = createTRPCRouter({
 
       const employeeId = generateId(15);
       const hashedPassword = await hashPassword(password);
+      const availableLeaveTypes = await ctx.db.query.leaveTypeTable.findMany();
+
+      // add employee to userTable
       await ctx.db.insert(userTable).values({
         id: employeeId,
         code,
@@ -64,24 +68,42 @@ export const employeeRouter = createTRPCRouter({
         isTeamLead,
         emailVerified: new Date(),
       });
-
+      // create profile for employee
       await ctx.db.insert(employeeProfileTable).values({
         empId: employeeId,
         joiningDate,
         dept,
         designation,
         salary,
-        paidLeaves,
         location,
+        dob,
         empBand,
       });
 
+      // create shift timing for the employee
       await ctx.db.insert(employeeShiftTable).values({
         empId: employeeId,
         shiftStart: shiftStart.toLocaleTimeString("en-IN", { hour12: false }),
         shiftEnd: shiftEnd.toLocaleTimeString("en-IN", { hour12: false }),
         breakMinutes,
       });
+
+      if (availableLeaveTypes.length > 0) {
+        await Promise.all(
+          availableLeaveTypes.map(async (leaveType) => {
+            const [newLeaveBalance] = await ctx.db
+              .insert(leaveBalanceTable)
+              .values({
+                id: generateId(15),
+                leaveTypeId: leaveType.id,
+                empId: employeeId,
+                balance: leaveType.daysAllowed,
+                createdAt: new Date(),
+              });
+            return newLeaveBalance.affectedRows === 1;
+          }),
+        );
+      }
     }),
 
   getAttendanceStatus: protectedProcedure.query(async ({ ctx }) => {
@@ -157,11 +179,19 @@ export const employeeRouter = createTRPCRouter({
   leaveApply: protectedProcedure
     .input(LeaveApplySchema)
     .mutation(async ({ ctx, input }) => {
-      const { leaveDate, leaveDays, reason, leaveType, reviewerId } = input;
+      const { user } = ctx.session;
+      const {
+        leaveDate,
+        leaveDays,
+        reason,
+        leaveTypeId,
+        reviewerId,
+        daysAllowed,
+      } = input;
 
       await ctx.db.insert(leaveRequestTable).values({
         id: generateId(15),
-        leaveType,
+        leaveTypeId,
         fromDate: leaveDate.from,
         toDate: leaveDate.to,
         leaveDays,
@@ -171,5 +201,31 @@ export const employeeRouter = createTRPCRouter({
         empId: ctx.session.user.id,
         reviewerId,
       });
+
+      const leaveBalance = await ctx.db.query.leaveBalanceTable.findFirst({
+        where: and(
+          eq(leaveBalanceTable.empId, user.id),
+          eq(leaveBalanceTable.leaveTypeId, leaveTypeId),
+        ),
+        with: {
+          leaveType: true,
+        },
+      });
+
+      if (leaveBalance === undefined) {
+        await ctx.db.insert(leaveBalanceTable).values({
+          id: generateId(15),
+          createdAt: new Date(),
+          balance: daysAllowed - leaveDays,
+          empId: user.id,
+          leaveTypeId,
+        });
+        return;
+      }
+
+      await ctx.db
+        .update(leaveBalanceTable)
+        .set({ balance: leaveBalance.balance - leaveDays })
+        .where(eq(leaveBalanceTable.id, leaveBalance.id));
     }),
 });

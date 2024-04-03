@@ -2,6 +2,15 @@ import { toast } from "sonner";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { EmployeeAttendanceType } from "@/lib/types";
+import {
+  startOfYear,
+  endOfYear,
+  startOfMonth,
+  endOfMonth,
+  addMonths,
+  addYears,
+  format,
+} from "date-fns";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -89,4 +98,41 @@ export function getCurrentTimeWithPeriod() {
   const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
   const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
   return `${formattedHours}:${formattedMinutes} ${ampm}`;
+}
+
+export function getLeavePeriodRange({
+  renewPeriod,
+  renewPeriodCount,
+}: {
+  renewPeriod: "month" | "year";
+  renewPeriodCount: number;
+}): { startDate: Date; endDate: Date } {
+  const currentDate = new Date();
+  currentDate.setUTCHours(0, 0, 0, 0);
+  currentDate.setUTCDate(1);
+  console.log(currentDate);
+  switch (renewPeriod) {
+    case "month": {
+      const startDate = new Date(currentDate);
+      const endDate = new Date(
+        addMonths(endOfMonth(currentDate), renewPeriodCount - 1).setUTCHours(
+          0,
+          0,
+          0,
+          0,
+        ),
+      );
+      return { startDate, endDate };
+    }
+    case "year": {
+      const startDate = new Date(currentDate.setUTCMonth(1));
+      const endDate = addYears(endOfYear(currentDate), renewPeriodCount - 1);
+      return { startDate, endDate };
+    }
+  }
+}
+
+export function removeTimeZoneValue(date: Date): Date {
+  date = new Date(date);
+  return new Date(date.valueOf() + date.getTimezoneOffset() * 60 * 1000);
 }

@@ -38,6 +38,7 @@ import EmployeeShiftTimePicker from "@/components/admin/employee/employee-shift-
 export default function CreateEmployeeForm() {
   const shiftStart = new Date(new Date().setHours(10, 0, 0, 0));
   const shiftEnd = new Date(new Date().setHours(8, 0, 0, 0));
+  const currentYear = new Date().getFullYear();
   const createEmployeeForm = useForm<CreateEmployeeSchemaType>({
     defaultValues: {
       code: "",
@@ -46,10 +47,8 @@ export default function CreateEmployeeForm() {
       password: "password",
       role: "EMPLOYEE",
       isTeamLead: false,
-      joiningDate: new Date(),
       dept: "",
       designation: "",
-      paidLeaves: 2,
       location: "",
       salary: 10000,
       empBand: "U3",
@@ -60,7 +59,7 @@ export default function CreateEmployeeForm() {
     resolver: zodResolver(CreateEmployeeSchema),
   });
 
-  const { control, handleSubmit, formState } = createEmployeeForm;
+  const { control, handleSubmit, formState, watch } = createEmployeeForm;
 
   const { data: departmentList = [] } = api.departmentRouter.getAll.useQuery();
 
@@ -76,274 +75,353 @@ export default function CreateEmployeeForm() {
     await createEmployee(formData);
   };
 
+  const selectedDept = watch("dept");
+  const selectedDeptId =
+    departmentList.find((department) => department.name === selectedDept)?.id ??
+    "";
+  const designationByDept = designationList.filter(
+    (designation) => designation.deptId === selectedDeptId,
+  );
+
   return (
     <Form {...createEmployeeForm}>
       <form
         className="flex flex-col gap-3"
         onSubmit={handleSubmit(createEmployeeAction)}
       >
-        <FormField
-          control={control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Employee Name</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="Enter employee name" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Employee Email</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="Enter employee email" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Employee Password</FormLabel>
-              <FormControl>
-                <Input {...field} readOnly={true} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="code"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Employee Code</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="Enter employee code" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="dept"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Department</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+        {/* Personal details */}
+        <div>
+          <FormField
+            control={control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a department for new employee" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {departmentList.map((department) => (
-                    <SelectItem key={department.id} value={department.name}>
-                      {department.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="designation"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Designation</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a designation for new employee" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {designationList.map((designation) => (
-                    <SelectItem key={designation.id} value={designation.name}>
-                      {designation.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="isTeamLead"
-          render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel>Make this employee team lead of department</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={(value) => {
-                    if (value === "yes") field.onChange(true);
-                    else field.onChange(false);
-                  }}
-                  defaultValue={field.value ? "yes" : "no"}
-                  className="flex flex-col space-y-1"
-                >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="yes" />
-                    </FormControl>
-                    <FormLabel className="font-normal">Yes</FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="no" />
-                    </FormControl>
-                    <FormLabel className="font-normal">No</FormLabel>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="joiningDate"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Joining Date</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground",
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
+                  <Input
+                    {...field}
+                    className="bg-white"
+                    placeholder="Jane Doe"
                   />
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="paidLeaves"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Days of paid leaves</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  type="number"
-                  placeholder="No. of paid leaves for employee"
-                  onChange={(event) =>
-                    field.onChange(Number(event.target.value))
-                  }
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
-          name="empBand"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Employee Band</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select an employee band" />
-                  </SelectTrigger>
                 </FormControl>
-                <SelectContent>
-                  <SelectItem value="U1">U1</SelectItem>
-                  <SelectItem value="U2">U2</SelectItem>
-                  <SelectItem value="U3">U3</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="shiftStart"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Shift start time</FormLabel>
-              <FormControl>
-                <EmployeeShiftTimePicker
-                  date={field.value}
-                  setDate={field.onChange}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="shiftEnd"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Shift end time</FormLabel>
-              <FormControl>
-                <EmployeeShiftTimePicker
-                  date={field.value}
-                  setDate={field.onChange}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="breakMinutes"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Break hours (in minutes.)</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  type="number"
-                  className="w-12 [&::-webkit-inner-spin-button]:appearance-none"
-                  onChange={(event) =>
-                    field.onChange(Number(event.target.value))
-                  }
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    className="bg-white"
+                    placeholder="example@mail.com"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input {...field} className="bg-white" readOnly={true} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name="dob"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Date of Birth</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-48 justify-start px-2 text-left font-normal",
+                          !field.value && "text-muted-foreground",
+                        )}
+                      >
+                        <CalendarIcon className="mr-3 size-4 opacity-50" />
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>dd/mm/yyyy</span>
+                        )}
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      fromYear={currentYear - 60}
+                      toYear={currentYear - 18}
+                      captionLayout="dropdown-buttons"
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/*professional details*/}
+        <div>
+          <FormField
+            control={control}
+            name="code"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Employee Code</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    className="bg-white"
+                    placeholder="Enter employee code"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name="dept"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Department</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger className="bg-white">
+                      <SelectValue placeholder="Select a department" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {departmentList.map((department) => (
+                      <SelectItem key={department.id} value={department.name}>
+                        {department.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name="designation"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Designation</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger className="bg-white">
+                      <SelectValue
+                        className="bg-white"
+                        placeholder="Select a designation"
+                      />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {designationByDept.length === 0 ? (
+                      <p className="p-1">
+                        {selectedDeptId.length === 0
+                          ? "First select a department"
+                          : "Selected department has no designations"}
+                      </p>
+                    ) : (
+                      designationByDept.map((designation) => (
+                        <SelectItem
+                          key={designation.id}
+                          value={designation.name}
+                        >
+                          {designation.name}
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name="joiningDate"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Joining Date</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-48 justify-start px-2 text-left font-normal",
+                          !field.value && "text-muted-foreground",
+                        )}
+                      >
+                        <CalendarIcon className="mr-3 size-4 opacity-50" />
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>dd/mm/yyyy</span>
+                        )}
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={control}
+            name="empBand"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Employee Band</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger className="w-24 bg-white">
+                      <SelectValue placeholder="Select an employee band" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="w-24">
+                    <SelectItem value="U1">U1</SelectItem>
+                    <SelectItem value="U2">U2</SelectItem>
+                    <SelectItem value="U3">U3</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        {/*work details*/}
+        <div>
+          <FormField
+            control={control}
+            name="shiftStart"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Shift start time</FormLabel>
+                <FormControl>
+                  <EmployeeShiftTimePicker
+                    date={field.value}
+                    setDate={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name="shiftEnd"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Shift end time</FormLabel>
+                <FormControl>
+                  <EmployeeShiftTimePicker
+                    date={field.value}
+                    setDate={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name="breakMinutes"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Break hours (in minutes.)</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="number"
+                    step={15}
+                    className="hide-number-input-spinner w-12 bg-white"
+                    onChange={(event) =>
+                      field.onChange(Number(event.target.value))
+                    }
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
+        {/*additional options*/}
+        <div>
+          <FormField
+            control={control}
+            name="isTeamLead"
+            render={({ field }) => (
+              <FormItem className="space-y-3">
+                <FormLabel>
+                  Make this employee team lead of department
+                </FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={(value) => {
+                      if (value === "yes") field.onChange(true);
+                      else field.onChange(false);
+                    }}
+                    defaultValue={field.value ? "yes" : "no"}
+                    className="flex flex-col space-y-1"
+                  >
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="yes" />
+                      </FormControl>
+                      <FormLabel className="font-normal">Yes</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="no" />
+                      </FormControl>
+                      <FormLabel className="font-normal">No</FormLabel>
+                    </FormItem>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <Button className="w-fit" disabled={formState.isSubmitting}>
           Create

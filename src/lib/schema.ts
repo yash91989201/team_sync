@@ -56,6 +56,7 @@ export const CreateDepartmentSchema = z.object({
 
 // designation schemas
 export const CreateDesignationSchema = z.object({
+  deptId: z.string(),
   name: z
     .string()
     .min(6, { message: "Min. allowed length is 6." })
@@ -73,7 +74,7 @@ export const CreateEmployeeSchema = z.object({
   joiningDate: z.date({ required_error: "Joining date is required." }),
   dept: z.string(),
   designation: z.string(),
-  paidLeaves: z.number(),
+  dob: z.date(),
   location: z.string(),
   salary: z.number(),
   empBand: z.enum(["U1", "U2", "U3"]),
@@ -94,11 +95,14 @@ export const CreateLeaveTypeSchema = z.object({
     .min(4, { message: "Min. 4 letters is required." })
     .max(128, { message: "Max. 128 characters is allowed." }),
   daysAllowed: z.number(),
+  renewPeriod: z.enum(["month", "year"]),
+  renewPeriodCount: z.number(),
+  carryOver: z.boolean(),
 });
 
 export const LeaveApplySchema = z
   .object({
-    leaveType: z.string(),
+    leaveTypeId: z.string(),
     leaveDate: z.object({
       from: z.date(),
       to: z.date(),
@@ -112,9 +116,15 @@ export const LeaveApplySchema = z
     daysAllowed: z.number(),
   })
   .refine(
-    (schema) => schema.leaveDays < schema.daysAllowed,
+    (schema) => schema.daysAllowed > schema.leaveDays,
     (schema) => ({
-      message: `You can have max. ${schema.daysAllowed} days of ${schema.leaveType}.`,
+      message: `You can have max. ${schema.daysAllowed} days for this leave type.`,
       path: ["leaveDays"],
     }),
   );
+
+export const UpdateLeaveRequestStatus = LeaveRequestSchema.pick({
+  id: true,
+  empId: true,
+  status: true,
+});

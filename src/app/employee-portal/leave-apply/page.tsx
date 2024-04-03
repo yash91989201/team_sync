@@ -2,10 +2,10 @@ import LeaveApplyForm from "@/components/employee/leave-apply-form";
 import { api } from "@/trpc/server";
 
 export default async function LeaveApplyPage() {
-  const employeeProfile = await api.employeeRouter.getProfile();
+  const employeeLeaveBalances = await api.leaveRouter.getLeaveBalance();
   return (
     <>
-      <LeaveApplyForm paidLeaveDays={employeeProfile.paidLeaves} />
+      <LeaveApplyForm leaveBalances={employeeLeaveBalances} />
     </>
   );
 }

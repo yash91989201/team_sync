@@ -40,6 +40,7 @@ export const userTableRelations = relations(userTable, ({ one, many }) => ({
   leaveRequestReviewer: many(leaveRequestTable, {
     relationName: "leaveRequestReviewer",
   }),
+  leaveBalance: many(leaveBalanceTable),
 }));
 
 export const adminProfileTable = mysqlTable("admin_profile", {
@@ -68,9 +69,9 @@ export const employeeProfileTable = mysqlTable("employee_profile", {
   empBand: mysqlEnum("emp_band", ["U1", "U2", "U3"]).notNull(),
   dept: varchar("dept", { length: 128 }).notNull(),
   designation: varchar("designation", { length: 128 }).notNull(),
-  paidLeaves: int("paid_leaves").notNull(),
   salary: int("salary").notNull(),
   location: varchar("location", { length: 256 }).notNull(),
+  dob: date("dob", { mode: "date" }).notNull(),
   imageUrl: text("image_url"),
   isProfileUpdated: boolean("is_profile_updated").default(false).notNull(),
 });
@@ -92,12 +93,35 @@ export const departmentTable = mysqlTable("department", {
   name: varchar("name", { length: 128 }).unique().notNull(),
 });
 
+export const departmentTableRelations = relations(
+  departmentTable,
+  ({ many }) => ({
+    designation: many(designationTable),
+  }),
+);
+
 export const designationTable = mysqlTable("designation", {
   id: varchar("id", {
     length: 256,
   }).primaryKey(),
   name: varchar("name", { length: 128 }).unique().notNull(),
+  // FOREIGN KEY RELATIONS
+  deptId: varchar("dept_id", {
+    length: 256,
+  })
+    .notNull()
+    .references(() => departmentTable.id),
 });
+
+export const designationTableRelations = relations(
+  designationTable,
+  ({ one }) => ({
+    department: one(departmentTable, {
+      fields: [designationTable.deptId],
+      references: [departmentTable.id],
+    }),
+  }),
+);
 
 export const employeeShiftTable = mysqlTable("employee_shift", {
   // FOREIGN KEY AS PRIMAY KEY - SINCE EMPLOYEE AND EMPLOYEE SHIFT IS ONE-ONE RELATIONSHIP
@@ -147,7 +171,17 @@ export const leaveTypeTable = mysqlTable("leave_type", {
   }).primaryKey(),
   type: varchar("type", { length: 128 }).notNull().unique(),
   daysAllowed: int("days_allowed").notNull(),
+  renewPeriod: mysqlEnum("renew_period", ["month", "year"]).notNull(),
+  renewPeriodCount: int("renew_period_count").notNull(),
+  carryOver: boolean("carry_over").default(false).notNull(),
 });
+
+export const leaveTypeTableRelations = relations(
+  leaveTypeTable,
+  ({ many }) => ({
+    leaveRequest: many(leaveRequestTable),
+  }),
+);
 
 export const leaveRequestTable = mysqlTable("leave_request", {
   id: varchar("id", {
@@ -157,13 +191,15 @@ export const leaveRequestTable = mysqlTable("leave_request", {
   toDate: date("to_date", { mode: "date" }).notNull(),
   leaveDays: int("leave_days").notNull(),
   reason: text("reason"),
-  leaveType: varchar("leave_type", { length: 128 }).notNull(),
   appliedOn: date("applied_on", { mode: "date" }).notNull(),
   status: mysqlEnum("status", ["pending", "approved", "denied"]).notNull(),
   // FOREIGN KEY RELATIONS
   empId: varchar("emp_id", { length: 256 })
     .notNull()
     .references(() => userTable.id),
+  leaveTypeId: varchar("leave_type_id", { length: 256 })
+    .notNull()
+    .references(() => leaveTypeTable.id),
   reviewerId: varchar("reviewer_id", { length: 256 })
     .notNull()
     .references(() => userTable.id),
@@ -177,10 +213,43 @@ export const leaveRequestTableRelations = relations(
       references: [userTable.id],
       relationName: "employeeLeaveRequest",
     }),
+    leaveType: one(leaveTypeTable, {
+      fields: [leaveRequestTable.leaveTypeId],
+      references: [leaveTypeTable.id],
+    }),
     reviewer: one(userTable, {
       fields: [leaveRequestTable.reviewerId],
       references: [userTable.id],
       relationName: "leaveRequestReviewer",
+    }),
+  }),
+);
+
+export const leaveBalanceTable = mysqlTable("leave_balance", {
+  id: varchar("id", {
+    length: 256,
+  }).primaryKey(),
+  createdAt: date("createdAt", { mode: "date" }).notNull(),
+  balance: int("balance").notNull(),
+  // FOREIGN KEY RELATIONS
+  empId: varchar("emp_id", { length: 256 })
+    .notNull()
+    .references(() => userTable.id),
+  leaveTypeId: varchar("leave_type_id", { length: 256 })
+    .notNull()
+    .references(() => leaveTypeTable.id),
+});
+
+export const leaveBalanceTableRelations = relations(
+  leaveBalanceTable,
+  ({ one }) => ({
+    employee: one(userTable, {
+      fields: [leaveBalanceTable.empId],
+      references: [userTable.id],
+    }),
+    leaveType: one(leaveTypeTable, {
+      fields: [leaveBalanceTable.leaveTypeId],
+      references: [leaveTypeTable.id],
     }),
   }),
 );

@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { LeaveApplySchema } from "@/lib/schema";
-import type { LeaveApplySchemaType } from "@/lib/types";
+import type { LeaveApplySchemaType, LeaveTypeType } from "@/lib/types";
 import { api } from "@/trpc/react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,11 +35,11 @@ import { Textarea } from "../ui/textarea";
 import { Badge } from "../ui/badge";
 import { toast } from "sonner";
 
-export default function LeaveApplyForm({
-  paidLeaveDays,
-}: {
-  paidLeaveDays: number;
-}) {
+type LeaveApplyFormProps = {
+  leaveBalances: LeaveTypeType[];
+};
+
+export default function LeaveApplyForm({ leaveBalances }: LeaveApplyFormProps) {
   const currentDate = new Date();
   // Add 1 day to the current date
   const nextDay = new Date(currentDate);
@@ -48,19 +48,17 @@ export default function LeaveApplyForm({
   const leaveApplyForm = useForm<LeaveApplySchemaType>({
     resolver: zodResolver(LeaveApplySchema),
     defaultValues: {
-      leaveType: "Paid Leave",
+      leaveTypeId: "",
       leaveDate: {
         from: currentDate,
         to: nextDay,
       },
-      leaveDays: 1,
+      leaveDays: 2,
       reason: "",
-      daysAllowed: paidLeaveDays,
     },
   });
 
-  const { control, handleSubmit, setValue, formState } = leaveApplyForm;
-  const { data: leaveTypes = [] } = api.leaveRouter.getLeaveTypes.useQuery();
+  const { control, handleSubmit, setValue, formState, watch } = leaveApplyForm;
   const { data: leaveReviewers = [] } =
     api.leaveRouter.getLeaveReviewers.useQuery();
 
@@ -71,28 +69,25 @@ export default function LeaveApplyForm({
     toast.success("Applied for leave request");
   };
 
+  const leaveTypeBalance = watch("daysAllowed");
+
   return (
     <Form {...leaveApplyForm}>
       <form onSubmit={handleSubmit(leaveApplyAction)}>
         <FormField
           control={control}
-          name="leaveType"
+          name="leaveTypeId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Leave Type</FormLabel>
               <Select
                 onValueChange={(value) => {
                   field.onChange(value);
-                  if (value === "Paid Leave") {
-                    setValue("daysAllowed", paidLeaveDays);
-                    return;
-                  }
-                  const selectedLeaveType = leaveTypes.find(
-                    (leave) => leave.type === value,
+                  const selectedLeaveType = leaveBalances.find(
+                    (leaveType) => leaveType.id === value,
                   )!;
-                  setValue("daysAllowed", selectedLeaveType?.daysAllowed);
+                  setValue("daysAllowed", selectedLeaveType.daysAllowed);
                 }}
-                defaultValue="Paid Leave"
               >
                 <FormControl>
                   <SelectTrigger>
@@ -100,10 +95,9 @@ export default function LeaveApplyForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="Paid Leave">Paid Leave</SelectItem>
-                  {leaveTypes?.map((leave) => (
-                    <SelectItem key={leave.id} value={leave.type}>
-                      {leave.type}
+                  {leaveBalances?.map((leaveType) => (
+                    <SelectItem key={leaveType.id} value={leaveType.id}>
+                      {leaveType.type}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -177,6 +171,7 @@ export default function LeaveApplyForm({
             </FormItem>
           )}
         />
+        <p>Leave Bal: {leaveTypeBalance}</p>
         <FormField
           control={control}
           name="leaveDays"
@@ -187,7 +182,7 @@ export default function LeaveApplyForm({
                 <Input
                   {...field}
                   type="number"
-                  className="w-16 [-moz-appearance:_textfield] [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
+                  className="hide-number-input-spinner w-16"
                   readOnly={true}
                 />
               </FormControl>

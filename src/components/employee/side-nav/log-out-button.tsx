@@ -31,9 +31,7 @@ function LogoutButtonInner({ sideNavOpen }: { sideNavOpen: boolean }) {
       size={sideNavOpen ? "default" : "icon"}
       className={cn(
         "flex h-12 w-12 items-center gap-3 text-base font-medium text-gray-700 hover:bg-red-600/15 hover:text-red-600 [&>svg]:size-5",
-        sideNavOpen
-          ? "w-full justify-start [&>svg]:size-5"
-          : "justify-center [&>svg]:size-6",
+        sideNavOpen ? "w-full justify-start" : "justify-center",
       )}
     >
       {pending ? <Loader2 className="animate-spin" /> : <Power />}

@@ -32,15 +32,13 @@ export default function NavLink(
             size: sideNavOpen ? "default" : "icon",
           }),
           "flex h-12 w-12 gap-3 rounded-lg text-base font-medium ",
-          sideNavOpen
-            ? "w-full justify-start [&>svg]:size-5"
-            : "justify-center [&>svg]:size-6",
+          sideNavOpen ? "w-full justify-start" : "justify-center",
           isActive
             ? "bg-primary-foreground text-primary hover:bg-primary-foreground"
             : "text-gray-700",
         )}
       >
-        <Icon />
+        <Icon className="size-5" />
         {sideNavOpen && <p className="text-base font-medium">{label}</p>}
       </Link>
     );
@@ -57,15 +55,13 @@ export default function NavLink(
                 size: sideNavOpen ? "default" : "icon",
               }),
               "flex h-12 w-12 gap-3 rounded-lg text-base font-medium ",
-              sideNavOpen
-                ? "w-full justify-start [&>svg]:size-5"
-                : "justify-center [&>svg]:size-6",
+              sideNavOpen ? "w-full justify-start" : "justify-center",
               isActive
                 ? "bg-primary-foreground text-primary hover:bg-primary-foreground"
-                : "text-gray-700",
+                : "text-gray-600",
             )}
           >
-            <Icon />
+            <Icon className="size-5" />
             {sideNavOpen && <p className="text-base font-medium">{label}</p>}
           </Link>
         </TooltipTrigger>
