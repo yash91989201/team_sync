@@ -31,8 +31,8 @@ export type DepartmentType = z.infer<typeof DepartmentSchema>;
 export type DesignationType = z.infer<typeof DesignationSchema>;
 export type EmployeeShiftType = z.infer<typeof EmployeeShiftSchema>;
 export type EmployeeAttendanceType = z.infer<typeof EmployeeAttendanceSchema>;
-export type LeaveTypeType = z.infer<typeof LeaveTypeSchema>;
-export type LeaveRequest = z.infer<typeof LeaveRequestSchema>;
+export type LeaveTypeSchemaType = z.infer<typeof LeaveTypeSchema>;
+export type LeaveRequestSchemaType = z.infer<typeof LeaveRequestSchema>;
 // AUTH TYPES
 export type AdminSignupSchemaType = z.infer<typeof AdminSignupSchema>;
 export type LoginSchemaType = z.infer<typeof LoginSchema>;
@@ -62,4 +62,7 @@ export type NavLinkProps = {
   label: string;
   href: string;
   matchExact: boolean;
+  isNested: boolean;
+  childrens?: NavLinkProps[];
+  isChildLink: boolean;
 };

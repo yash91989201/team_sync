@@ -1,75 +1,33 @@
 "use client";
 import Link from "next/link";
-// CUSTOM HOOKS
-import useToggle from "@/hooks/use-toggle";
 // UTILS
 import { cn } from "@/lib/utils";
 // UI
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 // ICONS
-import { Bell, Bolt, ChevronFirst, ChevronLast } from "lucide-react";
+import { Bell, Bolt } from "lucide-react";
 // CUSTOM COMPONENTS
 import NavLinks from "@/components/admin/side-nav/nav-links";
 import LogoutButton from "./log-out-button";
 
 export default function SideNav() {
-  const sideNavToggle = useToggle(true);
-
   return (
-    <aside
-      className={cn(
-        "hidden h-screen flex-shrink-0 origin-left  flex-col gap-6 border-r transition-all duration-150 ease-out md:flex",
-        sideNavToggle.isOpen ? "w-64 p-6" : "w-20 p-3",
-      )}
-    >
-      <div
-        className={cn(
-          "flex items-center",
-          sideNavToggle.isOpen ? "justify-between" : "justify-center",
-        )}
-      >
-        <h1
-          className={cn(
-            "text-lg font-bold",
-            sideNavToggle.isOpen ? "" : "w-0 overflow-hidden",
-          )}
-        >
-          TEAM SYNC
-        </h1>
-        <Button
-          variant={sideNavToggle.isOpen ? "secondary" : "default"}
-          size="icon"
-          className="h-12 w-12"
-          onClick={sideNavToggle.toggle}
-        >
-          {sideNavToggle.isOpen ? <ChevronFirst /> : <ChevronLast />}
-        </Button>
-      </div>
+    <aside className="hidden h-screen w-60 flex-col gap-6 border-r p-3 md:flex">
+      <h1 className="h-12 rounded-md bg-primary p-1.5 text-center align-middle text-2xl font-semibold text-white">
+        TEAM SYNC
+      </h1>
 
-      <NavLinks sideNavOpen={sideNavToggle.isOpen} />
-      <section
-        className={cn(
-          "flex w-full flex-col gap-3",
-          sideNavToggle.isOpen ? "" : "items-center",
-        )}
-      >
+      <NavLinks />
+      <section className="flex  flex-col gap-3">
         <Link
           href="/admin/notifications"
           className={cn(
-            buttonVariants({
-              variant: "ghost",
-              size: sideNavToggle.isOpen ? "default" : "icon",
-            }),
-            "h-12 w-12 gap-3 text-gray-700",
-            sideNavToggle.isOpen
-              ? "w-full justify-start [&>svg]:size-5"
-              : "justify-center [&>svg]:size-6",
+            buttonVariants({ variant: "ghost" }),
+            "justify-start gap-3 text-gray-700",
           )}
         >
-          <Bell />
-          {sideNavToggle.isOpen && (
-            <p className="text-base font-medium">Notifications</p>
-          )}
+          <Bell className="size-5" />
+          <p className="text-base font-normal">Notifications</p>
         </Link>
 
         <Link
@@ -77,20 +35,14 @@ export default function SideNav() {
           className={cn(
             buttonVariants({
               variant: "ghost",
-              size: sideNavToggle.isOpen ? "default" : "icon",
             }),
-            "h-12 w-12 gap-3 text-gray-700",
-            sideNavToggle.isOpen
-              ? "w-full justify-start [&>svg]:size-5"
-              : "justify-center [&>svg]:size-6",
+            "justify-start gap-3 text-gray-700",
           )}
         >
-          <Bolt />
-          {sideNavToggle.isOpen && (
-            <p className="text-base font-medium">Settings</p>
-          )}
+          <Bolt className="size-5" />
+          <p className="text-base font-normal">Settings</p>
         </Link>
-        <LogoutButton sideNavOpen={sideNavToggle.isOpen} />
+        <LogoutButton />
       </section>
     </aside>
   );

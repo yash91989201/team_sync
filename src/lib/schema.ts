@@ -127,4 +127,7 @@ export const UpdateLeaveRequestStatus = LeaveRequestSchema.pick({
   id: true,
   empId: true,
   status: true,
+  leaveDays: true,
+}).extend({
+  leaveType: LeaveTypeSchema,
 });

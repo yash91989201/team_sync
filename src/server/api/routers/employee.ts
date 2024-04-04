@@ -207,9 +207,6 @@ export const employeeRouter = createTRPCRouter({
           eq(leaveBalanceTable.empId, user.id),
           eq(leaveBalanceTable.leaveTypeId, leaveTypeId),
         ),
-        with: {
-          leaveType: true,
-        },
       });
 
       if (leaveBalance === undefined) {

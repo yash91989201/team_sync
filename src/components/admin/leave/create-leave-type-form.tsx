@@ -132,7 +132,6 @@ export default function CreateLeaveTypeForm() {
                 <Checkbox
                   checked={field.value}
                   onCheckedChange={field.onChange}
-                  className="h-5 w-5"
                 />
               </FormControl>
               <FormLabel className="text-sm font-normal">

@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { LeaveApplySchema } from "@/lib/schema";
-import type { LeaveApplySchemaType, LeaveTypeType } from "@/lib/types";
+import type { LeaveApplySchemaType, LeaveTypeSchemaType } from "@/lib/types";
 import { api } from "@/trpc/react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,7 +36,7 @@ import { Badge } from "../ui/badge";
 import { toast } from "sonner";
 
 type LeaveApplyFormProps = {
-  leaveBalances: LeaveTypeType[];
+  leaveBalances: LeaveTypeSchemaType[];
 };
 
 export default function LeaveApplyForm({ leaveBalances }: LeaveApplyFormProps) {
@@ -50,10 +50,10 @@ export default function LeaveApplyForm({ leaveBalances }: LeaveApplyFormProps) {
     defaultValues: {
       leaveTypeId: "",
       leaveDate: {
-        from: currentDate,
+        from: nextDay,
         to: nextDay,
       },
-      leaveDays: 2,
+      leaveDays: 1,
       reason: "",
     },
   });
@@ -143,7 +143,7 @@ export default function LeaveApplyForm({ leaveBalances }: LeaveApplyFormProps) {
                       mode="range"
                       defaultMonth={field.value?.from}
                       selected={field.value}
-                      disabled={(date) => date < currentDate}
+                      disabled={(date) => date <= currentDate}
                       onSelect={(value) => {
                         field.onChange(value);
                         if (
@@ -182,7 +182,7 @@ export default function LeaveApplyForm({ leaveBalances }: LeaveApplyFormProps) {
                 <Input
                   {...field}
                   type="number"
-                  className="hide-number-input-spinner w-16"
+                  className="hide-number-input-spinner w-16 bg-white"
                   readOnly={true}
                 />
               </FormControl>
@@ -198,7 +198,7 @@ export default function LeaveApplyForm({ leaveBalances }: LeaveApplyFormProps) {
               <FormLabel>Leave Reviewer</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-white">
                     <SelectValue placeholder="Apply to" />
                   </SelectTrigger>
                 </FormControl>
@@ -226,7 +226,7 @@ export default function LeaveApplyForm({ leaveBalances }: LeaveApplyFormProps) {
               <FormControl>
                 <Textarea
                   placeholder="Reason for leave (optional)"
-                  className="resize-none"
+                  className="resize-none bg-white"
                   {...field}
                 />
               </FormControl>

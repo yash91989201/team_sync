@@ -180,6 +180,7 @@ export const leaveTypeTableRelations = relations(
   leaveTypeTable,
   ({ many }) => ({
     leaveRequest: many(leaveRequestTable),
+    leaveBalance: many(leaveBalanceTable),
   }),
 );
 
@@ -192,7 +193,7 @@ export const leaveRequestTable = mysqlTable("leave_request", {
   leaveDays: int("leave_days").notNull(),
   reason: text("reason"),
   appliedOn: date("applied_on", { mode: "date" }).notNull(),
-  status: mysqlEnum("status", ["pending", "approved", "denied"]).notNull(),
+  status: mysqlEnum("status", ["pending", "approved", "rejected"]).notNull(),
   // FOREIGN KEY RELATIONS
   empId: varchar("emp_id", { length: 256 })
     .notNull()
