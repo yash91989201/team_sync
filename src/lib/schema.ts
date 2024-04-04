@@ -114,9 +114,10 @@ export const LeaveApplySchema = z
       .max(1024, { message: "Max. 1024 characters allowed." })
       .optional(),
     daysAllowed: z.number(),
+    balance: z.number(),
   })
   .refine(
-    (schema) => schema.daysAllowed > schema.leaveDays,
+    (schema) => schema.leaveDays > schema.balance,
     (schema) => ({
       message: `You can have max. ${schema.daysAllowed} days for this leave type.`,
       path: ["leaveDays"],

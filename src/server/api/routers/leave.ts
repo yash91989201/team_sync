@@ -31,7 +31,7 @@ export const leaveRouter = createTRPCRouter({
   getLeaveBalance: protectedProcedure.query(async ({ ctx }) => {
     const empId = ctx.session.user.id;
 
-    const leaveTypesWithBalance = await ctx.db.query.leaveTypeTable.findMany({
+    const leaveTypes = await ctx.db.query.leaveTypeTable.findMany({
       with: {
         leaveBalance: {
           where: eq(leaveBalanceTable.empId, empId),
@@ -39,16 +39,17 @@ export const leaveRouter = createTRPCRouter({
       },
     });
 
-    const leaveTypes = leaveTypesWithBalance.map((leaveType) => {
-      const { leaveBalance: leaveBalances, ...rest } = leaveType;
-      if (leaveBalances.length === 0) return { ...rest };
+    const leaveTypesWithBalance = leaveTypes.map((leaveType) => {
+      const { leaveBalance: leaveBalances, ...leaveTypeWithoutBal } = leaveType;
+      if (leaveBalances.length === 0)
+        return { ...leaveTypeWithoutBal, balance: leaveType.daysAllowed };
 
       if (leaveType.carryOver) {
         const totalLeaveBalance = leaveBalances.reduce(
           (totalBalance, leaveBalance) => totalBalance + leaveBalance.balance,
           0,
         );
-        return { ...rest, daysAllowed: totalLeaveBalance };
+        return { ...leaveTypeWithoutBal, balance: totalLeaveBalance };
       }
 
       const { startDate, endDate } = getLeavePeriodRange({
@@ -66,12 +67,12 @@ export const leaveRouter = createTRPCRouter({
       );
 
       return {
-        ...rest,
-        daysAllowed: totalLeaveBalance,
+        ...leaveTypeWithoutBal,
+        balance: totalLeaveBalance,
       };
     });
 
-    return leaveTypes;
+    return leaveTypesWithBalance;
   }),
   getLeaveReviewers: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.userTable.findMany({

@@ -35,8 +35,10 @@ import { Textarea } from "../ui/textarea";
 import { Badge } from "../ui/badge";
 import { toast } from "sonner";
 
+type LeaveBalanceType = LeaveTypeSchemaType & { balance: number };
+
 type LeaveApplyFormProps = {
-  leaveBalances: LeaveTypeSchemaType[];
+  leaveBalances: LeaveBalanceType[];
 };
 
 export default function LeaveApplyForm({ leaveBalances }: LeaveApplyFormProps) {
@@ -54,6 +56,7 @@ export default function LeaveApplyForm({ leaveBalances }: LeaveApplyFormProps) {
         to: nextDay,
       },
       leaveDays: 1,
+      balance: 0,
       reason: "",
     },
   });
@@ -69,7 +72,7 @@ export default function LeaveApplyForm({ leaveBalances }: LeaveApplyFormProps) {
     toast.success("Applied for leave request");
   };
 
-  const leaveTypeBalance = watch("daysAllowed");
+  const leaveTypeBalance = watch("balance");
 
   return (
     <Form {...leaveApplyForm}>
@@ -86,7 +89,7 @@ export default function LeaveApplyForm({ leaveBalances }: LeaveApplyFormProps) {
                   const selectedLeaveType = leaveBalances.find(
                     (leaveType) => leaveType.id === value,
                   )!;
-                  setValue("daysAllowed", selectedLeaveType.daysAllowed);
+                  setValue("balance", selectedLeaveType.daysAllowed);
                 }}
               >
                 <FormControl>
