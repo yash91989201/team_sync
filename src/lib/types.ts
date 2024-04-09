@@ -21,6 +21,7 @@ import type {
   LeaveRequestSchema,
   CreateLeaveTypeSchema,
   LeaveApplySchema,
+  LeaveBalanceSchema,
 } from "@/lib/schema";
 
 // DB TABLE TYPES
@@ -33,6 +34,7 @@ export type EmployeeShiftType = z.infer<typeof EmployeeShiftSchema>;
 export type EmployeeAttendanceType = z.infer<typeof EmployeeAttendanceSchema>;
 export type LeaveTypeSchemaType = z.infer<typeof LeaveTypeSchema>;
 export type LeaveRequestSchemaType = z.infer<typeof LeaveRequestSchema>;
+export type LeaveBalanceSchemaType = z.infer<typeof LeaveBalanceSchema>;
 // AUTH TYPES
 export type AdminSignupSchemaType = z.infer<typeof AdminSignupSchema>;
 export type LoginSchemaType = z.infer<typeof LoginSchema>;

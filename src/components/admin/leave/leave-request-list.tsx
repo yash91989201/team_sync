@@ -39,30 +39,23 @@ export default function LeaveRequestList({
 }
 
 const LeaveRequestCard = (leaveRequest: LeaveRequestProps) => {
-  const { id, employee, leaveType, fromDate, toDate, leaveDays, status } =
-    leaveRequest;
+  const {
+    id: leaveRequestId,
+    employee,
+    leaveType,
+    fromDate,
+    toDate,
+    leaveDays,
+    status,
+  } = leaveRequest;
 
-  const { mutateAsync: updateLeaveStatus } =
-    api.leaveRouter.updateLeaveStatus.useMutation();
+  const { id: empId } = employee;
 
-  const acceptLeave = async () => {
-    await updateLeaveStatus({
-      empId: employee.id,
-      status: "approved",
-      id,
-      leaveDays,
-      leaveType,
-    });
-  };
-  const rejectLeave = async () => {
-    await updateLeaveStatus({
-      empId: employee.id,
-      status: "rejected",
-      id,
-      leaveDays,
-      leaveType,
-    });
-  };
+  const { mutate: rejectLeave, isPending: isRejectingLeave } =
+    api.leaveRouter.rejectLeave.useMutation();
+
+  const { mutate: approveLeave, isPending: isApprovingLeave } =
+    api.leaveRouter.approveLeave.useMutation();
 
   return (
     <Card>
@@ -72,8 +65,8 @@ const LeaveRequestCard = (leaveRequest: LeaveRequestProps) => {
       </CardHeader>
       <CardContent>
         <p>
-          {format(fromDate, "dd/mm/yyyy")} &minus;{" "}
-          {format(toDate, "dd/mm/yyyy")}
+          {format(fromDate, "dd/MM/yyyy")} &minus;
+          {format(toDate, "dd/MM/yyyy")}
         </p>
         <p>Total: {leaveDays} Days</p>
         <Badge
@@ -89,10 +82,20 @@ const LeaveRequestCard = (leaveRequest: LeaveRequestProps) => {
       </CardContent>
       {status === "pending" ? (
         <CardFooter>
-          <Button variant="secondary" className="mr-3" onClick={rejectLeave}>
+          <Button
+            variant="secondary"
+            className="mr-3"
+            onClick={() => rejectLeave({ empId, leaveRequestId })}
+            disabled={isRejectingLeave || isApprovingLeave}
+          >
             Reject
           </Button>
-          <Button onClick={acceptLeave}>Accept</Button>
+          <Button
+            onClick={() => approveLeave({ leaveRequestId })}
+            disabled={isRejectingLeave || isApprovingLeave}
+          >
+            Approve
+          </Button>
         </CardFooter>
       ) : null}
     </Card>

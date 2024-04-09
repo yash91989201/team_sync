@@ -1,11 +1,39 @@
 import { toast } from "sonner";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import type { EmployeeAttendanceType } from "@/lib/types";
-import { endOfYear, endOfMonth, addMonths, addYears } from "date-fns";
+import type {
+  EmployeeAttendanceType,
+  LeaveBalanceSchemaType,
+} from "@/lib/types";
+import {
+  endOfYear,
+  endOfMonth,
+  addMonths,
+  addYears,
+  isSameDay,
+  startOfYear,
+  addDays,
+  startOfMonth,
+  differenceInDays,
+  isSameMonth,
+  isSameYear,
+  isBefore,
+  isWithinInterval,
+} from "date-fns";
+import { fromZonedTime } from "date-fns-tz";
+import { generateId } from "lucia";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+/*
+ fixes the date being 1day back 
+ when using startOfYear or startOfMonth 
+ method from date-fns
+*/
+export function toUTC(date: Date) {
+  return fromZonedTime(date, "UTC");
 }
 
 export function formatDate(date: Date): string {
@@ -92,34 +120,145 @@ export function getCurrentTimeWithPeriod() {
   return `${formattedHours}:${formattedMinutes} ${ampm}`;
 }
 
-export function getLeavePeriodRange({
+export function getRenewPeriodRange({
   renewPeriod,
   renewPeriodCount,
+  referenceDate = new Date(),
 }: {
   renewPeriod: "month" | "year";
   renewPeriodCount: number;
+  referenceDate?: Date;
 }): { startDate: Date; endDate: Date } {
-  const currentDate = new Date();
-  currentDate.setUTCHours(0, 0, 0, 0);
-  currentDate.setUTCDate(1);
+  const currentDate = referenceDate;
 
   switch (renewPeriod) {
     case "month": {
-      const startDate = new Date(currentDate);
-      const endDate = new Date(
-        addMonths(endOfMonth(currentDate), renewPeriodCount - 1).setUTCHours(
-          0,
-          0,
-          0,
-          0,
-        ),
-      );
+      const startDate = toUTC(startOfMonth(currentDate));
+      const endDate = endOfMonth(addMonths(startDate, renewPeriodCount - 1));
       return { startDate, endDate };
     }
     case "year": {
-      const startDate = new Date(currentDate.setUTCMonth(1));
-      const endDate = addYears(endOfYear(currentDate), renewPeriodCount - 1);
+      const startDate = toUTC(startOfYear(currentDate));
+      const endDate = endOfYear(addYears(startDate, renewPeriodCount - 1));
       return { startDate, endDate };
     }
   }
+}
+
+export function isInARenewPeriod({
+  leaveDate,
+  renewPeriodCount,
+  renewPeriod,
+}: {
+  leaveDate: { from: Date; to: Date };
+  renewPeriod: "month" | "year";
+  renewPeriodCount: number;
+}): boolean {
+  const { startDate: fromStartDate, endDate: fromEndDate } =
+    getRenewPeriodRange({
+      renewPeriod,
+      renewPeriodCount,
+      referenceDate: leaveDate.from,
+    });
+
+  const { startDate: toStartDate, endDate: toEndDate } = getRenewPeriodRange({
+    renewPeriod,
+    renewPeriodCount,
+    referenceDate: leaveDate.to,
+  });
+  const isSameStartDate = isSameDay(fromStartDate, toStartDate);
+  const isSameEndDate = isSameDay(fromEndDate, toEndDate);
+  return isSameStartDate && isSameEndDate;
+}
+
+export function getDateRangeByRenewPeriod({
+  leaveDate,
+  renewPeriod,
+  renewPeriodCount,
+}: {
+  leaveDate: { from: Date; to: Date };
+  renewPeriod: "month" | "year";
+  renewPeriodCount: number;
+}): { startDate: Date; endDate: Date; days: number }[] {
+  if (
+    isInARenewPeriod({
+      leaveDate,
+      renewPeriod,
+      renewPeriodCount,
+    })
+  ) {
+    const { startDate, endDate } = getRenewPeriodRange({
+      renewPeriod,
+      renewPeriodCount,
+      referenceDate: leaveDate.from,
+    });
+    return [
+      {
+        startDate,
+        endDate,
+        days: differenceInDays(leaveDate.to, leaveDate.from) + 1,
+      },
+    ];
+  }
+
+  let startDate = toUTC(leaveDate.from);
+  const endDate = toUTC(leaveDate.to);
+  const distinctDateRange: { startDate: Date; endDate: Date; days: number }[] =
+    [];
+
+  if (renewPeriod === "month") {
+    while (isBefore(startDate, endDate) || isSameMonth(startDate, endDate)) {
+      // keep 1 day inclusive
+      let days = 1;
+      const { startDate: distinctStartDate, endDate: distinctEndDate } =
+        getRenewPeriodRange({
+          renewPeriod,
+          renewPeriodCount,
+          referenceDate: startDate,
+        });
+
+      if (isSameMonth(startDate, leaveDate.from)) {
+        days += differenceInDays(distinctEndDate, startDate);
+      } else if (isSameMonth(distinctStartDate, leaveDate.to)) {
+        days += differenceInDays(endDate, distinctStartDate);
+      } else {
+        days += differenceInDays(distinctEndDate, distinctStartDate);
+      }
+
+      distinctDateRange.push({
+        startDate: distinctStartDate,
+        endDate: distinctEndDate,
+        days,
+      });
+      startDate = addDays(distinctEndDate, 1);
+    }
+  } else {
+    while (isBefore(startDate, endDate) || isSameMonth(startDate, endDate)) {
+      // keep 1 day inclusive
+      let days = 1;
+      const { startDate: distinctStartDate, endDate: distinctEndDate } =
+        getRenewPeriodRange({
+          renewPeriod,
+          renewPeriodCount,
+          referenceDate: startDate,
+        });
+
+      if (isSameYear(startDate, leaveDate.from)) {
+        days += differenceInDays(distinctEndDate, startDate);
+      } else if (isSameYear(distinctStartDate, leaveDate.to)) {
+        days += differenceInDays(endDate, distinctStartDate);
+      } else {
+        days += differenceInDays(distinctEndDate, distinctStartDate);
+      }
+
+      distinctDateRange.push({
+        startDate: distinctStartDate,
+        endDate: distinctEndDate,
+        days,
+      });
+      startDate = addDays(distinctEndDate, 1);
+    }
+  }
+
+  return distinctDateRange;
 }

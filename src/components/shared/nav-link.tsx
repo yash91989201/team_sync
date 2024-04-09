@@ -31,15 +31,15 @@ export default function NavLink(props: NavLinkProps) {
         <Button
           variant={nestedNav.isOpen ? "secondary" : "ghost"}
           className={cn(
+            "flex w-full justify-start gap-3 rounded-lg px-3 text-base font-medium",
             nestedNav.isOpen
               ? "bg-primary-foreground text-primary hover:bg-primary-foreground"
               : "text-gray-700",
-            "flex w-full justify-start gap-3 rounded-lg px-3 text-base font-medium",
           )}
           onClick={nestedNav.toggle}
         >
           <Icon className="size-5" />
-          <p className="flex-1 text-left text-base font-normal">{label}</p>
+          <p className="flex-1 text-left text-base font-medium">{label}</p>
           <ChevronDown
             className={cn(
               "size-4 transition-all duration-150 ease-in-out",
@@ -82,7 +82,11 @@ export default function NavLink(props: NavLinkProps) {
       )}
     >
       {!isChildLink && <Icon className="size-5" />}
-      <p className="text-base font-normal">{label}</p>
+      <p
+        className={cn("text-base", isChildLink ? "font-normal" : "font-medium")}
+      >
+        {label}
+      </p>
     </Link>
   );
 }

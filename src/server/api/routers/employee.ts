@@ -9,6 +9,7 @@ import {
   employeeShiftTable,
   leaveBalanceTable,
   leaveRequestTable,
+  leaveTypeTable,
   userTable,
 } from "@/server/db/schema";
 import {
@@ -17,7 +18,12 @@ import {
   LeaveApplySchema,
 } from "@/lib/schema";
 import { and, eq } from "drizzle-orm";
-import { calculateShiftHours, getCurrentDate } from "@/lib/utils";
+import {
+  calculateShiftHours,
+  getCurrentDate,
+  getDateRangeByRenewPeriod,
+} from "@/lib/utils";
+import { isWithinInterval, format, addDays } from "date-fns";
 
 export const employeeRouter = createTRPCRouter({
   getAll: protectedProcedure.query(({ ctx }) => {
@@ -178,51 +184,112 @@ export const employeeRouter = createTRPCRouter({
     }),
   leaveApply: protectedProcedure
     .input(LeaveApplySchema)
-    .mutation(async ({ ctx, input }) => {
-      const { user } = ctx.session;
-      const {
-        leaveDate,
-        leaveDays,
-        reason,
-        leaveTypeId,
-        reviewerId,
-        daysAllowed,
-      } = input;
+    .mutation(
+      async ({
+        ctx,
+        input,
+      }): Promise<{ status: "FAILED" | "SUCCESS"; message: string }> => {
+        const empId = ctx.session.user.id;
+        const { leaveDate, reason, leaveTypeId, reviewerId, leaveDays } = input;
 
-      await ctx.db.insert(leaveRequestTable).values({
-        id: generateId(15),
-        leaveTypeId,
-        fromDate: leaveDate.from,
-        toDate: leaveDate.to,
-        leaveDays,
-        reason,
-        appliedOn: new Date(),
-        status: "pending",
-        empId: ctx.session.user.id,
-        reviewerId,
-      });
-
-      const leaveBalance = await ctx.db.query.leaveBalanceTable.findFirst({
-        where: and(
-          eq(leaveBalanceTable.empId, user.id),
-          eq(leaveBalanceTable.leaveTypeId, leaveTypeId),
-        ),
-      });
-
-      if (leaveBalance === undefined) {
-        await ctx.db.insert(leaveBalanceTable).values({
-          id: generateId(15),
-          createdAt: new Date(),
-          balance: daysAllowed - leaveDays,
-          empId: user.id,
-          leaveTypeId,
+        const leaveType = await ctx.db.query.leaveTypeTable.findFirst({
+          where: eq(leaveTypeTable.id, leaveTypeId),
         });
-        return;
-      }
 
-      await ctx.db
-        .update(leaveBalanceTable)
-        .set({ balance: leaveBalance.balance - leaveDays })
-        .where(eq(leaveBalanceTable.id, leaveBalance.id));
-    }),
+        if (leaveType === undefined) {
+          return { status: "FAILED", message: "No such leave type exists" };
+        }
+
+        const { renewPeriod, renewPeriodCount, daysAllowed } = leaveType;
+
+        const leaveDateRange = getDateRangeByRenewPeriod({
+          leaveDate,
+          renewPeriod,
+          renewPeriodCount,
+        });
+
+        const existingLeaveBalances =
+          await ctx.db.query.leaveBalanceTable.findMany({
+            where: and(
+              eq(leaveBalanceTable.empId, empId),
+              eq(leaveBalanceTable.leaveTypeId, leaveTypeId),
+            ),
+          });
+
+        const updatedLeaveBalances = leaveDateRange.map((leaveDate) => {
+          const existingLeaveBalance = existingLeaveBalances.find(
+            ({ createdAt }) =>
+              isWithinInterval(createdAt, {
+                start: leaveDate.startDate,
+                end: leaveDate.endDate,
+              }),
+          );
+          if (existingLeaveBalance === undefined) {
+            return {
+              id: generateId(15),
+              createdAt: leaveDate.startDate,
+              balance: daysAllowed - leaveDate.days,
+              empId,
+              leaveTypeId,
+              status: "create",
+            };
+          }
+          return {
+            id: existingLeaveBalance.id,
+            createdAt: leaveDate.startDate,
+            balance: existingLeaveBalance.balance - leaveDate.days,
+            empId,
+            leaveTypeId,
+            status: "update",
+          };
+        });
+
+        const negativeBalance = updatedLeaveBalances.filter(
+          ({ balance }) => balance < 0,
+        );
+
+        if (negativeBalance.length > 0) {
+          const negativeBalanceMonths = negativeBalance
+            .map(({ createdAt }) => format(createdAt, "MMMM"))
+            .join(", ");
+
+          return {
+            status: "FAILED",
+            message: `Not enough leave balance for ${negativeBalanceMonths} month(s)`,
+          };
+        }
+
+        await ctx.db.insert(leaveRequestTable).values({
+          id: generateId(15),
+          leaveTypeId,
+          fromDate: leaveDate.from,
+          toDate: leaveDate.to,
+          leaveDays,
+          reason,
+          appliedOn: new Date(),
+          status: "pending",
+          empId,
+          reviewerId,
+        });
+
+        await Promise.all(
+          updatedLeaveBalances.map(async (leaveBalance) => {
+            if (leaveBalance.status === "update") {
+              await ctx.db
+                .update(leaveBalanceTable)
+                .set({ balance: leaveBalance.balance })
+                .where(eq(leaveBalanceTable.id, leaveBalance.id));
+            } else {
+              const { status, ...leaveBalanceData } = leaveBalance;
+              await ctx.db.insert(leaveBalanceTable).values(leaveBalanceData);
+            }
+          }),
+        );
+
+        return {
+          status: "SUCCESS",
+          message: "Leave applied",
+        };
+      },
+    ),
 });

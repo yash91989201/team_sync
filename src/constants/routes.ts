@@ -148,8 +148,8 @@ export const EMPLOYEE_ROUTES: NavLinkProps[] = [
   },
   {
     Icon: HandCoins,
-    label: "Payslip",
-    href: "/employee-portal/pay-slip",
+    label: "Payslips",
+    href: "/employee-portal/pay-slips",
     matchExact: false,
     isNested: false,
     isChildLink: false,
@@ -191,7 +191,7 @@ export const EMPLOYEE_ROUTES: NavLinkProps[] = [
   {
     Icon: SquareCheckBig,
     label: "Attendance Info",
-    href: "/employee-portal/attendance",
+    href: "/employee-portal/attendance-info",
     matchExact: false,
     isNested: false,
     isChildLink: false,
@@ -199,7 +199,7 @@ export const EMPLOYEE_ROUTES: NavLinkProps[] = [
   {
     Icon: Book,
     label: "Document Center",
-    href: "/employee-portal/documents",
+    href: "/employee-portal/document-center",
     matchExact: false,
     isNested: false,
     isChildLink: false,

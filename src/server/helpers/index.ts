@@ -6,6 +6,13 @@ import { db } from "@/server/db";
 import { validateRequest } from "@/lib/auth";
 // SCHEMAS
 import { userTable } from "@/server/db/schema";
+import { redirect } from "next/navigation";
+import {
+  ADMIN_AUTH_ROUTES,
+  DEFAULT_ADMIN_ROUTE,
+  DEFAULT_EMPLOYEE_ROUTE,
+  EMPLOYEE_AUTH_ROUTES,
+} from "@/constants/routes";
 
 const argon2id = new Argon2id();
 

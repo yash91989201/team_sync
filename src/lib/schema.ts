@@ -8,6 +8,7 @@ import {
   employeeAttendanceTable,
   employeeProfileTable,
   employeeShiftTable,
+  leaveBalanceTable,
   leaveRequestTable,
   leaveTypeTable,
   userTable,
@@ -25,6 +26,7 @@ export const EmployeeAttendanceSchema = createSelectSchema(
 );
 export const LeaveTypeSchema = createSelectSchema(leaveTypeTable);
 export const LeaveRequestSchema = createSelectSchema(leaveRequestTable);
+export const LeaveBalanceSchema = createSelectSchema(leaveBalanceTable);
 // Auth schemas
 export const AdminSignupSchema = z.object({
   name: z.string().min(6, { message: "Full name is required." }),
@@ -100,35 +102,25 @@ export const CreateLeaveTypeSchema = z.object({
   carryOver: z.boolean(),
 });
 
-export const LeaveApplySchema = z
-  .object({
-    leaveTypeId: z.string(),
-    leaveDate: z.object({
-      from: z.date(),
-      to: z.date(),
-    }),
-    leaveDays: z.number(),
-    reviewerId: z.string({ required_error: "Leave reviewer is required." }),
-    reason: z
-      .string()
-      .max(1024, { message: "Max. 1024 characters allowed." })
-      .optional(),
-    daysAllowed: z.number(),
-    balance: z.number(),
-  })
-  .refine(
-    (schema) => schema.leaveDays > schema.balance,
-    (schema) => ({
-      message: `You can have max. ${schema.daysAllowed} days for this leave type.`,
-      path: ["leaveDays"],
-    }),
-  );
+export const LeaveApplySchema = z.object({
+  leaveTypeId: z.string().min(1, { message: "Select a leave type." }),
+  leaveDate: z.object({
+    from: z.date(),
+    to: z.date(),
+  }),
+  leaveDays: z.number(),
+  reviewerId: z.string().min(1, { message: "Select a reviwer." }),
+  reason: z
+    .string()
+    .max(1024, { message: "Max. 1024 characters allowed." })
+    .optional(),
+});
 
-export const UpdateLeaveRequestStatus = LeaveRequestSchema.pick({
-  id: true,
-  empId: true,
-  status: true,
-  leaveDays: true,
-}).extend({
-  leaveType: LeaveTypeSchema,
+export const ApproveLeaveSchema = z.object({
+  leaveRequestId: z.string(),
+});
+
+export const RejectLeaveSchema = z.object({
+  leaveRequestId: z.string(),
+  empId: z.string(),
 });

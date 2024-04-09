@@ -2,10 +2,10 @@ import LeaveApplyForm from "@/components/employee/leave-apply-form";
 import { api } from "@/trpc/server";
 
 export default async function LeaveApplyPage() {
-  const employeeLeaveBalances = await api.leaveRouter.getLeaveBalance();
+  const leaveTypes = await api.leaveRouter.getLeaveTypes();
   return (
     <>
-      <LeaveApplyForm leaveBalances={employeeLeaveBalances} />
+      <LeaveApplyForm leaveTypes={leaveTypes} />
     </>
   );
 }

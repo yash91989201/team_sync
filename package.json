@@ -42,6 +42,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "date-fns": "^3.6.0",
+    "date-fns-tz": "^3.0.0",
     "drizzle-orm": "0.30.6",
     "drizzle-zod": "0.5.1",
     "input-otp": "^1.2.3",
