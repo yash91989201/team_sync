@@ -6,11 +6,12 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC, TRPCError } from "@trpc/server";
-import superjson from "superjson";
 import { ZodError } from "zod";
-import { validateRequest } from "@/lib/auth";
+import superjson from "superjson";
+import { initTRPC, TRPCError } from "@trpc/server";
+// UTILS
 import { db } from "@/server/db";
+import { validateRequest } from "@/lib/auth";
 
 /**
  * 1. CONTEXT

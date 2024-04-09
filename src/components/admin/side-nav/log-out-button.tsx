@@ -1,13 +1,12 @@
 "use client";
+import React from "react";
 import { useFormStatus } from "react-dom";
+// ACTIONS
+import { logOut } from "@/server/actions/auth";
 // UI
 import { Button } from "@/components/ui/button";
 // ICONS
 import { Loader2, Power } from "lucide-react";
-
-import React from "react";
-// ACTIONS
-import { logOut } from "@/server/actions/auth";
 
 export default function LogoutButton() {
   return (

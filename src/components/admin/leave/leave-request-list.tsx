@@ -1,4 +1,9 @@
 "use client";
+import { format } from "date-fns";
+// UTILS
+import { cn } from "@/lib/utils";
+import { api } from "@/trpc/react";
+// UI
 import type {
   LeaveRequestSchemaType,
   LeaveTypeSchemaType,
@@ -13,11 +18,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { format } from "date-fns";
-import { api } from "@/trpc/react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 type LeaveRequestProps = LeaveRequestSchemaType & {
   employee: UserType;

@@ -1,5 +1,29 @@
 "use client";
-import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { zodResolver } from "@hookform/resolvers/zod";
+// UTILS
+import { api } from "@/trpc/react";
+// CUSTOM HOOKS
+import { useForm } from "react-hook-form";
+// SCHEMAS
+import { CreateEmployeeSchema } from "@/lib/schema";
+// TYPES
+import type { SubmitHandler } from "react-hook-form";
+import type { CreateEmployeeSchemaType } from "@/lib/types";
+// UI
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Form,
   FormControl,
@@ -8,32 +32,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { CreateEmployeeSchema } from "@/lib/schema";
-import type { CreateEmployeeSchemaType } from "@/lib/types";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon } from "lucide-react";
-import { useForm } from "react-hook-form";
-import type { SubmitHandler } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { api } from "@/trpc/react";
-import { Loader2 } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+// CUSTOM COMPONENTS
 import EmployeeShiftTimePicker from "@/components/admin/employee/employee-shift-time-picker";
+// ICONS
+import { Loader2 } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 
 export default function CreateEmployeeForm() {
   const shiftStart = new Date(new Date().setHours(10, 0, 0, 0));

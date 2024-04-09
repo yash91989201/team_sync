@@ -4,11 +4,11 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 // UI
 import { buttonVariants } from "@/components/ui/button";
-// ICONS
-import { Bell, Bolt } from "lucide-react";
 // CUSTOM COMPONENTS
 import NavLinks from "@/components/admin/side-nav/nav-links";
-import LogoutButton from "./log-out-button";
+import LogoutButton from "@/components/admin/side-nav/log-out-button";
+// ICONS
+import { Bell, Bolt } from "lucide-react";
 
 export default function SideNav() {
   return (

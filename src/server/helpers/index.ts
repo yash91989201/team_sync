@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 // UTILS
 import { db } from "@/server/db";
 import { validateRequest } from "@/lib/auth";
-// SCHEMAS
+// DB TABLES
 import { userTable } from "@/server/db/schema";
 // CONSTANTS
 import {

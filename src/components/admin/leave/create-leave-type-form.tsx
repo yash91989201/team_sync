@@ -1,5 +1,14 @@
 "use client";
-import { Button } from "@/components/ui/button";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+// SCHEMAS
+import { CreateLeaveTypeSchema } from "@/lib/schema";
+// UTILS
+import { api } from "@/trpc/react";
+// TYPES
+import type { SubmitHandler } from "react-hook-form";
+import type { CreateLeaveTypeSchemaType } from "@/lib/types";
+// UI
 import {
   Form,
   FormControl,
@@ -16,12 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { CreateLeaveTypeSchema } from "@/lib/schema";
-import type { CreateLeaveTypeSchemaType } from "@/lib/types";
-import { api } from "@/trpc/react";
-
-import { zodResolver } from "@hookform/resolvers/zod";
-import { type SubmitHandler, useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export default function CreateLeaveTypeForm() {

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createSelectSchema } from "drizzle-zod";
-// SCHEMAS
+// DB TABLES
 import {
   adminProfileTable,
   departmentTable,

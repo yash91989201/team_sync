@@ -1,7 +1,3 @@
-import { toast } from "sonner";
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-import type { EmployeeAttendanceType } from "@/lib/types";
 import {
   endOfYear,
   endOfMonth,
@@ -16,7 +12,13 @@ import {
   isSameYear,
   isBefore,
 } from "date-fns";
+import { clsx } from "clsx";
+import { toast } from "sonner";
+import { twMerge } from "tailwind-merge";
 import { fromZonedTime } from "date-fns-tz";
+// TYPES
+import type { ClassValue } from "clsx";
+import type { EmployeeAttendanceType } from "@/lib/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

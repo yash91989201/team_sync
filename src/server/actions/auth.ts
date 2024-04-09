@@ -1,11 +1,11 @@
 "use server";
-import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { generateId } from "lucia";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 // UTILS
-import { lucia, validateRequest } from "@/lib/auth";
 import { db } from "@/server/db";
+import { lucia, validateRequest } from "@/lib/auth";
 import { verifyPassword, getUserByEmail, hashPassword } from "@/server/helpers";
 import {
   generateVerificationToken,

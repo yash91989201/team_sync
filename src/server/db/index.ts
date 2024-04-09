@@ -1,8 +1,11 @@
 import { drizzle } from "drizzle-orm/mysql2";
-import { createPool, type Pool } from "mysql2/promise";
+import { createPool } from "mysql2/promise";
 import { DrizzleMySQLAdapter } from "@lucia-auth/adapter-drizzle";
-
+// UTILS
 import { env } from "@/env";
+// TYPES
+import type { Pool } from "mysql2/promise";
+// DB TABLES
 import * as schema from "./schema";
 
 /**

@@ -1,29 +1,30 @@
 import { generateId } from "lucia";
-// UTILS
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { hashPassword } from "@/server/helpers";
-// SCHEMAS
-import {
-  employeeAttendanceTable,
-  employeeProfileTable,
-  employeeShiftTable,
-  leaveBalanceTable,
-  leaveRequestTable,
-  leaveTypeTable,
-  userTable,
-} from "@/server/db/schema";
-import {
-  AttendancePunchOutSchema,
-  CreateEmployeeSchema,
-  LeaveApplySchema,
-} from "@/lib/schema";
 import { and, eq } from "drizzle-orm";
+import { isWithinInterval, format } from "date-fns";
+// UTILS
 import {
-  calculateShiftHours,
   getCurrentDate,
+  calculateShiftHours,
   getDateRangeByRenewPeriod,
 } from "@/lib/utils";
-import { isWithinInterval, format } from "date-fns";
+import { hashPassword } from "@/server/helpers";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+// DB TABLES
+import {
+  userTable,
+  leaveTypeTable,
+  leaveRequestTable,
+  leaveBalanceTable,
+  employeeShiftTable,
+  employeeProfileTable,
+  employeeAttendanceTable,
+} from "@/server/db/schema";
+// SCHEMAS
+import {
+  LeaveApplySchema,
+  CreateEmployeeSchema,
+  AttendancePunchOutSchema,
+} from "@/lib/schema";
 
 export const employeeRouter = createTRPCRouter({
   getAll: protectedProcedure.query(({ ctx }) => {

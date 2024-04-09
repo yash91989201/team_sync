@@ -1,21 +1,22 @@
 import { generateId } from "lucia";
-import { and, eq } from "drizzle-orm";
 import { isSameDay } from "date-fns";
+import { and, eq } from "drizzle-orm";
 // UTILS
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { getDateRangeByRenewPeriod } from "@/lib/utils";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // SCHEMAS
+import {
+  ApproveLeaveSchema,
+  CreateLeaveTypeSchema,
+  RejectLeaveSchema,
+} from "@/lib/schema";
+// DB TABLES
 import {
   leaveBalanceTable,
   leaveRequestTable,
   leaveTypeTable,
   userTable,
 } from "@/server/db/schema";
-import {
-  ApproveLeaveSchema,
-  CreateLeaveTypeSchema,
-  RejectLeaveSchema,
-} from "@/lib/schema";
 
 export const leaveRouter = createTRPCRouter({
   createLeaveType: protectedProcedure

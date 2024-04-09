@@ -1,6 +1,3 @@
-import type { z } from "zod";
-import type { Session } from "lucia";
-import type { LucideIcon } from "lucide-react";
 // SCHEMAS
 import type {
   UserSchema,
@@ -23,6 +20,10 @@ import type {
   LeaveApplySchema,
   LeaveBalanceSchema,
 } from "@/lib/schema";
+// TYPES
+import type { z } from "zod";
+import type { Session } from "lucia";
+import type { LucideIcon } from "lucide-react";
 
 // DB TABLE TYPES
 export type UserType = z.infer<typeof UserSchema>;
