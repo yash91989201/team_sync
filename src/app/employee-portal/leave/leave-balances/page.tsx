@@ -1,18 +1,22 @@
+// UTILS
 import { api } from "@/trpc/server";
+import { authPage } from "@/server/helpers";
+// UI
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function LeaveApplyPage() {
-  const employeeLeaveBalances = await api.leaveRouter.getLeaveBalance();
+  await authPage("EMPLOYEE");
+  const employeeLeaveBalances = await api.leaveRouter.getLeaveBalances();
   return (
     <div>
-      {employeeLeaveBalances.map(({ id, type, daysAllowed, balance }) => (
+      {employeeLeaveBalances.map(({ id, balance, leaveType }) => (
         <Card key={id}>
           <CardHeader>
-            <CardTitle>{type}</CardTitle>
+            <CardTitle>{leaveType.type}</CardTitle>
           </CardHeader>
           <CardContent>
             <p>
-              {balance}/{daysAllowed}
+              {balance}/{leaveType.daysAllowed}
             </p>
           </CardContent>
         </Card>

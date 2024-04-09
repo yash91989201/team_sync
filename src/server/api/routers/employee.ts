@@ -23,7 +23,7 @@ import {
   getCurrentDate,
   getDateRangeByRenewPeriod,
 } from "@/lib/utils";
-import { isWithinInterval, format, addDays } from "date-fns";
+import { isWithinInterval, format } from "date-fns";
 
 export const employeeRouter = createTRPCRouter({
   getAll: protectedProcedure.query(({ ctx }) => {
@@ -280,7 +280,7 @@ export const employeeRouter = createTRPCRouter({
                 .set({ balance: leaveBalance.balance })
                 .where(eq(leaveBalanceTable.id, leaveBalance.id));
             } else {
-              const { status, ...leaveBalanceData } = leaveBalance;
+              const { status: _status, ...leaveBalanceData } = leaveBalance;
               await ctx.db.insert(leaveBalanceTable).values(leaveBalanceData);
             }
           }),

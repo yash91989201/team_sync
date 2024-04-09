@@ -37,6 +37,13 @@ export const leaveRouter = createTRPCRouter({
   getLeaveTypes: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.leaveTypeTable.findMany();
   }),
+  getLeaveBalances: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.query.leaveBalanceTable.findMany({
+      with: {
+        leaveType: true,
+      },
+    });
+  }),
   getLeaveReviewers: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.userTable.findMany({
       where: eq(userTable.role, "ADMIN"),
