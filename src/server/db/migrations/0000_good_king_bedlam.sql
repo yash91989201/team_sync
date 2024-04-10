@@ -1,35 +1,35 @@
 CREATE TABLE `admin_profile` (
-	`admin_id` varchar(256) NOT NULL,
+	`admin_id` varchar(24) NOT NULL,
 	CONSTRAINT `admin_profile_admin_id` PRIMARY KEY(`admin_id`)
 );
 --> statement-breakpoint
 CREATE TABLE `department` (
-	`id` varchar(256) NOT NULL,
+	`id` varchar(24) NOT NULL,
 	`name` varchar(128) NOT NULL,
 	CONSTRAINT `department_id` PRIMARY KEY(`id`),
 	CONSTRAINT `department_name_unique` UNIQUE(`name`)
 );
 --> statement-breakpoint
 CREATE TABLE `designation` (
-	`id` varchar(256) NOT NULL,
+	`id` varchar(24) NOT NULL,
 	`name` varchar(128) NOT NULL,
-	`dept_id` varchar(256) NOT NULL,
+	`dept_id` varchar(24) NOT NULL,
 	CONSTRAINT `designation_id` PRIMARY KEY(`id`),
 	CONSTRAINT `designation_name_unique` UNIQUE(`name`)
 );
 --> statement-breakpoint
 CREATE TABLE `employee_attendance` (
-	`id` varchar(256) NOT NULL,
+	`id` varchar(24) NOT NULL,
 	`date` date NOT NULL,
 	`punchIn` time NOT NULL,
 	`punchOut` time,
 	`shift_hours` enum('0','0.5','0.75','1'),
-	`emp_id` varchar(256) NOT NULL,
+	`emp_id` varchar(24) NOT NULL,
 	CONSTRAINT `employee_attendance_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `employee_profile` (
-	`emp_id` varchar(256) NOT NULL,
+	`emp_id` varchar(24) NOT NULL,
 	`joining_date` timestamp NOT NULL,
 	`emp_band` enum('U1','U2','U3') NOT NULL,
 	`dept` varchar(128) NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE `employee_profile` (
 );
 --> statement-breakpoint
 CREATE TABLE `employee_shift` (
-	`emp_id` varchar(256) NOT NULL,
+	`emp_id` varchar(24) NOT NULL,
 	`shift_start` time(0) NOT NULL,
 	`shift_end` time(0) NOT NULL,
 	`break_minutes` int NOT NULL,
@@ -51,30 +51,30 @@ CREATE TABLE `employee_shift` (
 );
 --> statement-breakpoint
 CREATE TABLE `leave_balance` (
-	`id` varchar(256) NOT NULL,
+	`id` varchar(24) NOT NULL,
 	`createdAt` date NOT NULL,
 	`balance` int NOT NULL,
-	`emp_id` varchar(256) NOT NULL,
-	`leave_type_id` varchar(256) NOT NULL,
+	`emp_id` varchar(24) NOT NULL,
+	`leave_type_id` varchar(24) NOT NULL,
 	CONSTRAINT `leave_balance_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `leave_request` (
-	`id` varchar(256) NOT NULL,
+	`id` varchar(24) NOT NULL,
 	`from_date` date NOT NULL,
 	`to_date` date NOT NULL,
 	`leave_days` int NOT NULL,
 	`reason` text,
 	`applied_on` date NOT NULL,
-	`status` enum('pending','approved','denied') NOT NULL,
-	`emp_id` varchar(256) NOT NULL,
-	`leave_type_id` varchar(256) NOT NULL,
-	`reviewer_id` varchar(256) NOT NULL,
+	`status` enum('pending','approved','rejected') NOT NULL,
+	`emp_id` varchar(24) NOT NULL,
+	`leave_type_id` varchar(24) NOT NULL,
+	`reviewer_id` varchar(24) NOT NULL,
 	CONSTRAINT `leave_request_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `leave_type` (
-	`id` varchar(256) NOT NULL,
+	`id` varchar(24) NOT NULL,
 	`type` varchar(128) NOT NULL,
 	`days_allowed` int NOT NULL,
 	`renew_period` enum('month','year') NOT NULL,
@@ -93,15 +93,15 @@ CREATE TABLE `password_reset_token` (
 );
 --> statement-breakpoint
 CREATE TABLE `session` (
-	`id` varchar(256) NOT NULL,
+	`id` varchar(24) NOT NULL,
 	`expires_at` datetime NOT NULL,
-	`user_id` varchar(256) NOT NULL,
+	`user_id` varchar(24) NOT NULL,
 	CONSTRAINT `session_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `two_factor_confirmation` (
-	`id` varchar(256) NOT NULL,
-	`userId` varchar(256) NOT NULL,
+	`id` varchar(24) NOT NULL,
+	`userId` varchar(24) NOT NULL,
 	CONSTRAINT `two_factor_confirmation_id` PRIMARY KEY(`id`),
 	CONSTRAINT `two_factor_confirmation_userId_unique` UNIQUE(`userId`)
 );
@@ -115,7 +115,7 @@ CREATE TABLE `two_factor_token` (
 );
 --> statement-breakpoint
 CREATE TABLE `user` (
-	`id` varchar(256) NOT NULL,
+	`id` varchar(24) NOT NULL,
 	`code` varchar(128) NOT NULL,
 	`name` varchar(256) NOT NULL,
 	`email` varchar(256) NOT NULL,

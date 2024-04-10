@@ -47,7 +47,7 @@ export async function getUser() {
 }
 
 export async function authPage(
-  expectedRole: "ADMIN" | "EMPLOYEE",
+  expectedRole?: "ADMIN" | "EMPLOYEE",
   isAuthPage = false,
 ) {
   const { user, session } = await validateRequest();
@@ -66,6 +66,8 @@ export async function authPage(
       user.role === "ADMIN" ? DEFAULT_ADMIN_ROUTE : DEFAULT_EMPLOYEE_ROUTE;
 
     if (isAuthPage) return redirect(DEFAULT_ROUTE);
+
+    if (expectedRole === undefined) return redirect(DEFAULT_ROUTE);
 
     if (user.role !== expectedRole) return redirect(DEFAULT_ROUTE);
   }

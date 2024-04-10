@@ -235,6 +235,7 @@ export async function logIn(
           : DEFAULT_EMPLOYEE_ROUTE,
     };
   } catch (e) {
+    console.log(e);
     return { status: "FAILED", message: "Error occoured." };
   }
 }
