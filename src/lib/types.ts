@@ -19,6 +19,9 @@ import type {
   CreateLeaveTypeSchema,
   LeaveApplySchema,
   LeaveBalanceSchema,
+  CreateProfileImageSchema,
+  CreateEmployeeFormSchema,
+  CreateEmployeeInputSchema,
 } from "@/lib/schema";
 // TYPES
 import type { z } from "zod";
@@ -47,6 +50,15 @@ export type CreateDesignationSchemaType = z.infer<
   typeof CreateDesignationSchema
 >;
 export type CreateEmployeeSchemaType = z.infer<typeof CreateEmployeeSchema>;
+export type CreateEmployeeFormSchemaType = z.infer<
+  typeof CreateEmployeeFormSchema
+>;
+export type CreateEmployeeInputSchemaType = z.infer<
+  typeof CreateEmployeeInputSchema
+>;
+export type CreateProfileImageSchemaType = z.infer<
+  typeof CreateProfileImageSchema
+>;
 export type CreateLeaveTypeSchemaType = z.infer<typeof CreateLeaveTypeSchema>;
 export type LeaveApplySchemaType = z.infer<typeof LeaveApplySchema>;
 // OTHER TYPES

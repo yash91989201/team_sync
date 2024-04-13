@@ -67,3 +67,19 @@ type ResetPasswordStatusType =
   | FormInitialType<ResetPasswordErrorsType>
   | FormSuccessType
   | FormFailType<ResetPasswordErrorsType>;
+
+type UploadProfileImageErrorsType = {
+  id: string;
+  image: string;
+};
+
+type UploadProfileImageSuccessType = {
+  status: "SUCCESS";
+  message: string;
+  imageUrl: string;
+};
+
+type UploadProfileImageStatusType =
+  | FormInitialType<UploadProfileImageErrorsType>
+  | UploadProfileImageSuccessType
+  | FormFailType<UploadProfileImageErrorsType>;

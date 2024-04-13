@@ -27,6 +27,7 @@ export const userTable = mysqlTable("user", {
   isTeamLead: boolean("is_team_lead").default(false).notNull(),
   emailVerified: timestamp("email_verified", { mode: "date" }),
   twoFactorEnabled: boolean("two_factor_enabled").default(false).notNull(),
+  imageUrl: text("image_url"),
 });
 
 export const userTableRelations = relations(userTable, ({ one, many }) => ({
@@ -72,7 +73,6 @@ export const employeeProfileTable = mysqlTable("employee_profile", {
   salary: int("salary").notNull(),
   location: varchar("location", { length: 256 }).notNull(),
   dob: date("dob", { mode: "date" }).notNull(),
-  imageUrl: text("image_url"),
   isProfileUpdated: boolean("is_profile_updated").default(false).notNull(),
 });
 

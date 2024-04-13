@@ -103,8 +103,26 @@ export const ADMIN_ROUTES: NavLinkProps[] = [
     label: "Document Center",
     href: "/admin/document-center",
     matchExact: false,
-    isNested: false,
+    isNested: true,
     isChildLink: false,
+    childrens: [
+      {
+        Icon: Book,
+        label: "Documents",
+        href: "/admin/document-center/employee-documents",
+        matchExact: false,
+        isNested: false,
+        isChildLink: true,
+      },
+      {
+        Icon: Book,
+        label: "Document Types",
+        href: "/admin/document-center/document-types",
+        matchExact: false,
+        isNested: false,
+        isChildLink: true,
+      },
+    ],
   },
   {
     Icon: Building,

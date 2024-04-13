@@ -24,6 +24,7 @@ import {
   LeaveApplySchema,
   CreateEmployeeSchema,
   AttendancePunchOutSchema,
+  CreateEmployeeInputSchema,
 } from "@/lib/schema";
 
 export const employeeRouter = createTRPCRouter({
@@ -39,7 +40,7 @@ export const employeeRouter = createTRPCRouter({
     return employeeProfile;
   }),
   createNew: protectedProcedure
-    .input(CreateEmployeeSchema)
+    .input(CreateEmployeeInputSchema)
     .mutation(async ({ ctx, input }) => {
       const {
         code,
@@ -58,6 +59,7 @@ export const employeeRouter = createTRPCRouter({
         shiftStart,
         shiftEnd,
         breakMinutes,
+        imageUrl,
       } = input;
 
       const employeeId = generateId(15);
@@ -74,6 +76,7 @@ export const employeeRouter = createTRPCRouter({
         role,
         isTeamLead,
         emailVerified: new Date(),
+        imageUrl,
       });
       // create profile for employee
       await ctx.db.insert(employeeProfileTable).values({

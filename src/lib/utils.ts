@@ -19,6 +19,7 @@ import { fromZonedTime } from "date-fns-tz";
 // TYPES
 import type { ClassValue } from "clsx";
 import type { EmployeeAttendanceType } from "@/lib/types";
+import { generateId } from "lucia";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -258,4 +259,30 @@ export function getDateRangeByRenewPeriod({
   }
 
   return distinctDateRange;
+}
+
+export async function uploadProfileImage(
+  image: File,
+): Promise<{ imageUrl: string | null }> {
+  const formData = new FormData();
+  formData.append("id", generateId(15));
+  formData.append("image", image);
+  formData.append("file_type", image.type);
+  formData.append("file_size", image.size.toString());
+
+  const res = await fetch("/api/profile-image", {
+    method: "POST",
+    body: formData,
+  });
+  const resp = (await res.json()) as UploadProfileImageStatusType;
+
+  if (resp.status === "SUCCESS") {
+    return {
+      imageUrl: resp.imageUrl,
+    };
+  }
+
+  return {
+    imageUrl: null,
+  };
 }

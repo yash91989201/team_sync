@@ -1,5 +1,5 @@
 "use client";
-import { cn } from "@/lib/utils";
+import { cn, uploadProfileImage } from "@/lib/utils";
 import { format } from "date-fns";
 import { zodResolver } from "@hookform/resolvers/zod";
 // UTILS
@@ -7,10 +7,13 @@ import { api } from "@/trpc/react";
 // CUSTOM HOOKS
 import { useForm } from "react-hook-form";
 // SCHEMAS
-import { CreateEmployeeSchema } from "@/lib/schema";
+import { CreateEmployeeFormSchema, CreateEmployeeSchema } from "@/lib/schema";
 // TYPES
 import type { SubmitHandler } from "react-hook-form";
-import type { CreateEmployeeSchemaType } from "@/lib/types";
+import type {
+  CreateEmployeeFormSchemaType,
+  CreateEmployeeSchemaType,
+} from "@/lib/types";
 // UI
 import {
   Popover,
@@ -46,7 +49,7 @@ export default function CreateEmployeeForm() {
   const shiftStart = new Date(new Date().setHours(10, 0, 0, 0));
   const shiftEnd = new Date(new Date().setHours(8, 0, 0, 0));
   const currentYear = new Date().getFullYear();
-  const createEmployeeForm = useForm<CreateEmployeeSchemaType>({
+  const createEmployeeForm = useForm<CreateEmployeeFormSchemaType>({
     defaultValues: {
       code: "",
       name: "",
@@ -63,7 +66,7 @@ export default function CreateEmployeeForm() {
       shiftEnd,
       breakMinutes: 60,
     },
-    resolver: zodResolver(CreateEmployeeSchema),
+    resolver: zodResolver(CreateEmployeeFormSchema),
   });
 
   const { control, handleSubmit, formState, watch } = createEmployeeForm;
@@ -76,10 +79,15 @@ export default function CreateEmployeeForm() {
   const { mutateAsync: createEmployee } =
     api.employeeRouter.createNew.useMutation();
 
-  const createEmployeeAction: SubmitHandler<CreateEmployeeSchemaType> = async (
-    formData,
-  ) => {
-    await createEmployee(formData);
+  const createEmployeeAction: SubmitHandler<
+    CreateEmployeeFormSchemaType
+  > = async (formData) => {
+    const { imageUrl } = await uploadProfileImage(formData.profileImage);
+
+    await createEmployee({
+      ...formData,
+      imageUrl,
+    });
   };
 
   const selectedDept = watch("dept");

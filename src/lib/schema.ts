@@ -13,6 +13,7 @@ import {
   leaveTypeTable,
   userTable,
 } from "@/server/db/schema";
+import { ACCEPTED_FILE_MIME_TYPES, MAX_FILE_SIZE } from "@/constants";
 
 // Database table schemas
 export const UserSchema = createSelectSchema(userTable);
@@ -46,6 +47,20 @@ export const NewVerificationSchema = z.object({
 
 export const ResetPasswordSchema = z.object({
   email: z.string().email(),
+});
+
+// user profile image schemas
+export const CreateProfileImageSchema = z.object({
+  image: z
+    .instanceof(File)
+    .refine(
+      (file) => file.size <= MAX_FILE_SIZE.PROFILE_IMG,
+      "Max image size is 5MB.",
+    )
+    .refine(
+      (file) => ACCEPTED_FILE_MIME_TYPES.PROFILE_IMG.includes(file.type),
+      "only .webp .jpg .png .svg files are accepted.",
+    ),
 });
 
 // department schemas
@@ -85,6 +100,23 @@ export const CreateEmployeeSchema = z.object({
   breakMinutes: z
     .number()
     .min(15, { message: "Min. break hours should be 15 min." }),
+});
+
+export const CreateEmployeeInputSchema = CreateEmployeeSchema.extend({
+  imageUrl: z.string().nullable(),
+});
+
+export const CreateEmployeeFormSchema = CreateEmployeeSchema.extend({
+  profileImage: z
+    .instanceof(File)
+    .refine(
+      (file) => file.size <= MAX_FILE_SIZE.PROFILE_IMG,
+      "Max image size is 5MB.",
+    )
+    .refine(
+      (file) => ACCEPTED_FILE_MIME_TYPES.PROFILE_IMG.includes(file.type),
+      "only .webp .jpg .png .svg files are accepted.",
+    ),
 });
 
 export const AttendancePunchOutSchema = z.object({
