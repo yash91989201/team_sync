@@ -22,7 +22,6 @@ import {
 // SCHEMAS
 import {
   LeaveApplySchema,
-  CreateEmployeeSchema,
   AttendancePunchOutSchema,
   CreateEmployeeInputSchema,
 } from "@/lib/schema";

@@ -42,6 +42,7 @@ export const userTableRelations = relations(userTable, ({ one, many }) => ({
     relationName: "leaveRequestReviewer",
   }),
   leaveBalance: many(leaveBalanceTable),
+  employeeDocument: many(employeeDocumentTable),
 }));
 
 export const adminProfileTable = mysqlTable("admin_profile", {
@@ -251,6 +252,85 @@ export const leaveBalanceTableRelations = relations(
     leaveType: one(leaveTypeTable, {
       fields: [leaveBalanceTable.leaveTypeId],
       references: [leaveTypeTable.id],
+    }),
+  }),
+);
+
+export const documentTypeTable = mysqlTable("document_type", {
+  id: varchar("id", {
+    length: 24,
+  }).primaryKey(),
+  type: varchar("type", { length: 256 }).notNull(),
+  fileType: mysqlEnum("file_type", [
+    "image/jpg",
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "application/pdf",
+  ]).notNull(),
+  requiredFiles: int("required_files").notNull(),
+});
+
+export const documentTypeTableRelations = relations(
+  documentTypeTable,
+  ({ many }) => ({
+    employeeDocuments: many(employeeDocumentTable),
+  }),
+);
+
+export const employeeDocumentTable = mysqlTable("employee_document", {
+  id: varchar("id", {
+    length: 24,
+  }).primaryKey(),
+  verified: boolean("verified").notNull(),
+  uniqueDocumentId: varchar("unique_document_id", { length: 128 }),
+  // FOREIGN KEY RELATIONS
+  empId: varchar("emp_id", {
+    length: 24,
+  })
+    .notNull()
+    .references(() => userTable.id),
+  documentTypeId: varchar("document_type_id", {
+    length: 24,
+  })
+    .notNull()
+    .references(() => documentTypeTable.id),
+});
+
+export const employeDocumentTableRelations = relations(
+  employeeDocumentTable,
+  ({ one, many }) => ({
+    employee: one(userTable, {
+      fields: [employeeDocumentTable.empId],
+      references: [userTable.id],
+    }),
+    documentType: one(documentTypeTable, {
+      fields: [employeeDocumentTable.documentTypeId],
+      references: [documentTypeTable.id],
+    }),
+    documentFile: many(employeeDocumentFileTable),
+  }),
+);
+
+export const employeeDocumentFileTable = mysqlTable("employee_document_file", {
+  id: varchar("id", {
+    length: 24,
+  }).primaryKey(),
+  fileUrl: text("file_url").notNull(),
+  // FOREIGN KEY RELATIONS
+  empDocumentId: varchar("emp_document_id", {
+    length: 24,
+  })
+    .notNull()
+    .references(() => employeeDocumentTable.id),
+});
+
+export const employeeDocumentFileTableRelations = relations(
+  employeeDocumentFileTable,
+  ({ one }) => ({
+    document: one(employeeDocumentTable, {
+      fields: [employeeDocumentFileTable.empDocumentId],
+      references: [employeeDocumentTable.id],
     }),
   }),
 );

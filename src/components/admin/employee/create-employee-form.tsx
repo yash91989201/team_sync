@@ -1,11 +1,10 @@
 "use client";
-import { cn, uploadProfileImage } from "@/lib/utils";
 import { format } from "date-fns";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 // UTILS
 import { api } from "@/trpc/react";
-// CUSTOM HOOKS
-import { useForm } from "react-hook-form";
+import { cn, uploadProfileImage } from "@/lib/utils";
 // SCHEMAS
 import { CreateEmployeeFormSchema } from "@/lib/schema";
 // TYPES
@@ -38,6 +37,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 // CUSTOM COMPONENTS
 import EmployeeShiftTimePicker from "@/components/admin/employee/employee-shift-time-picker";
+// CONSTANTS
+import { MAX_FILE_SIZE } from "@/constants";
 // ICONS
 import { Loader2 } from "lucide-react";
 import { CalendarIcon } from "lucide-react";
@@ -118,6 +119,9 @@ export default function CreateEmployeeForm() {
                     onChange={field.onChange}
                     width={160}
                     height={160}
+                    dropzoneOptions={{
+                      maxSize: MAX_FILE_SIZE.PROFILE_IMG,
+                    }}
                   />
                 </FormControl>
                 <FormMessage />

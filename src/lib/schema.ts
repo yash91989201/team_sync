@@ -5,7 +5,10 @@ import {
   adminProfileTable,
   departmentTable,
   designationTable,
+  documentTypeTable,
   employeeAttendanceTable,
+  employeeDocumentFileTable,
+  employeeDocumentTable,
   employeeProfileTable,
   employeeShiftTable,
   leaveBalanceTable,
@@ -13,6 +16,7 @@ import {
   leaveTypeTable,
   userTable,
 } from "@/server/db/schema";
+// CONSTANTS
 import { ACCEPTED_FILE_MIME_TYPES, MAX_FILE_SIZE } from "@/constants";
 
 // Database table schemas
@@ -28,6 +32,9 @@ export const EmployeeAttendanceSchema = createSelectSchema(
 export const LeaveTypeSchema = createSelectSchema(leaveTypeTable);
 export const LeaveRequestSchema = createSelectSchema(leaveRequestTable);
 export const LeaveBalanceSchema = createSelectSchema(leaveBalanceTable);
+export const DocumentTypeSchema=createSelectSchema(documentTypeTable)
+export const EmployeeDocumentSchema=createSelectSchema(employeeDocumentTable)
+export const EmployeeDocumentFileSchema=createSelectSchema(employeeDocumentFileTable)
 // Auth schemas
 export const AdminSignupSchema = z.object({
   name: z.string().min(6, { message: "Full name is required." }),

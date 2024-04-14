@@ -1,25 +1,30 @@
 // SCHEMAS
 import type {
+  // DB TABLES
   UserSchema,
   EmployeeProfileSchema,
   AdminProfileSchema,
-  AdminSignupSchema,
-  LoginSchema,
-  ResetPasswordSchema,
-  NewVerificationSchema,
   DepartmentSchema,
-  CreateDepartmentSchema,
   DesignationSchema,
-  CreateDesignationSchema,
-  CreateEmployeeSchema,
   EmployeeShiftSchema,
   EmployeeAttendanceSchema,
   LeaveTypeSchema,
   LeaveRequestSchema,
+  LeaveBalanceSchema,
+  DocumentTypeSchema,
+  EmployeeDocumentSchema,
+  EmployeeDocumentFileSchema,
+  // OTHER SCHEMAS
+  AdminSignupSchema,
+  LoginSchema,
+  ResetPasswordSchema,
+  NewVerificationSchema,
+  CreateDepartmentSchema,
+  CreateDesignationSchema,
+  CreateEmployeeSchema,
   CreateLeaveTypeSchema,
   LeaveApplySchema,
-  LeaveBalanceSchema,
-  CreateProfileImageSchema,
+  CreateProfileImageSchema,  
   CreateEmployeeFormSchema,
   CreateEmployeeInputSchema,
 } from "@/lib/schema";
@@ -39,6 +44,9 @@ export type EmployeeAttendanceType = z.infer<typeof EmployeeAttendanceSchema>;
 export type LeaveTypeSchemaType = z.infer<typeof LeaveTypeSchema>;
 export type LeaveRequestSchemaType = z.infer<typeof LeaveRequestSchema>;
 export type LeaveBalanceSchemaType = z.infer<typeof LeaveBalanceSchema>;
+export type DocumentTypeSchemaType=z.infer<typeof DocumentTypeSchema>
+export type EmployeeDocumentSchemaType=z.infer<typeof EmployeeDocumentSchema>
+export type EmployeeDocumentFileSchemaType=z.infer<typeof EmployeeDocumentFileSchema>
 // AUTH TYPES
 export type AdminSignupSchemaType = z.infer<typeof AdminSignupSchema>;
 export type LoginSchemaType = z.infer<typeof LoginSchema>;
