@@ -7,13 +7,10 @@ import { api } from "@/trpc/react";
 // CUSTOM HOOKS
 import { useForm } from "react-hook-form";
 // SCHEMAS
-import { CreateEmployeeFormSchema, CreateEmployeeSchema } from "@/lib/schema";
+import { CreateEmployeeFormSchema } from "@/lib/schema";
 // TYPES
 import type { SubmitHandler } from "react-hook-form";
-import type {
-  CreateEmployeeFormSchemaType,
-  CreateEmployeeSchemaType,
-} from "@/lib/types";
+import type { CreateEmployeeFormSchemaType } from "@/lib/types";
 // UI
 import {
   Popover,
@@ -44,11 +41,13 @@ import EmployeeShiftTimePicker from "@/components/admin/employee/employee-shift-
 // ICONS
 import { Loader2 } from "lucide-react";
 import { CalendarIcon } from "lucide-react";
+import { SingleImageDropzone } from "@/components/shared/single-image-dropzone";
 
 export default function CreateEmployeeForm() {
   const shiftStart = new Date(new Date().setHours(10, 0, 0, 0));
   const shiftEnd = new Date(new Date().setHours(8, 0, 0, 0));
   const currentYear = new Date().getFullYear();
+
   const createEmployeeForm = useForm<CreateEmployeeFormSchemaType>({
     defaultValues: {
       code: "",
@@ -94,6 +93,7 @@ export default function CreateEmployeeForm() {
   const selectedDeptId =
     departmentList.find((department) => department.name === selectedDept)?.id ??
     "";
+
   const designationByDept = designationList.filter(
     (designation) => designation.deptId === selectedDeptId,
   );
@@ -106,6 +106,25 @@ export default function CreateEmployeeForm() {
       >
         {/* Personal details */}
         <div>
+          <FormField
+            control={control}
+            name="profileImage"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Employee Image</FormLabel>
+                <FormControl>
+                  <SingleImageDropzone
+                    value={field.value}
+                    onChange={field.onChange}
+                    width={160}
+                    height={160}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={control}
             name="name"

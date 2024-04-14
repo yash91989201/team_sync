@@ -108,7 +108,7 @@ export const CreateEmployeeInputSchema = CreateEmployeeSchema.extend({
 
 export const CreateEmployeeFormSchema = CreateEmployeeSchema.extend({
   profileImage: z
-    .instanceof(File)
+    .instanceof(File, { message: "Employee Image is required." })
     .refine(
       (file) => file.size <= MAX_FILE_SIZE.PROFILE_IMG,
       "Max image size is 5MB.",
