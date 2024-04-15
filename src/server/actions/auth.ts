@@ -1,11 +1,11 @@
 "use server";
-import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { generateId } from "lucia";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 // UTILS
-import { lucia, validateRequest } from "@/lib/auth";
 import { db } from "@/server/db";
+import { lucia, validateRequest } from "@/lib/auth";
 import { verifyPassword, getUserByEmail, hashPassword } from "@/server/helpers";
 import {
   generateVerificationToken,
@@ -235,6 +235,7 @@ export async function logIn(
           : DEFAULT_EMPLOYEE_ROUTE,
     };
   } catch (e) {
+    console.log(e);
     return { status: "FAILED", message: "Error occoured." };
   }
 }

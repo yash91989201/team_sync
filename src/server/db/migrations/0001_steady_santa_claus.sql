@@ -1,0 +1,1 @@
+ALTER TABLE `session` MODIFY COLUMN `id` varchar(48) NOT NULL;

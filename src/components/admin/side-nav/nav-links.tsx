@@ -2,22 +2,12 @@
 import NavLink from "@/components/shared/nav-link";
 // CONSTANTS
 import { ADMIN_ROUTES } from "@/constants/routes";
-import { cn } from "@/lib/utils";
 
-export default function NavLinks({ sideNavOpen }: { sideNavOpen: boolean }) {
+export default function NavLinks() {
   return (
-    <nav
-      className={cn(
-        "flex flex-1 flex-col gap-3",
-        sideNavOpen ? "" : "items-center",
-      )}
-    >
+    <nav className=" flex w-full flex-1 flex-col items-start gap-3">
       {ADMIN_ROUTES.map((adminRoute) => (
-        <NavLink
-          key={adminRoute.href}
-          {...adminRoute}
-          sideNavOpen={sideNavOpen}
-        />
+        <NavLink key={adminRoute.href} {...adminRoute} />
       ))}
     </nav>
   );

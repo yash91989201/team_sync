@@ -1,19 +1,17 @@
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
-// TRPC routers
+// TRPC ROUTERS
+import { leaveRouter } from "@/server/api/routers/leave";
+import { employeeRouter } from "@/server/api/routers/employee";
+import { documentRouter } from "@/server/api/routers/document";
 import { departmentRouter } from "@/server/api/routers/department";
-import { designationRouter } from "./routers/designation";
-import { employeeRouter } from "./routers/employee";
-import { leaveRouter } from "./routers/leave";
-/**
- * This is the primary router for your server.
- *
- * All routers added in /api/routers should be manually added here.
- */
+import { designationRouter } from "@/server/api/routers/designation";
+
 export const appRouter = createTRPCRouter({
   departmentRouter,
   designationRouter,
   employeeRouter,
   leaveRouter,
+  documentRouter,
 });
 
 // export type definition of API

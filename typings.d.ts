@@ -67,3 +67,40 @@ type ResetPasswordStatusType =
   | FormInitialType<ResetPasswordErrorsType>
   | FormSuccessType
   | FormFailType<ResetPasswordErrorsType>;
+
+type UploadProfileImageErrorsType = {
+  id: string;
+  image: string;
+};
+
+type UploadProfileImageSuccessType = {
+  status: "SUCCESS";
+  message: string;
+  imageUrl: string;
+};
+
+type UploadProfileImageStatusType =
+  | FormInitialType<UploadProfileImageErrorsType>
+  | UploadProfileImageSuccessType
+  | FormFailType<UploadProfileImageErrorsType>;
+
+type UploadEmployeeDocumentErrorsType = {
+  id: string;
+  image: string;
+};
+
+type UploadEmployeeDocumentSuccessType = {
+  status: "SUCCESS";
+  message: string;
+  data: {
+    filesData: {
+      id: string;
+      fileUrl: string;
+    }[]
+  },
+};
+
+type UploadEmployeeDocumentStatusType =
+  | FormInitialType<UploadEmployeeDocumentErrorsType>
+  | UploadEmployeeDocumentSuccessType
+  | FormFailType<UploadEmployeeDocumentErrorsType>;

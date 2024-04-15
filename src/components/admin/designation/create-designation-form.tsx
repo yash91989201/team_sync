@@ -14,6 +14,13 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 // TYPES
@@ -28,6 +35,9 @@ export default function CreateDesignationForm() {
   });
 
   const { control, handleSubmit, formState } = createDesignationForm;
+
+  const { data: departments = [], isLoading } =
+    api.departmentRouter.getAll.useQuery();
 
   const { mutateAsync: createDesignation } =
     api.designationRouter.createNew.useMutation();
@@ -50,6 +60,34 @@ export default function CreateDesignationForm() {
               <FormControl>
                 <Input {...field} placeholder="Enter designation" />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={control}
+          name="deptId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Select Department</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a department" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {isLoading ? (
+                    <p>Loading departments...</p>
+                  ) : (
+                    departments.map(({ id, name }) => (
+                      <SelectItem key={id} value={id}>
+                        {name}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

@@ -1,27 +1,40 @@
-import type { z } from "zod";
-import type { Session } from "lucia";
-import type { LucideIcon } from "lucide-react";
 // SCHEMAS
 import type {
+  // DB TABLES
   UserSchema,
   EmployeeProfileSchema,
   AdminProfileSchema,
-  AdminSignupSchema,
-  LoginSchema,
-  ResetPasswordSchema,
-  NewVerificationSchema,
   DepartmentSchema,
-  CreateDepartmentSchema,
   DesignationSchema,
-  CreateDesignationSchema,
-  CreateEmployeeSchema,
   EmployeeShiftSchema,
   EmployeeAttendanceSchema,
   LeaveTypeSchema,
   LeaveRequestSchema,
+  LeaveBalanceSchema,
+  DocumentTypeSchema,
+  EmployeeDocumentSchema,
+  EmployeeDocumentFileSchema,
+  // OTHER SCHEMAS
+  AdminSignupSchema,
+  LoginSchema,
+  ResetPasswordSchema,
+  NewVerificationSchema,
+  CreateDepartmentSchema,
+  CreateDesignationSchema,
+  CreateEmployeeSchema,
   CreateLeaveTypeSchema,
   LeaveApplySchema,
+  CreateProfileImageSchema,
+  CreateEmployeeFormSchema,
+  CreateEmployeeInputSchema,
+  CreateDocumentTypeSchema,
+  GetEmployeeByQueryInput,
+  CreateEmployeeDocumentFormSchema,
 } from "@/lib/schema";
+// TYPES
+import type { z } from "zod";
+import type { Session } from "lucia";
+import type { LucideIcon } from "lucide-react";
 
 // DB TABLE TYPES
 export type UserType = z.infer<typeof UserSchema>;
@@ -31,8 +44,14 @@ export type DepartmentType = z.infer<typeof DepartmentSchema>;
 export type DesignationType = z.infer<typeof DesignationSchema>;
 export type EmployeeShiftType = z.infer<typeof EmployeeShiftSchema>;
 export type EmployeeAttendanceType = z.infer<typeof EmployeeAttendanceSchema>;
-export type LeaveTypeType = z.infer<typeof LeaveTypeSchema>;
-export type LeaveRequest = z.infer<typeof LeaveRequestSchema>;
+export type LeaveTypeSchemaType = z.infer<typeof LeaveTypeSchema>;
+export type LeaveRequestSchemaType = z.infer<typeof LeaveRequestSchema>;
+export type LeaveBalanceSchemaType = z.infer<typeof LeaveBalanceSchema>;
+export type DocumentTypeSchemaType = z.infer<typeof DocumentTypeSchema>;
+export type EmployeeDocumentSchemaType = z.infer<typeof EmployeeDocumentSchema>;
+export type EmployeeDocumentFileSchemaType = z.infer<
+  typeof EmployeeDocumentFileSchema
+>;
 // AUTH TYPES
 export type AdminSignupSchemaType = z.infer<typeof AdminSignupSchema>;
 export type LoginSchemaType = z.infer<typeof LoginSchema>;
@@ -43,9 +62,27 @@ export type CreateDepartmentSchemaType = z.infer<typeof CreateDepartmentSchema>;
 export type CreateDesignationSchemaType = z.infer<
   typeof CreateDesignationSchema
 >;
+export type GetEmployeeByQueryInputType = z.infer<
+  typeof GetEmployeeByQueryInput
+>;
 export type CreateEmployeeSchemaType = z.infer<typeof CreateEmployeeSchema>;
+export type CreateEmployeeFormSchemaType = z.infer<
+  typeof CreateEmployeeFormSchema
+>;
+export type CreateEmployeeInputSchemaType = z.infer<
+  typeof CreateEmployeeInputSchema
+>;
+export type CreateProfileImageSchemaType = z.infer<
+  typeof CreateProfileImageSchema
+>;
 export type CreateLeaveTypeSchemaType = z.infer<typeof CreateLeaveTypeSchema>;
 export type LeaveApplySchemaType = z.infer<typeof LeaveApplySchema>;
+export type CreateDocumentTypeSchemaType = z.infer<
+  typeof CreateDocumentTypeSchema
+>;
+export type CreateEmployeeDocumentFormSchemaType = z.infer<
+  typeof CreateEmployeeDocumentFormSchema
+>;
 // OTHER TYPES
 export type UserSessionType =
   | {
@@ -62,4 +99,7 @@ export type NavLinkProps = {
   label: string;
   href: string;
   matchExact: boolean;
+  isNested: boolean;
+  childrens?: NavLinkProps[];
+  isChildLink: boolean;
 };

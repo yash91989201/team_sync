@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "c2a1e242-360a-4afc-bbc2-0f2cf98f7ed9",
+  "id": "211fec7c-bf05-4961-abf1-9085429103d3",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "admin_profile": {
@@ -9,7 +9,7 @@
       "columns": {
         "admin_id": {
           "name": "admin_id",
-          "type": "varchar(256)",
+          "type": "varchar(24)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -46,7 +46,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(256)",
+          "type": "varchar(24)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -83,7 +83,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(256)",
+          "type": "varchar(24)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -94,10 +94,31 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "dept_id": {
+          "name": "dept_id",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "designation_dept_id_department_id_fk": {
+          "name": "designation_dept_id_department_id_fk",
+          "tableFrom": "designation",
+          "tableTo": "department",
+          "columnsFrom": [
+            "dept_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {
         "designation_id": {
           "name": "designation_id",
@@ -120,7 +141,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(256)",
+          "type": "varchar(24)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -155,7 +176,7 @@
         },
         "emp_id": {
           "name": "emp_id",
-          "type": "varchar(256)",
+          "type": "varchar(24)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -192,7 +213,7 @@
       "columns": {
         "emp_id": {
           "name": "emp_id",
-          "type": "varchar(256)",
+          "type": "varchar(24)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -225,13 +246,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "paid_leaves": {
-          "name": "paid_leaves",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "salary": {
           "name": "salary",
           "type": "int",
@@ -242,6 +256,13 @@
         "location": {
           "name": "location",
           "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "dob": {
+          "name": "dob",
+          "type": "date",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -293,7 +314,7 @@
       "columns": {
         "emp_id": {
           "name": "emp_id",
-          "type": "varchar(256)",
+          "type": "varchar(24)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -346,12 +367,90 @@
       },
       "uniqueConstraints": {}
     },
+    "leave_balance": {
+      "name": "leave_balance",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "balance": {
+          "name": "balance",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "emp_id": {
+          "name": "emp_id",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "leave_type_id": {
+          "name": "leave_type_id",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "leave_balance_emp_id_user_id_fk": {
+          "name": "leave_balance_emp_id_user_id_fk",
+          "tableFrom": "leave_balance",
+          "tableTo": "user",
+          "columnsFrom": [
+            "emp_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "leave_balance_leave_type_id_leave_type_id_fk": {
+          "name": "leave_balance_leave_type_id_leave_type_id_fk",
+          "tableFrom": "leave_balance",
+          "tableTo": "leave_type",
+          "columnsFrom": [
+            "leave_type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "leave_balance_id": {
+          "name": "leave_balance_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
     "leave_request": {
       "name": "leave_request",
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(256)",
+          "type": "varchar(24)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -384,13 +483,6 @@
           "notNull": false,
           "autoincrement": false
         },
-        "leave_type": {
-          "name": "leave_type",
-          "type": "varchar(128)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "applied_on": {
           "name": "applied_on",
           "type": "date",
@@ -400,21 +492,28 @@
         },
         "status": {
           "name": "status",
-          "type": "enum('pending','approved','denied')",
+          "type": "enum('pending','approved','rejected')",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "emp_id": {
           "name": "emp_id",
-          "type": "varchar(256)",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "leave_type_id": {
+          "name": "leave_type_id",
+          "type": "varchar(24)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "reviewer_id": {
           "name": "reviewer_id",
-          "type": "varchar(256)",
+          "type": "varchar(24)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -428,6 +527,19 @@
           "tableTo": "user",
           "columnsFrom": [
             "emp_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "leave_request_leave_type_id_leave_type_id_fk": {
+          "name": "leave_request_leave_type_id_leave_type_id_fk",
+          "tableFrom": "leave_request",
+          "tableTo": "leave_type",
+          "columnsFrom": [
+            "leave_type_id"
           ],
           "columnsTo": [
             "id"
@@ -464,7 +576,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(256)",
+          "type": "varchar(24)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -482,6 +594,28 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "renew_period": {
+          "name": "renew_period",
+          "type": "enum('month','year')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "renew_period_count": {
+          "name": "renew_period_count",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "carry_over": {
+          "name": "carry_over",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
         }
       },
       "indexes": {},
@@ -552,7 +686,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(256)",
+          "type": "varchar(24)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -566,7 +700,7 @@
         },
         "user_id": {
           "name": "user_id",
-          "type": "varchar(256)",
+          "type": "varchar(24)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -603,14 +737,14 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(256)",
+          "type": "varchar(24)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "userId": {
           "name": "userId",
-          "type": "varchar(256)",
+          "type": "varchar(24)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -698,7 +832,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(256)",
+          "type": "varchar(24)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false

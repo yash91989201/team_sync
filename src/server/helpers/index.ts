@@ -1,11 +1,19 @@
 import "server-only";
 import { eq } from "drizzle-orm";
 import { Argon2id } from "oslo/password";
+import { redirect } from "next/navigation";
 // UTILS
 import { db } from "@/server/db";
 import { validateRequest } from "@/lib/auth";
-// SCHEMAS
+// DB TABLES
 import { userTable } from "@/server/db/schema";
+// CONSTANTS
+import {
+  ADMIN_AUTH_ROUTES,
+  DEFAULT_ADMIN_ROUTE,
+  DEFAULT_EMPLOYEE_ROUTE,
+  EMPLOYEE_AUTH_ROUTES,
+} from "@/constants/routes";
 
 const argon2id = new Argon2id();
 
@@ -36,4 +44,31 @@ export async function getUser() {
     user,
     isAdmin: user.role === "ADMIN",
   };
+}
+
+export async function authPage(
+  expectedRole?: "ADMIN" | "EMPLOYEE",
+  isAuthPage = false,
+) {
+  const { user, session } = await validateRequest();
+
+  const LOGIN_ROUTE =
+    expectedRole === "ADMIN"
+      ? ADMIN_AUTH_ROUTES.logIn
+      : EMPLOYEE_AUTH_ROUTES.logIn;
+
+  if (!user || !session) {
+    if (isAuthPage) return;
+
+    return redirect(LOGIN_ROUTE);
+  } else {
+    const DEFAULT_ROUTE =
+      user.role === "ADMIN" ? DEFAULT_ADMIN_ROUTE : DEFAULT_EMPLOYEE_ROUTE;
+
+    if (isAuthPage) return redirect(DEFAULT_ROUTE);
+
+    if (expectedRole === undefined) return redirect(DEFAULT_ROUTE);
+
+    if (user.role !== expectedRole) return redirect(DEFAULT_ROUTE);
+  }
 }

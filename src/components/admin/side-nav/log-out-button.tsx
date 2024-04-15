@@ -1,43 +1,30 @@
 "use client";
+import React from "react";
 import { useFormStatus } from "react-dom";
-// UTILS
-import { cn } from "@/lib/utils";
+// ACTIONS
+import { logOut } from "@/server/actions/auth";
 // UI
 import { Button } from "@/components/ui/button";
 // ICONS
 import { Loader2, Power } from "lucide-react";
 
-import React from "react";
-// ACTIONS
-import { logOut } from "@/server/actions/auth";
-
-export default function LogoutButton({
-  sideNavOpen,
-}: {
-  sideNavOpen: boolean;
-}) {
+export default function LogoutButton() {
   return (
-    <form action={logOut} className={cn(sideNavOpen ? "w-full" : "")}>
-      <LogoutButtonInner sideNavOpen={sideNavOpen} />
+    <form action={logOut} className="w-full">
+      <LogoutButtonInner />
     </form>
   );
 }
 
-function LogoutButtonInner({ sideNavOpen }: { sideNavOpen: boolean }) {
+function LogoutButtonInner() {
   const { pending } = useFormStatus();
   return (
     <Button
       variant="ghost"
-      size={sideNavOpen ? "default" : "icon"}
-      className={cn(
-        "flex h-12 w-12 items-center gap-3 text-base font-medium text-gray-700 hover:bg-red-600/15 hover:text-red-600 [&>svg]:size-5",
-        sideNavOpen
-          ? "w-full justify-start [&>svg]:size-5"
-          : "justify-center [&>svg]:size-6",
-      )}
+      className="w-full justify-start gap-3 text-base font-medium text-gray-700 hover:bg-red-600/15 hover:text-red-600 [&>svg]:size-5"
     >
       {pending ? <Loader2 className="animate-spin" /> : <Power />}
-      {sideNavOpen && <p>Log Out</p>}
+      <p className="text-base font-normal">Log Out</p>
     </Button>
   );
 }
