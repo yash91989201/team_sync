@@ -45,7 +45,7 @@ import { cn, uploadEmployeeDocuments } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { CommandLoading } from "cmdk";
 import { useState } from "react";
-import { SingleFileDropzone } from "@shared/single-file-dropzone";
+import { SingleFileDropzone } from "@sharedComponents/single-file-dropzone";
 import { MAX_FILE_SIZE } from "@/constants";
 import { toast } from "sonner";
 

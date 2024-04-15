@@ -23,7 +23,7 @@ import {
 import { Input } from "@ui//input";
 import { Button } from "@ui//button";
 // CUSTOM COMPONENTS
-import AuthCardWrapper from "@shared/auth-card-wrapper";
+import AuthCardWrapper from "@sharedComponents/auth-card-wrapper";
 // ICONS
 import { Eye, EyeOff, Loader2, Mail, UserRound } from "lucide-react";
 // CONSTANTS

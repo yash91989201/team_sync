@@ -42,7 +42,7 @@ import { MAX_FILE_SIZE } from "@/constants";
 // ICONS
 import { Loader2 } from "lucide-react";
 import { CalendarIcon } from "lucide-react";
-import { SingleFileDropzone } from "@shared/single-file-dropzone";
+import { SingleFileDropzone } from "@sharedComponents/single-file-dropzone";
 
 export default function CreateEmployeeForm() {
   const shiftStart = new Date(new Date().setHours(10, 0, 0, 0));

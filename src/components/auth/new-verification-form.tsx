@@ -14,7 +14,7 @@ import type { NewVerificationSchemaType, UserType } from "@/lib/types";
 import { Form } from "@ui//form";
 import { Button } from "@ui//button";
 // CUSTOM COMPONENTS
-import AuthCardWrapper from "@shared/auth-card-wrapper";
+import AuthCardWrapper from "@sharedComponents/auth-card-wrapper";
 // ICONS
 import { Loader2 } from "lucide-react";
 // CONSTANTS
