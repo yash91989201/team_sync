@@ -1,11 +1,9 @@
 // UTILS
 import { env } from "@/env";
 import { pbClient } from "@/server/pb/config";
-// TYPES
-import type { NextRequest } from "next/server";
 
 export async function GET(
-  _request: NextRequest,
+  _request: Request,
   { params }: { params: { id: string } },
 ) {
   const imageId = params.id;
@@ -16,10 +14,29 @@ export async function GET(
 
   const profileImage = await res.blob();
 
-  return new Response(profileImage, {
-    headers: {
-      "Content-Type": "image/png",
-    },
-    status: 200,
-  });
+  return new Response(profileImage);
+}
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const imageId = params.id;
+    const formData = await request.formData();
+
+    await pbClient
+      .collection("user_profile")
+      .update(imageId, formData)
+
+    return Response.json({
+      status: "SUCCESS",
+      message: "Image updated successfully",
+    });
+  } catch (error) {
+    return Response.json({
+      status: "FAILED",
+      message: "Unable to update profile image",
+    });
+  }
 }

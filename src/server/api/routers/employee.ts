@@ -1,5 +1,5 @@
 import { generateId } from "lucia";
-import { and, eq } from "drizzle-orm";
+import { and, eq, like, or } from "drizzle-orm";
 import { isWithinInterval, format } from "date-fns";
 // UTILS
 import {
@@ -24,9 +24,23 @@ import {
   LeaveApplySchema,
   AttendancePunchOutSchema,
   CreateEmployeeInputSchema,
+  GetEmployeeByQueryInput,
 } from "@/lib/schema";
 
 export const employeeRouter = createTRPCRouter({
+  getByCodeOrName: protectedProcedure
+    .input(GetEmployeeByQueryInput)
+    .query(({ ctx, input }) => {
+      return ctx.db.query.userTable.findMany({
+        where: and(
+          eq(userTable.role, "EMPLOYEE"),
+          or(
+            like(userTable.name, `%${input.query.toLowerCase()}%`),
+            like(userTable.code, `%${input.query.toLowerCase()}%`),
+          ),
+        ),
+      });
+    }),
   getAll: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.userTable.findMany({
       where: eq(userTable.role, "EMPLOYEE"),
@@ -283,7 +297,7 @@ export const employeeRouter = createTRPCRouter({
                 .set({ balance: leaveBalance.balance })
                 .where(eq(leaveBalanceTable.id, leaveBalance.id));
             } else {
-              const { status: _status, ...leaveBalanceData } = leaveBalance;
+              const { status: _, ...leaveBalanceData } = leaveBalance;
               await ctx.db.insert(leaveBalanceTable).values(leaveBalanceData);
             }
           }),

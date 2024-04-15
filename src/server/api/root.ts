@@ -2,6 +2,7 @@ import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 // TRPC ROUTERS
 import { leaveRouter } from "@/server/api/routers/leave";
 import { employeeRouter } from "@/server/api/routers/employee";
+import { documentRouter } from "@/server/api/routers/document";
 import { departmentRouter } from "@/server/api/routers/department";
 import { designationRouter } from "@/server/api/routers/designation";
 
@@ -10,6 +11,7 @@ export const appRouter = createTRPCRouter({
   designationRouter,
   employeeRouter,
   leaveRouter,
+  documentRouter,
 });
 
 // export type definition of API

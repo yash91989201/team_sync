@@ -14,12 +14,12 @@ import {
 } from "date-fns";
 import { clsx } from "clsx";
 import { toast } from "sonner";
+import { generateId } from "lucia";
 import { twMerge } from "tailwind-merge";
 import { fromZonedTime } from "date-fns-tz";
 // TYPES
 import type { ClassValue } from "clsx";
-import type { EmployeeAttendanceType } from "@/lib/types";
-import { generateId } from "lucia";
+import type { EmployeeAttendanceType, } from "@/lib/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -285,6 +285,21 @@ export async function uploadProfileImage(
   return {
     imageUrl: null,
   };
+}
+
+export async function uploadEmployeeDocuments(files: File[]): Promise<UploadEmployeeDocumentStatusType> {
+
+  const formData = new FormData()
+  files.forEach((file) => formData.append("file", file))
+
+  const res = await fetch("/api/employee-documents", {
+    method: "POST",
+    body: formData,
+  })
+
+  const data = (await res.json()) as UploadEmployeeDocumentStatusType
+
+  return data;
 }
 
 export function formatFileSize(bytes?: number) {

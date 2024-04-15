@@ -42,7 +42,7 @@ import { MAX_FILE_SIZE } from "@/constants";
 // ICONS
 import { Loader2 } from "lucide-react";
 import { CalendarIcon } from "lucide-react";
-import { SingleImageDropzone } from "@/components/shared/single-image-dropzone";
+import { SingleFileDropzone } from "@/components/shared/single-file-dropzone";
 
 export default function CreateEmployeeForm() {
   const shiftStart = new Date(new Date().setHours(10, 0, 0, 0));
@@ -114,7 +114,7 @@ export default function CreateEmployeeForm() {
               <FormItem>
                 <FormLabel>Employee Image</FormLabel>
                 <FormControl>
-                  <SingleImageDropzone
+                  <SingleFileDropzone
                     value={field.value}
                     onChange={field.onChange}
                     width={160}
@@ -412,6 +412,7 @@ export default function CreateEmployeeForm() {
                     {...field}
                     type="number"
                     step={15}
+                    min={15}
                     className="hide-number-input-spinner w-12 bg-white"
                     onChange={(event) =>
                       field.onChange(Number(event.target.value))

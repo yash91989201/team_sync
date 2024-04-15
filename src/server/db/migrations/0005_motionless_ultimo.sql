@@ -1,0 +1,1 @@
+ALTER TABLE `employee_document` DROP COLUMN `name`;

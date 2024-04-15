@@ -24,9 +24,12 @@ import type {
   CreateEmployeeSchema,
   CreateLeaveTypeSchema,
   LeaveApplySchema,
-  CreateProfileImageSchema,  
+  CreateProfileImageSchema,
   CreateEmployeeFormSchema,
   CreateEmployeeInputSchema,
+  CreateDocumentTypeSchema,
+  GetEmployeeByQueryInput,
+  CreateEmployeeDocumentFormSchema,
 } from "@/lib/schema";
 // TYPES
 import type { z } from "zod";
@@ -44,9 +47,11 @@ export type EmployeeAttendanceType = z.infer<typeof EmployeeAttendanceSchema>;
 export type LeaveTypeSchemaType = z.infer<typeof LeaveTypeSchema>;
 export type LeaveRequestSchemaType = z.infer<typeof LeaveRequestSchema>;
 export type LeaveBalanceSchemaType = z.infer<typeof LeaveBalanceSchema>;
-export type DocumentTypeSchemaType=z.infer<typeof DocumentTypeSchema>
-export type EmployeeDocumentSchemaType=z.infer<typeof EmployeeDocumentSchema>
-export type EmployeeDocumentFileSchemaType=z.infer<typeof EmployeeDocumentFileSchema>
+export type DocumentTypeSchemaType = z.infer<typeof DocumentTypeSchema>;
+export type EmployeeDocumentSchemaType = z.infer<typeof EmployeeDocumentSchema>;
+export type EmployeeDocumentFileSchemaType = z.infer<
+  typeof EmployeeDocumentFileSchema
+>;
 // AUTH TYPES
 export type AdminSignupSchemaType = z.infer<typeof AdminSignupSchema>;
 export type LoginSchemaType = z.infer<typeof LoginSchema>;
@@ -56,6 +61,9 @@ export type ResetPasswordSchemaType = z.infer<typeof ResetPasswordSchema>;
 export type CreateDepartmentSchemaType = z.infer<typeof CreateDepartmentSchema>;
 export type CreateDesignationSchemaType = z.infer<
   typeof CreateDesignationSchema
+>;
+export type GetEmployeeByQueryInputType = z.infer<
+  typeof GetEmployeeByQueryInput
 >;
 export type CreateEmployeeSchemaType = z.infer<typeof CreateEmployeeSchema>;
 export type CreateEmployeeFormSchemaType = z.infer<
@@ -69,6 +77,12 @@ export type CreateProfileImageSchemaType = z.infer<
 >;
 export type CreateLeaveTypeSchemaType = z.infer<typeof CreateLeaveTypeSchema>;
 export type LeaveApplySchemaType = z.infer<typeof LeaveApplySchema>;
+export type CreateDocumentTypeSchemaType = z.infer<
+  typeof CreateDocumentTypeSchema
+>;
+export type CreateEmployeeDocumentFormSchemaType = z.infer<
+  typeof CreateEmployeeDocumentFormSchema
+>;
 // OTHER TYPES
 export type UserSessionType =
   | {

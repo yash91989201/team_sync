@@ -45,7 +45,7 @@ const ERROR_MESSAGES = {
   },
 };
 
-const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
+const SingleFileDropzone = React.forwardRef<HTMLInputElement, InputProps>(
   (
     { dropzoneOptions, width, height, value, className, disabled, onChange },
     ref,
@@ -139,11 +139,13 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
 
           {imageUrl ? (
             // Image Preview
-            <img
-              className="h-full w-full rounded-md object-cover"
-              src={imageUrl}
-              alt={acceptedFiles[0]?.name}
-            />
+            <picture>
+              <img
+                className="h-full w-full rounded-md object-cover"
+                src={imageUrl}
+                alt={acceptedFiles[0]?.name}
+              />
+            </picture>
           ) : (
             // Upload Icon
             <div className="flex flex-col items-center justify-center text-xs text-gray-400">
@@ -183,7 +185,7 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
     );
   },
 );
-SingleImageDropzone.displayName = "SingleImageDropzone";
+SingleFileDropzone.displayName = "SingleImageDropzone";
 
 const Button = React.forwardRef<
   HTMLButtonElement,
@@ -207,4 +209,4 @@ const Button = React.forwardRef<
 });
 Button.displayName = "Button";
 
-export { SingleImageDropzone };
+export { SingleFileDropzone };

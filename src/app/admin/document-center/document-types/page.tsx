@@ -1,3 +1,9 @@
+import CreateDocumentTypeForm from "@/components/admin/document/create-document-type-form";
+
 export default function DocumentTypesPage() {
-  return <>document types page WIP</>;
+  return (
+    <>
+      <CreateDocumentTypeForm />
+    </>
+  );
 }

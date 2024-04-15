@@ -32,10 +32,12 @@ export const EmployeeAttendanceSchema = createSelectSchema(
 export const LeaveTypeSchema = createSelectSchema(leaveTypeTable);
 export const LeaveRequestSchema = createSelectSchema(leaveRequestTable);
 export const LeaveBalanceSchema = createSelectSchema(leaveBalanceTable);
-export const DocumentTypeSchema=createSelectSchema(documentTypeTable)
-export const EmployeeDocumentSchema=createSelectSchema(employeeDocumentTable)
-export const EmployeeDocumentFileSchema=createSelectSchema(employeeDocumentFileTable)
-// Auth schemas
+export const DocumentTypeSchema = createSelectSchema(documentTypeTable);
+export const EmployeeDocumentSchema = createSelectSchema(employeeDocumentTable);
+export const EmployeeDocumentFileSchema = createSelectSchema(
+  employeeDocumentFileTable,
+);
+// AUTH SCHEMAS
 export const AdminSignupSchema = z.object({
   name: z.string().min(6, { message: "Full name is required." }),
   email: z.string().email(),
@@ -56,7 +58,7 @@ export const ResetPasswordSchema = z.object({
   email: z.string().email(),
 });
 
-// user profile image schemas
+// USER SCHEMAS
 export const CreateProfileImageSchema = z.object({
   image: z
     .instanceof(File)
@@ -70,7 +72,7 @@ export const CreateProfileImageSchema = z.object({
     ),
 });
 
-// department schemas
+// DEPARTMENT SCHEMAS
 export const CreateDepartmentSchema = z.object({
   name: z
     .string()
@@ -78,7 +80,7 @@ export const CreateDepartmentSchema = z.object({
     .max(128, { message: "Max. allowed length is 128." }),
 });
 
-// designation schemas
+// DESIGNATION SCHEMAS
 export const CreateDesignationSchema = z.object({
   deptId: z.string(),
   name: z
@@ -87,7 +89,47 @@ export const CreateDesignationSchema = z.object({
     .max(64, { message: "Max. allowed length is 64." }),
 });
 
-// employee schemas
+// DOCUMENT SCHEMAS
+export const CreateDocumentTypeSchema = DocumentTypeSchema.extend({
+  type: z.string().min(4, { message: "Min. required length is 4" }),
+});
+
+export const CreateEmployeeDocumentFormSchema = z.object({
+  id: z.string(),
+  empId: z.string(),
+  documentTypeId: z.string(),
+  documentType: DocumentTypeSchema,
+  uniqueDocumentId: z.string().optional(),
+  verified: z.boolean(),
+  // document list
+  documents: z.array(z.object({
+    id: z.string(),
+    file: z
+      .instanceof(File, { message: "File is required." })
+      .refine(
+        (file) => file.size <= MAX_FILE_SIZE.PROFILE_IMG,
+        "Max image size is 5MB.",
+      )
+  }))
+}).refine((schema) => schema.documents.length === schema.documentType.requiredFiles,
+  (schema) => ({ message: `Exactly ${schema.documentType.requiredFiles} files are required.`, path: ["documents"] }))
+
+export const CreateEmployeeDocumentInputSchema = z.object({
+  id: z.string(),
+  empId: z.string(),
+  documentTypeId: z.string(),
+  uniqueDocumentId: z.string().optional(),
+  verified: z.boolean().default(false),
+  documentFiles: z.array(z.object({
+    id: z.string(),
+    fileUrl: z.string().url(),
+    empDocumentId: z.string(),
+  }))
+})
+
+// EMPLOYEE SCHEMAS
+export const GetEmployeeByQueryInput = z.object({ query: z.string() });
+
 export const CreateEmployeeSchema = z.object({
   code: z.string(),
   name: z.string(),
@@ -126,10 +168,12 @@ export const CreateEmployeeFormSchema = CreateEmployeeSchema.extend({
     ),
 });
 
+// EMPLOYEE ATTENDANCE SCHEMAS
 export const AttendancePunchOutSchema = z.object({
   attendanceId: z.string(),
 });
 
+// EMPLOYEE LEAVE SCHEMAS
 export const CreateLeaveTypeSchema = z.object({
   type: z
     .string()
