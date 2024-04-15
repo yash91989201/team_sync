@@ -1,14 +1,14 @@
 "use client";
 import Link from "next/link";
 // UTILS
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@ui//button";
 // UI
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
-} from "@/components/ui/card";
+} from "@ui//card";
 // ICONS
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";

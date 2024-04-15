@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 // UTILS
 import { cn } from "@/lib/utils";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@ui//button";
 // TYPES
 import type { NavLinkProps } from "@/lib/types";
 import useToggle from "@/hooks/use-toggle";
@@ -31,7 +31,7 @@ export default function NavLink(props: NavLinkProps) {
         <Button
           variant={nestedNav.isOpen ? "secondary" : "ghost"}
           className={cn(
-            "flex w-full justify-start gap-3 rounded-lg px-3 text-base font-medium",
+            "flex w-full justify-start gap-3 rounded-lg p-3 h-12",
             nestedNav.isOpen
               ? "bg-primary-foreground text-primary hover:bg-primary-foreground"
               : "text-gray-700",
@@ -49,15 +49,12 @@ export default function NavLink(props: NavLinkProps) {
         </Button>
         <div
           className={cn(
-            "grid transition-all duration-150 ease-out",
+            "grid transition-all duration-150 ease-out overflow-hidden",
             nestedNav.isOpen ? "grid-rows-1" : "grid-rows-[0]",
           )}
         >
           <div
-            className={cn(
-              "mx-[1.25rem] my-3 space-y-3 overflow-hidden px-3 py-1",
-              nestedNav.isOpen && "border-l",
-            )}
+            className="m-3 space-y-3"
           >
             {childrens?.map((nestedLink) => (
               <NavLink key={nestedLink.href} {...nestedLink} />
@@ -75,7 +72,7 @@ export default function NavLink(props: NavLinkProps) {
         buttonVariants({
           variant: isActive ? "secondary" : "ghost",
         }),
-        "flex w-full items-center justify-start gap-3 rounded-lg px-3",
+        "flex w-full items-center justify-start gap-3 rounded-lg p-3 h-12",
         isActive
           ? "bg-primary-foreground text-primary hover:bg-primary-foreground"
           : "text-gray-700",

@@ -3,7 +3,7 @@
 import { api } from "@/trpc/react";
 import { getShiftTimeWithPeriod } from "@/lib/utils";
 // UI
-import { Button } from "@/components/ui/button";
+import { Button } from "@ui//button";
 import {
   Card,
   CardContent,
@@ -11,8 +11,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@ui//card";
+import { Skeleton } from "@ui//skeleton";
 // ICONS
 import { Loader2 } from "lucide-react";
 

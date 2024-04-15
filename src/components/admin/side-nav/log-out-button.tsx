@@ -4,13 +4,13 @@ import { useFormStatus } from "react-dom";
 // ACTIONS
 import { logOut } from "@/server/actions/auth";
 // UI
-import { Button } from "@/components/ui/button";
+import { Button } from "@ui//button";
 // ICONS
 import { Loader2, Power } from "lucide-react";
 
 export default function LogoutButton() {
   return (
-    <form action={logOut} className="w-full">
+    <form action={logOut}>
       <LogoutButtonInner />
     </form>
   );
@@ -20,11 +20,11 @@ function LogoutButtonInner() {
   const { pending } = useFormStatus();
   return (
     <Button
-      variant="ghost"
-      className="w-full justify-start gap-3 text-base font-medium text-gray-700 hover:bg-red-600/15 hover:text-red-600 [&>svg]:size-5"
+      size="icon"
+      variant="outline"
+      className="rounded-xl [&>svg]:size-4 text-red-500 hover:text-red-500 border-red-500 hover:bg-white"
     >
       {pending ? <Loader2 className="animate-spin" /> : <Power />}
-      <p className="text-base font-normal">Log Out</p>
     </Button>
   );
 }

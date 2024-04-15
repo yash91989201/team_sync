@@ -3,9 +3,9 @@ import * as React from "react";
 // TYPES
 import type { Period } from "@/lib/time-picker-utils";
 // UI
-import { Label } from "@/components/ui/label";
-import { TimePickerInput } from "@/components/ui/time-picker-input";
-import { TimePeriodSelect } from "@/components/ui/time-period-select";
+import { Label } from "@ui//label";
+import { TimePickerInput } from "@ui//time-picker-input";
+import { TimePeriodSelect } from "@ui//time-period-select";
 
 interface EmployeeShiftTimePickerProps {
   date: Date | undefined;

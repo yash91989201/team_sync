@@ -20,11 +20,11 @@ import {
   FormField,
   FormItem,
   FormLabel,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+} from "@ui//form";
+import { Input } from "@ui//input";
+import { Button } from "@ui//button";
 // CUSTOM COMPONENTS
-import AuthCardWrapper from "@/components/shared/auth-card-wrapper";
+import AuthCardWrapper from "@shared/auth-card-wrapper";
 // ICONS
 import { Eye, EyeOff, FormInput, Loader2, Mail } from "lucide-react";
 // CONSTANTS

@@ -16,7 +16,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@ui//select";
 import {
   Form,
   FormControl,
@@ -24,7 +24,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@ui//form";
 import {
   Command,
   CommandEmpty,
@@ -32,20 +32,20 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from "@ui//command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+} from "@ui//popover";
+import { Badge } from "@ui//badge";
+import { Input } from "@ui//input";
+import { Button } from "@ui//button";
 import { cn, uploadEmployeeDocuments } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { CommandLoading } from "cmdk";
 import { useState } from "react";
-import { SingleFileDropzone } from "@/components/shared/single-file-dropzone";
+import { SingleFileDropzone } from "@shared/single-file-dropzone";
 import { MAX_FILE_SIZE } from "@/constants";
 import { toast } from "sonner";
 

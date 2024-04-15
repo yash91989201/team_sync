@@ -3,7 +3,7 @@ import Link from "next/link";
 // UTILS
 import { cn } from "@/lib/utils";
 // UI
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@ui//button";
 // ICONS
 import { Bell, Bolt } from "lucide-react";
 // CUSTOM COMPONENTS

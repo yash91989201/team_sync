@@ -1,5 +1,5 @@
 // CUSTOM COMPONENTS
-import NavLink from "@/components/shared/nav-link";
+import NavLink from "@shared/nav-link";
 // CONSTANTS
 import { EMPLOYEE_ROUTES } from "@/constants/routes";
 

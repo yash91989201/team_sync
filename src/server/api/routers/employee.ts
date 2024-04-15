@@ -46,11 +46,10 @@ export const employeeRouter = createTRPCRouter({
       where: eq(userTable.role, "EMPLOYEE"),
     });
   }),
-  getProfile: protectedProcedure.query(async ({ ctx }) => {
-    const employeeProfile = (await ctx.db.query.employeeProfileTable.findFirst({
+  getProfile: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.query.employeeProfileTable.findFirst({
       where: eq(employeeProfileTable.empId, ctx.session.user.id),
-    }))!;
-    return employeeProfile;
+    })
   }),
   createNew: protectedProcedure
     .input(CreateEmployeeInputSchema)

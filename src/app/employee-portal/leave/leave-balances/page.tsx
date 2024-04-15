@@ -2,7 +2,7 @@
 import { api } from "@/trpc/server";
 import { authPage } from "@/server/helpers";
 // UI
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@ui//card";
 
 export default async function LeaveApplyPage() {
   await authPage("EMPLOYEE");

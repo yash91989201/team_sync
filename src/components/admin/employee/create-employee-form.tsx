@@ -15,14 +15,14 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@ui//popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@ui//select";
 import {
   Form,
   FormControl,
@@ -30,11 +30,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+} from "@ui//form";
+import { Input } from "@ui//input";
+import { Button } from "@ui//button";
+import { Calendar } from "@ui//calendar";
+import { RadioGroup, RadioGroupItem } from "@ui//radio-group";
 // CUSTOM COMPONENTS
 import EmployeeShiftTimePicker from "@/components/admin/employee/employee-shift-time-picker";
 // CONSTANTS
@@ -42,7 +42,7 @@ import { MAX_FILE_SIZE } from "@/constants";
 // ICONS
 import { Loader2 } from "lucide-react";
 import { CalendarIcon } from "lucide-react";
-import { SingleFileDropzone } from "@/components/shared/single-file-dropzone";
+import { SingleFileDropzone } from "@shared/single-file-dropzone";
 
 export default function CreateEmployeeForm() {
   const shiftStart = new Date(new Date().setHours(10, 0, 0, 0));
