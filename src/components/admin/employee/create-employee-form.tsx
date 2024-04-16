@@ -11,11 +11,7 @@ import { CreateEmployeeFormSchema } from "@/lib/schema";
 import type { SubmitHandler } from "react-hook-form";
 import type { CreateEmployeeFormSchemaType } from "@/lib/types";
 // UI
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
 import {
   Select,
   SelectContent,
@@ -38,7 +34,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@ui/card"
+} from "@ui/card";
 import { Input } from "@ui/input";
 import { Button } from "@ui/button";
 import { Calendar } from "@ui/calendar";
@@ -77,7 +73,8 @@ export default function CreateEmployeeForm() {
     resolver: zodResolver(CreateEmployeeFormSchema),
   });
 
-  const { control, handleSubmit, formState, watch, resetField } = createEmployeeForm;
+  const { control, handleSubmit, formState, watch, resetField } =
+    createEmployeeForm;
 
   const { data: departmentList = [] } = api.departmentRouter.getAll.useQuery();
 
@@ -109,26 +106,25 @@ export default function CreateEmployeeForm() {
 
   const clearPersonalDetailFields = () => {
     resetField("name");
-    resetField("email")
-    resetField("dob")
-  }
+    resetField("email");
+    resetField("dob");
+  };
   const clearProfessionalDetailFields = () => {
-    resetField("designation", { defaultValue: "" })
-    resetField("dept", { defaultValue: "" })
-    resetField("joiningDate")
-    resetField("empBand")
-    resetField("code")
-  }
+    resetField("designation", { defaultValue: "" });
+    resetField("dept", { defaultValue: "" });
+    resetField("joiningDate");
+    resetField("empBand");
+    resetField("code");
+  };
 
   const clearShiftDetailFields = () => {
-    resetField("shiftStart")
-    resetField("shiftEnd")
-    resetField("breakMinutes")
-  }
+    resetField("shiftStart");
+    resetField("shiftEnd");
+    resetField("breakMinutes");
+  };
   const clearAdditionalDetailFields = () => {
-    resetField("isTeamLead", { defaultValue: false })
-  }
-
+    resetField("isTeamLead", { defaultValue: false });
+  };
 
   return (
     <Form {...createEmployeeForm}>
@@ -138,16 +134,23 @@ export default function CreateEmployeeForm() {
       >
         <Card aria-hidden>
           <CardHeader>
-            <CardTitle className="text-2xl text-primary">Create New Employee</CardTitle>
-            <CardDescription>Add details and create new employee</CardDescription>
+            <CardTitle className="text-2xl text-primary">
+              Create New Employee
+            </CardTitle>
+            <CardDescription>
+              Add details and create new employee
+            </CardDescription>
           </CardHeader>
         </Card>
 
         {/* Personal details */}
-        <div className="flex items-start gap-3" aria-label="1 Employee personal details section">
-          <Card className="w-96 hidden md:flex">
-            <CardHeader className="flex-row gap-3 items-center space-y-0">
-              <div className="size-9 flex items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
+        <div
+          className="flex items-start gap-3"
+          aria-label="1 Employee personal details section"
+        >
+          <Card className="hidden w-96 md:flex">
+            <CardHeader className="flex-row items-center gap-3 space-y-0">
+              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
                 <span>1</span>
               </div>
               <div className="mt-0">
@@ -157,8 +160,8 @@ export default function CreateEmployeeForm() {
             </CardHeader>
           </Card>
           <Card className="flex-1">
-            <CardHeader className="flex-row gap-3 items-center space-y-0 md:hidden">
-              <div className="size-9 flex items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
+            <CardHeader className="flex-row items-center gap-3 space-y-0 md:hidden">
+              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
                 <span>1</span>
               </div>
               <div className="mt-0">
@@ -166,7 +169,7 @@ export default function CreateEmployeeForm() {
                 <CardDescription>Employee internal details.</CardDescription>
               </div>
             </CardHeader>
-            <CardContent className="md:p-6 space-y-3">
+            <CardContent className="space-y-3 md:p-6">
               <div className="flex items-center justify-center">
                 <FormField
                   control={control}
@@ -233,7 +236,11 @@ export default function CreateEmployeeForm() {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input {...field} className="bg-white" readOnly={true} />
+                        <Input
+                          {...field}
+                          className="bg-white"
+                          readOnly={true}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -282,16 +289,25 @@ export default function CreateEmployeeForm() {
               />
             </CardContent>
             <CardFooter className="flex justify-end">
-              <Button variant="outline" type="button" onClick={clearPersonalDetailFields}>Clear Section</Button>
+              <Button
+                variant="outline"
+                type="button"
+                onClick={clearPersonalDetailFields}
+              >
+                Clear Section
+              </Button>
             </CardFooter>
           </Card>
         </div>
 
         {/*professional details*/}
-        <div className="flex items-start gap-3" aria-label="2 Employee professional details section">
-          <Card className="w-96 hidden md:flex">
-            <CardHeader className="flex-row gap-3 items-center space-y-0">
-              <div className="size-9 flex items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
+        <div
+          className="flex items-start gap-3"
+          aria-label="2 Employee professional details section"
+        >
+          <Card className="hidden w-96 md:flex">
+            <CardHeader className="flex-row items-center gap-3 space-y-0">
+              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
                 <span>2</span>
               </div>
               <div className="mt-0">
@@ -301,8 +317,8 @@ export default function CreateEmployeeForm() {
             </CardHeader>
           </Card>
           <Card className="flex-1" aria-label="Employee professional details">
-            <CardHeader className="flex-row gap-3 items-center space-y-0 md:hidden">
-              <div className="size-9 flex items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
+            <CardHeader className="flex-row items-center gap-3 space-y-0 md:hidden">
+              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
                 <span>2</span>
               </div>
               <div className="mt-0">
@@ -310,7 +326,7 @@ export default function CreateEmployeeForm() {
                 <CardDescription>Employee professonal details.</CardDescription>
               </div>
             </CardHeader>
-            <CardContent className="md:p-6 space-y-3">
+            <CardContent className="space-y-3 md:p-6">
               <FormField
                 control={control}
                 name="dept"
@@ -328,7 +344,10 @@ export default function CreateEmployeeForm() {
                       </FormControl>
                       <SelectContent>
                         {departmentList.map((department) => (
-                          <SelectItem key={department.id} value={department.name}>
+                          <SelectItem
+                            key={department.id}
+                            value={department.name}
+                          >
                             {department.name}
                           </SelectItem>
                         ))}
@@ -379,7 +398,7 @@ export default function CreateEmployeeForm() {
                   </FormItem>
                 )}
               />
-              <div className="flex gap-3 items-center">
+              <div className="flex items-center gap-3">
                 <FormField
                   control={control}
                   name="code"
@@ -401,7 +420,7 @@ export default function CreateEmployeeForm() {
                   control={control}
                   name="joiningDate"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col flex-1">
+                    <FormItem className="flex flex-1 flex-col">
                       <FormLabel>Joining Date</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
@@ -462,16 +481,25 @@ export default function CreateEmployeeForm() {
               </div>
             </CardContent>
             <CardFooter className="flex justify-end">
-              <Button variant="outline" type="button" onClick={clearProfessionalDetailFields}>Clear Section</Button>
+              <Button
+                variant="outline"
+                type="button"
+                onClick={clearProfessionalDetailFields}
+              >
+                Clear Section
+              </Button>
             </CardFooter>
           </Card>
         </div>
 
         {/*work details*/}
-        <div className="flex items-start gap-3" aria-label="3 Employee work shift details section">
-          <Card className="hidden md:flex w-96">
-            <CardHeader className="flex-row gap-3 items-center space-y-0">
-              <div className="size-9 flex items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
+        <div
+          className="flex items-start gap-3"
+          aria-label="3 Employee work shift details section"
+        >
+          <Card className="hidden w-96 md:flex">
+            <CardHeader className="flex-row items-center gap-3 space-y-0">
+              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
                 <span>3</span>
               </div>
               <div className="mt-0">
@@ -481,8 +509,8 @@ export default function CreateEmployeeForm() {
             </CardHeader>
           </Card>
           <Card className="flex-1">
-            <CardHeader className="flex-row gap-3 items-center space-y-0 md:hidden flex">
-              <div className="size-9 flex items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
+            <CardHeader className="flex flex-row items-center gap-3 space-y-0 md:hidden">
+              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
                 <span>3</span>
               </div>
               <div className="mt-0">
@@ -490,7 +518,7 @@ export default function CreateEmployeeForm() {
                 <CardDescription>Employee shift details.</CardDescription>
               </div>
             </CardHeader>
-            <CardContent className="md:p-6 flex flex-row items-center">
+            <CardContent className="flex flex-row items-center md:p-6">
               <FormField
                 control={control}
                 name="shiftStart"
@@ -533,7 +561,7 @@ export default function CreateEmployeeForm() {
                         type="number"
                         step={15}
                         min={15}
-                        className="hide-number-input-spinner w-12 bg-white"
+                        className="hide-input-spinner w-12 bg-white"
                         onChange={(event) =>
                           field.onChange(Number(event.target.value))
                         }
@@ -544,16 +572,25 @@ export default function CreateEmployeeForm() {
               />
             </CardContent>
             <CardFooter className="flex justify-end">
-              <Button variant="outline" type="button" onClick={clearShiftDetailFields}>Clear Section</Button>
+              <Button
+                variant="outline"
+                type="button"
+                onClick={clearShiftDetailFields}
+              >
+                Clear Section
+              </Button>
             </CardFooter>
           </Card>
         </div>
 
         {/*additional options*/}
-        <div className="flex items-start gap-3" aria-label="4 Employee additional options section">
-          <Card className="hidden md:flex w-96">
-            <CardHeader className="flex-row gap-3 items-center space-y-0">
-              <div className="size-9 flex items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
+        <div
+          className="flex items-start gap-3"
+          aria-label="4 Employee additional options section"
+        >
+          <Card className="hidden w-96 md:flex">
+            <CardHeader className="flex-row items-center gap-3 space-y-0">
+              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
                 <span>4</span>
               </div>
               <div className="mt-0">
@@ -563,8 +600,8 @@ export default function CreateEmployeeForm() {
             </CardHeader>
           </Card>
           <Card className="flex-1">
-            <CardHeader className="flex-row gap-3 items-center space-y-0 md:hidden flex">
-              <div className="size-9 flex items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
+            <CardHeader className="flex flex-row items-center gap-3 space-y-0 md:hidden">
+              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
                 <span>4</span>
               </div>
               <div className="mt-0">
@@ -610,16 +647,31 @@ export default function CreateEmployeeForm() {
               />
             </CardContent>
             <CardFooter className="flex justify-end">
-              <Button variant="outline" type="button" onClick={clearAdditionalDetailFields}>Clear Section</Button>
+              <Button
+                variant="outline"
+                type="button"
+                onClick={clearAdditionalDetailFields}
+              >
+                Clear Section
+              </Button>
             </CardFooter>
           </Card>
         </div>
 
-        <div className="flex items-start gap-3" aria-label="4 Click to create new employee">
-          <div className="hidden md:block w-96" />
-          <Button className="w-fit md:font-semibold md:text-base" size="lg" disabled={formState.isSubmitting}>
+        <div
+          className="flex items-start gap-3"
+          aria-label="4 Click to create new employee"
+        >
+          <div className="hidden w-96 md:block" />
+          <Button
+            className="w-fit md:text-base md:font-semibold"
+            size="lg"
+            disabled={formState.isSubmitting}
+          >
             Create new employee
-            {formState.isSubmitting && <Loader2 className="ml-3 animate-spin" />}
+            {formState.isSubmitting && (
+              <Loader2 className="ml-3 animate-spin" />
+            )}
           </Button>
         </div>
       </form>

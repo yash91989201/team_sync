@@ -105,7 +105,7 @@ export default function CreateDocumentTypeForm() {
                   {...field}
                   type="number"
                   min={1}
-                  className="hide-number-input-spinner w-12 bg-white"
+                  className="hide-input-spinner w-12 bg-white"
                   onChange={(event) =>
                     field.onChange(Number(event.target.value))
                   }

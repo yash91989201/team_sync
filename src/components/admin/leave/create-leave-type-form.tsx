@@ -27,6 +27,15 @@ import {
 import { Input } from "@ui/input";
 import { Button } from "@ui/button";
 import { Checkbox } from "@ui/checkbox";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+// ICONS
+import { Loader2 } from "lucide-react";
 
 export default function CreateLeaveTypeForm() {
   const createLeaveTypeForm = useForm<CreateLeaveTypeSchemaType>({
@@ -36,11 +45,15 @@ export default function CreateLeaveTypeForm() {
       daysAllowed: 5,
       renewPeriod: "month",
       renewPeriodCount: 1,
-      carryOver: true,
+      carryOver: false,
     },
   });
 
   const { control, handleSubmit } = createLeaveTypeForm;
+
+  const { refetch: refetchLeaveTypes } =
+    api.leaveRouter.getLeaveTypes.useQuery();
+
   const { mutateAsync: createLeaveType, isPending } =
     api.leaveRouter.createLeaveType.useMutation();
 
@@ -48,103 +61,123 @@ export default function CreateLeaveTypeForm() {
     CreateLeaveTypeSchemaType
   > = async (formData) => {
     await createLeaveType(formData);
+    await refetchLeaveTypes();
   };
 
   return (
     <Form {...createLeaveTypeForm}>
       <form onSubmit={handleSubmit(createLeaveTypeAction)}>
-        <FormField
-          control={control}
-          name="type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Leave Type</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="ex. Paid leave" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="daysAllowed"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>No. of leave days</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  type="number"
-                  className="hide-number-input-spinner w-16"
-                  onChange={(e) => {
-                    field.onChange(Number(e.target.value));
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="renewPeriod"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Renew Period</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Renew leave by this period" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="month">Month</SelectItem>
-                  <SelectItem value="year">Year</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="renewPeriodCount"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Renew Period Count</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  type="number"
-                  className="hide-number-input-spinner w-16"
-                  onChange={(e) => {
-                    field.onChange(Number(e.target.value));
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="carryOver"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <FormLabel className="text-sm font-normal">
-                Leave carry over
-              </FormLabel>
-            </FormItem>
-          )}
-        />
-        <Button disabled={isPending}>Add Leave type</Button>
+        <Card className="w-96">
+          <CardHeader>
+            <CardTitle>Create new leave type</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <FormField
+              control={control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Type</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="ex. Paid leave" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={control}
+              name="daysAllowed"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Allowed days</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="number"
+                      className="hide-input-spinner w-16"
+                      onChange={(e) => {
+                        field.onChange(Number(e.target.value));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={control}
+              name="carryOver"
+              render={({ field }) => (
+                <FormItem className="flex items-center gap-3 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel className="text-sm font-normal">
+                    Allow carry over
+                  </FormLabel>
+                </FormItem>
+              )}
+            />
+
+            <div className="flex items-end gap-1">
+              <FormField
+                control={control}
+                name="renewPeriodCount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Renews every</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="number"
+                        className="hide-input-spinner w-16"
+                        onChange={(e) => {
+                          field.onChange(Number(e.target.value));
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name="renewPeriod"
+                render={({ field }) => (
+                  <FormItem>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-32">
+                          <SelectValue placeholder="Renew leave by this period" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="month">month</SelectItem>
+                        <SelectItem value="year">year</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button disabled={isPending}>
+              {isPending ? <Loader2 className="animate-spin" /> : null}
+              <span>Create leave type</span>
+            </Button>
+          </CardFooter>
+        </Card>
       </form>
     </Form>
   );

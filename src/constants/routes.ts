@@ -203,13 +203,12 @@ export const ADMIN_ROUTES: NavLinkProps[] = [
 ] as const;
 
 /*
-Configuration for routes are accessible to admins 
-on the search module
+Configuration for routes are accessible 
+to admins for the search module
 */
-export const ADMIN_SEARCH_ROUTES =
-  ADMIN_ROUTES
-    .flatMap(item => !item.childrens ? [item] : [item, ...item.childrens])
-    .filter(item => !item.childrens);
+export const ADMIN_SEARCH_ROUTES = ADMIN_ROUTES
+  .flatMap(item => !item.childrens ? [item] : [item, ...item.childrens])
+  .filter(item => !item.childrens);
 
 /*
 Configuration for routes are accessible to employees
