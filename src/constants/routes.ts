@@ -8,11 +8,19 @@ import {
   SquareCheckBig,
   Book,
   Building,
-  CalendarX2,
   Users,
   PersonStanding,
   CalendarDays,
   LayoutDashboard,
+  GitPullRequestDraft,
+  Banknote,
+  BookUser,
+  NotebookTabs,
+  Tally5,
+  UserRoundPlus,
+  LayoutPanelTop,
+  ListOrdered,
+  Files,
 } from "lucide-react";
 
 /* 
@@ -49,33 +57,15 @@ export const ADMIN_ROUTES: NavLinkProps[] = [
     isChildLink: false,
   },
   {
-    Icon: Calendar,
-    label: "Leave",
-    href: "/admin/leave",
+    Icon: GitPullRequestDraft,
+    label: "Leave Requests",
+    href: "/admin/leave/leave-requests",
     matchExact: false,
-    isNested: true,
+    isNested: false,
     isChildLink: false,
-    childrens: [
-      {
-        Icon: Calendar,
-        label: "Leave Requests",
-        href: "/admin/leave/leave-requests",
-        matchExact: false,
-        isNested: false,
-        isChildLink: true,
-      },
-      {
-        Icon: Calendar,
-        label: "Leave Types",
-        href: "/admin/leave/leave-types",
-        matchExact: false,
-        isNested: false,
-        isChildLink: true,
-      },
-    ],
   },
   {
-    Icon: CalendarX2,
+    Icon: CalendarDays,
     label: "Holidays",
     href: "/admin/holidays",
     matchExact: false,
@@ -87,16 +77,68 @@ export const ADMIN_ROUTES: NavLinkProps[] = [
     label: "Employees",
     href: "/admin/employees",
     matchExact: false,
-    isNested: false,
+    isNested: true,
     isChildLink: false,
+    childrens: [
+      {
+        Icon: BookUser,
+        label: "Employee Directory",
+        href: "/admin/employees",
+        matchExact: true,
+        isNested: false,
+        isChildLink: true,
+      },
+      {
+        Icon: NotebookTabs,
+        label: "Attendance",
+        href: "/admin/employees/attendance",
+        matchExact: false,
+        isNested: false,
+        isChildLink: true,
+      },
+      {
+        Icon: Tally5,
+        label: "Leave Balances",
+        href: "/admin/employees/leave-balances",
+        matchExact: false,
+        isNested: false,
+        isChildLink: true,
+      },
+      {
+        Icon: UserRoundPlus,
+        label: "New Employee",
+        href: "/admin/employees/new-employee",
+        matchExact: false,
+        isNested: false,
+        isChildLink: true,
+      },
+    ],
   },
   {
-    Icon: HandCoins,
-    label: "Salaries",
-    href: "/admin/salaries",
+    Icon: Banknote,
+    label: "Payroll",
+    href: "/admin/payroll",
     matchExact: false,
-    isNested: false,
+    isNested: true,
     isChildLink: false,
+    childrens: [
+      {
+        Icon: HandCoins,
+        label: "Salaries",
+        href: "/admin/payroll/salaries",
+        matchExact: false,
+        isNested: false,
+        isChildLink: true,
+      },
+      {
+        Icon: LayoutPanelTop,
+        label: "Salary structure",
+        href: "/admin/payroll/salary-structure",
+        matchExact: false,
+        isNested: false,
+        isChildLink: true,
+      }
+    ]
   },
   {
     Icon: Book,
@@ -107,7 +149,7 @@ export const ADMIN_ROUTES: NavLinkProps[] = [
     isChildLink: false,
     childrens: [
       {
-        Icon: Book,
+        Icon: Files,
         label: "Documents",
         href: "/admin/document-center/employee-documents",
         matchExact: false,
@@ -115,7 +157,7 @@ export const ADMIN_ROUTES: NavLinkProps[] = [
         isChildLink: true,
       },
       {
-        Icon: Book,
+        Icon: ListOrdered,
         label: "Document Types",
         href: "/admin/document-center/document-types",
         matchExact: false,
@@ -132,6 +174,14 @@ export const ADMIN_ROUTES: NavLinkProps[] = [
     isNested: true,
     isChildLink: false,
     childrens: [
+      {
+        Icon: PersonStanding,
+        label: "Leave types",
+        href: "/admin/leave/leave-types",
+        matchExact: false,
+        isNested: false,
+        isChildLink: true,
+      },
       {
         Icon: Building,
         label: "Departments",
@@ -151,6 +201,15 @@ export const ADMIN_ROUTES: NavLinkProps[] = [
     ],
   },
 ] as const;
+
+/*
+Configuration for routes are accessible to admins 
+on the search module
+*/
+export const ADMIN_SEARCH_ROUTES =
+  ADMIN_ROUTES
+    .flatMap(item => !item.childrens ? [item] : [item, ...item.childrens])
+    .filter(item => !item.childrens);
 
 /*
 Configuration for routes are accessible to employees

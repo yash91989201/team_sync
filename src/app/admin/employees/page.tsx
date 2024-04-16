@@ -1,4 +1,3 @@
-import Link from "next/link";
 // UTILS
 import { authPage } from "@/server/helpers";
 // CUSTOM COMPONENTS
@@ -8,7 +7,6 @@ export default async function EmployeePage() {
   await authPage("ADMIN");
   return (
     <>
-      <Link href="/admin/employees/new-employee">New Employee</Link>
       <EmployeeList />
     </>
   );

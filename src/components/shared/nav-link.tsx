@@ -3,10 +3,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 // UTILS
 import { cn } from "@/lib/utils";
-import { Button, buttonVariants } from "@ui//button";
+import { Button, buttonVariants } from "@ui/button";
 // TYPES
 import type { NavLinkProps } from "@/lib/types";
+// CUSTOM HOOKS
 import useToggle from "@/hooks/use-toggle";
+// ICONS
 import { ChevronDown } from "lucide-react";
 
 export default function NavLink(props: NavLinkProps) {
@@ -54,7 +56,7 @@ export default function NavLink(props: NavLinkProps) {
           )}
         >
           <div
-            className="m-3 space-y-3"
+            className="m-3 space-y-1.5"
           >
             {childrens?.map((nestedLink) => (
               <NavLink key={nestedLink.href} {...nestedLink} />
@@ -72,7 +74,8 @@ export default function NavLink(props: NavLinkProps) {
         buttonVariants({
           variant: isActive ? "secondary" : "ghost",
         }),
-        "flex w-full items-center justify-start gap-3 rounded-lg p-3 h-12",
+        "flex w-full items-center justify-start gap-3 rounded-lg",
+        isChildLink ? "h-9" : "h-12 p-3",
         isActive
           ? "bg-primary-foreground text-primary hover:bg-primary-foreground"
           : "text-gray-700",
@@ -80,7 +83,7 @@ export default function NavLink(props: NavLinkProps) {
     >
       {!isChildLink && <Icon className="size-5" />}
       <p
-        className={cn("text-base", isChildLink ? "font-normal" : "font-medium")}
+        className={cn("text-base flex-1 text-left", isChildLink ? "font-normal" : "font-medium")}
       >
         {label}
       </p>
