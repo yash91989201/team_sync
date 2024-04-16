@@ -11,7 +11,7 @@ import { Bolt } from "lucide-react";
 
 export default function TopNav() {
    return (
-      <header className="sticky top-0 flex items-center justify-between border-b bg-white p-6 py-3 shadow-sm">
+      <header className="flex items-center justify-between border-b bg-white p-6 py-3 shadow-sm z-50">
          <UserInfo />
          <div className="flex items-center gap-3">
             <ModuleSearchBar />

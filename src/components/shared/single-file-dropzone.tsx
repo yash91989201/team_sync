@@ -7,10 +7,10 @@ import { formatFileSize } from "@/lib/utils";
 // TYPES
 import type { DropzoneOptions } from "react-dropzone";
 // ICONS
-import { UploadCloudIcon, X } from "lucide-react";
+import { UserRoundPlus, X } from "lucide-react";
 
 const variants = {
-  base: "relative rounded-md flex justify-center items-center flex-col cursor-pointer min-h-[150px] min-w-[200px] border border-dashed border-gray-400 dark:border-gray-300 transition-colors duration-200 ease-in-out",
+  base: "relative rounded-md flex justify-center items-center flex-col cursor-pointer min-h-[120px] min-w-[120px] border border-dashed border-gray-400 dark:border-gray-300 transition-colors duration-200 ease-in-out",
   image:
     "border-0 p-0 min-h-0 min-w-0 relative shadow-md bg-slate-200 dark:bg-slate-900 rounded-md",
   active: "border-2",
@@ -124,7 +124,7 @@ const SingleFileDropzone = React.forwardRef<HTMLInputElement, InputProps>(
     }, [fileRejections, dropzoneOptions]);
 
     return (
-      <div>
+      <div className="w-fit">
         <div
           {...getRootProps({
             className: dropZoneClassName,
@@ -139,23 +139,18 @@ const SingleFileDropzone = React.forwardRef<HTMLInputElement, InputProps>(
 
           {imageUrl ? (
             // Image Preview
-            <picture>
+            <picture style={{ width, height }} className="rounded-full overflow-hidden">
               <img
-                className="h-full w-full rounded-md object-cover"
+                className="h-full w-full object-cover"
                 src={imageUrl}
                 alt={acceptedFiles[0]?.name}
               />
             </picture>
           ) : (
             // Upload Icon
-            <div className="flex flex-col items-center justify-center text-xs text-gray-400">
-              <UploadCloudIcon className="mb-2 h-7 w-7" />
-              <div className="text-gray-400">drag & drop to upload</div>
-              <div className="mt-3">
-                <Button type="button" disabled={disabled}>
-                  select
-                </Button>
-              </div>
+            <div className="flex flex-col items-center justify-center text-xs text-gray-600">
+              <UserRoundPlus className="size-12" />
+              <div>employee image</div>
             </div>
           )}
 
@@ -168,7 +163,7 @@ const SingleFileDropzone = React.forwardRef<HTMLInputElement, InputProps>(
                 void onChange?.(undefined);
               }}
             >
-              <div className="flex h-5 w-5 items-center justify-center rounded-md border border-solid border-gray-500 bg-white transition-all duration-300 hover:h-6 hover:w-6 dark:border-gray-400 dark:bg-black">
+              <div className="flex h-5 w-5 items-center justify-center rounded-full border border-solid border-gray-500 bg-white transition-all duration-300 hover:h-6 hover:w-6 dark:border-gray-400 dark:bg-black">
                 <X
                   className="text-gray-500 dark:text-gray-400"
                   width={16}
@@ -180,7 +175,7 @@ const SingleFileDropzone = React.forwardRef<HTMLInputElement, InputProps>(
         </div>
 
         {/* Error Text */}
-        <div className="mt-1 text-xs text-red-500">{errorMessage}</div>
+        <div className="mt-1 text-xs text-red-500 text-center">{errorMessage}</div>
       </div>
     );
   },

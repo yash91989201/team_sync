@@ -10,12 +10,12 @@ export default async function AdminRootLayout({
   children: ReactNode;
 }) {
   return (
-    <main className="relative flex flex-col md:flex-row md:overflow-hidden">
+    <div className="relative flex flex-col md:flex-row md:overflow-hidden">
       <SideNav />
-      <section className="flex-1 overflow-y-auto md:max-h-screen bg-primary-foreground">
+      <section className="flex-1 md:max-h-screen bg-primary-foreground flex flex-col">
         <TopNav />
         {children}
       </section>
-    </main>
+    </div>
   );
 }
