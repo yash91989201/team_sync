@@ -11,8 +11,8 @@ import { NewVerificationSchema } from "@/lib/schema";
 import type { SubmitHandler } from "react-hook-form";
 import type { NewVerificationSchemaType, UserType } from "@/lib/types";
 // UI
-import { Form } from "@ui//form";
-import { Button } from "@ui//button";
+import { Form } from "@ui/form";
+import { Button } from "@ui/button";
 // CUSTOM COMPONENTS
 import AuthCardWrapper from "@sharedComponents/auth-card-wrapper";
 // ICONS

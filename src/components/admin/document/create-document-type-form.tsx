@@ -16,7 +16,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@ui//select";
+} from "@ui/select";
 import {
   Form,
   FormControl,
@@ -24,9 +24,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@ui//form";
-import { Input } from "@ui//input";
-import { Button } from "@ui//button";
+} from "@ui/form";
+import { Input } from "@ui/input";
+import { Button } from "@ui/button";
 // ICONS
 
 export default function CreateDocumentTypeForm() {

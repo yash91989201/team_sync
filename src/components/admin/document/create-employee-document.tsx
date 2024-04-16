@@ -16,7 +16,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@ui//select";
+} from "@ui/select";
 import {
   Form,
   FormControl,
@@ -24,7 +24,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@ui//form";
+} from "@ui/form";
 import {
   Command,
   CommandEmpty,
@@ -32,15 +32,15 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@ui//command";
+} from "@ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@ui//popover";
-import { Badge } from "@ui//badge";
-import { Input } from "@ui//input";
-import { Button } from "@ui//button";
+} from "@ui/popover";
+import { Badge } from "@ui/badge";
+import { Input } from "@ui/input";
+import { Button } from "@ui/button";
 import { cn, uploadEmployeeDocuments } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { CommandLoading } from "cmdk";

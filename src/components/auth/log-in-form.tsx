@@ -20,9 +20,9 @@ import {
   FormField,
   FormItem,
   FormLabel,
-} from "@ui//form";
-import { Input } from "@ui//input";
-import { Button } from "@ui//button";
+} from "@ui/form";
+import { Input } from "@ui/input";
+import { Button } from "@ui/button";
 // CUSTOM COMPONENTS
 import AuthCardWrapper from "@sharedComponents/auth-card-wrapper";
 // ICONS

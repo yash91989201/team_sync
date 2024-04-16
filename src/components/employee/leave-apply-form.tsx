@@ -1,6 +1,6 @@
 "use client";
-import { Calendar } from "@ui//calendar";
-import { Button } from "@ui//button";
+import { Calendar } from "@ui/calendar";
+import { Button } from "@ui/button";
 import {
   Form,
   FormControl,
@@ -8,19 +8,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@ui//form";
+} from "@ui/form";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@ui//popover";
+} from "@ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@ui//select";
+} from "@ui/select";
 import { LeaveApplySchema } from "@/lib/schema";
 import type { LeaveApplySchemaType, LeaveTypeSchemaType } from "@/lib/types";
 import { api } from "@/trpc/react";
@@ -30,8 +30,8 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { Textarea } from "@ui//textarea";
-import { Badge } from "@ui//badge";
+import { Textarea } from "@ui/textarea";
+import { Badge } from "@ui/badge";
 import { toast } from "sonner";
 
 type LeaveApplyFormProps = {

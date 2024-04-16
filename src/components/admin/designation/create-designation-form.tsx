@@ -13,16 +13,16 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from "@ui//form";
+} from "@ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@ui//select";
-import { Input } from "@ui//input";
-import { Button } from "@ui//button";
+} from "@ui/select";
+import { Input } from "@ui/input";
+import { Button } from "@ui/button";
 // TYPES
 import type { SubmitHandler } from "react-hook-form";
 import type { CreateDesignationSchemaType } from "@/lib/types";

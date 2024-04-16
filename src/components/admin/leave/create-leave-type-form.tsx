@@ -16,17 +16,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@ui//form";
+} from "@ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@ui//select";
-import { Input } from "@ui//input";
-import { Button } from "@ui//button";
-import { Checkbox } from "@ui//checkbox";
+} from "@ui/select";
+import { Input } from "@ui/input";
+import { Button } from "@ui/button";
+import { Checkbox } from "@ui/checkbox";
 
 export default function CreateLeaveTypeForm() {
   const createLeaveTypeForm = useForm<CreateLeaveTypeSchemaType>({

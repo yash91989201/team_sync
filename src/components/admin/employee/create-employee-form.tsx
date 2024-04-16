@@ -15,14 +15,14 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@ui//popover";
+} from "@ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@ui//select";
+} from "@ui/select";
 import {
   Form,
   FormControl,
@@ -30,11 +30,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@ui//form";
-import { Input } from "@ui//input";
-import { Button } from "@ui//button";
-import { Calendar } from "@ui//calendar";
-import { RadioGroup, RadioGroupItem } from "@ui//radio-group";
+} from "@ui/form";
+import { Input } from "@ui/input";
+import { Button } from "@ui/button";
+import { Calendar } from "@ui/calendar";
+import { RadioGroup, RadioGroupItem } from "@ui/radio-group";
 // CUSTOM COMPONENTS
 import EmployeeShiftTimePicker from "@/components/admin/employee/employee-shift-time-picker";
 // CONSTANTS

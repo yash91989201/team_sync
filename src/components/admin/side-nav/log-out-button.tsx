@@ -4,7 +4,7 @@ import { useFormStatus } from "react-dom";
 // ACTIONS
 import { logOut } from "@/server/actions/auth";
 // UI
-import { Button } from "@ui//button";
+import { Button } from "@ui/button";
 // ICONS
 import { Loader2, Power } from "lucide-react";
 

@@ -16,9 +16,9 @@ import {
   FormField,
   FormItem,
   FormLabel,
-} from "@ui//form";
-import { Input } from "@ui//input";
-import { Button } from "@ui//button";
+} from "@ui/form";
+import { Input } from "@ui/input";
+import { Button } from "@ui/button";
 // ICONS
 import { Loader2, Mail } from "lucide-react";
 // CONSTANTS
