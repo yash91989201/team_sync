@@ -61,8 +61,8 @@ export default function CreateEmployeeForm() {
       password: "password",
       role: "EMPLOYEE",
       isTeamLead: false,
-      dept: "",
-      designation: "",
+      deptId: "",
+      designationId: "",
       location: "",
       salary: 10000,
       empBand: "U3",
@@ -95,7 +95,7 @@ export default function CreateEmployeeForm() {
     });
   };
 
-  const selectedDept = watch("dept");
+  const selectedDept = watch("deptId");
   const selectedDeptId =
     departmentList.find((department) => department.name === selectedDept)?.id ??
     "";
@@ -110,8 +110,8 @@ export default function CreateEmployeeForm() {
     resetField("dob");
   };
   const clearProfessionalDetailFields = () => {
-    resetField("designation", { defaultValue: "" });
-    resetField("dept", { defaultValue: "" });
+    resetField("designationId", { defaultValue: "" });
+    resetField("deptId", { defaultValue: "" });
     resetField("joiningDate");
     resetField("empBand");
     resetField("code");
@@ -329,7 +329,7 @@ export default function CreateEmployeeForm() {
             <CardContent className="space-y-3 md:p-6">
               <FormField
                 control={control}
-                name="dept"
+                name="deptId"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Department</FormLabel>
@@ -359,7 +359,7 @@ export default function CreateEmployeeForm() {
               />
               <FormField
                 control={control}
-                name="designation"
+                name="designationId"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Designation</FormLabel>
