@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "211fec7c-bf05-4961-abf1-9085429103d3",
+  "id": "80a55273-4915-4ce0-ba4a-045bf6cf06f5",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "admin_profile": {
@@ -128,13 +128,58 @@
         }
       },
       "uniqueConstraints": {
-        "designation_name_unique": {
-          "name": "designation_name_unique",
+        "designation_name_dept_id_unique": {
+          "name": "designation_name_dept_id_unique",
           "columns": [
-            "name"
+            "name",
+            "dept_id"
           ]
         }
       }
+    },
+    "document_type": {
+      "name": "document_type",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "type": {
+          "name": "type",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "file_type": {
+          "name": "file_type",
+          "type": "enum('image/jpg','image/jpeg','image/png','image/webp','application/pdf')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "required_files": {
+          "name": "required_files",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "document_type_id": {
+          "name": "document_type_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
     },
     "employee_attendance": {
       "name": "employee_attendance",
@@ -208,6 +253,135 @@
       },
       "uniqueConstraints": {}
     },
+    "employee_document_file": {
+      "name": "employee_document_file",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "file_url": {
+          "name": "file_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "emp_document_id": {
+          "name": "emp_document_id",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "employee_document_file_emp_document_id_employee_document_id_fk": {
+          "name": "employee_document_file_emp_document_id_employee_document_id_fk",
+          "tableFrom": "employee_document_file",
+          "tableTo": "employee_document",
+          "columnsFrom": [
+            "emp_document_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "employee_document_file_id": {
+          "name": "employee_document_file_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "employee_document": {
+      "name": "employee_document",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "verified": {
+          "name": "verified",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "unique_document_id": {
+          "name": "unique_document_id",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "emp_id": {
+          "name": "emp_id",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "document_type_id": {
+          "name": "document_type_id",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "employee_document_emp_id_user_id_fk": {
+          "name": "employee_document_emp_id_user_id_fk",
+          "tableFrom": "employee_document",
+          "tableTo": "user",
+          "columnsFrom": [
+            "emp_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "employee_document_document_type_id_document_type_id_fk": {
+          "name": "employee_document_document_type_id_document_type_id_fk",
+          "tableFrom": "employee_document",
+          "tableTo": "document_type",
+          "columnsFrom": [
+            "document_type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "employee_document_id": {
+          "name": "employee_document_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
     "employee_profile": {
       "name": "employee_profile",
       "columns": {
@@ -228,20 +402,6 @@
         "emp_band": {
           "name": "emp_band",
           "type": "enum('U1','U2','U3')",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "dept": {
-          "name": "dept",
-          "type": "varchar(128)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "designation": {
-          "name": "designation",
-          "type": "varchar(128)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -267,13 +427,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "image_url": {
-          "name": "image_url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
         "is_profile_updated": {
           "name": "is_profile_updated",
           "type": "boolean",
@@ -281,6 +434,20 @@
           "notNull": true,
           "autoincrement": false,
           "default": false
+        },
+        "dept_id": {
+          "name": "dept_id",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "designation_id": {
+          "name": "designation_id",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -291,6 +458,32 @@
           "tableTo": "user",
           "columnsFrom": [
             "emp_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "employee_profile_dept_id_department_id_fk": {
+          "name": "employee_profile_dept_id_department_id_fk",
+          "tableFrom": "employee_profile",
+          "tableTo": "department",
+          "columnsFrom": [
+            "dept_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "employee_profile_designation_id_designation_id_fk": {
+          "name": "employee_profile_designation_id_designation_id_fk",
+          "tableFrom": "employee_profile",
+          "tableTo": "designation",
+          "columnsFrom": [
+            "designation_id"
           ],
           "columnsTo": [
             "id"
@@ -686,7 +879,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(24)",
+          "type": "varchar(48)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -895,6 +1088,13 @@
           "notNull": true,
           "autoincrement": false,
           "default": false
+        },
+        "image_url": {
+          "name": "image_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},

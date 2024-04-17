@@ -15,7 +15,15 @@ CREATE TABLE `designation` (
 	`name` varchar(128) NOT NULL,
 	`dept_id` varchar(24) NOT NULL,
 	CONSTRAINT `designation_id` PRIMARY KEY(`id`),
-	CONSTRAINT `designation_name_unique` UNIQUE(`name`)
+	CONSTRAINT `designation_name_dept_id_unique` UNIQUE(`name`,`dept_id`)
+);
+--> statement-breakpoint
+CREATE TABLE `document_type` (
+	`id` varchar(24) NOT NULL,
+	`type` varchar(256) NOT NULL,
+	`file_type` enum('image/jpg','image/jpeg','image/png','image/webp','application/pdf') NOT NULL,
+	`required_files` int NOT NULL,
+	CONSTRAINT `document_type_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `employee_attendance` (
@@ -28,17 +36,32 @@ CREATE TABLE `employee_attendance` (
 	CONSTRAINT `employee_attendance_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
+CREATE TABLE `employee_document_file` (
+	`id` varchar(24) NOT NULL,
+	`file_url` text NOT NULL,
+	`emp_document_id` varchar(24) NOT NULL,
+	CONSTRAINT `employee_document_file_id` PRIMARY KEY(`id`)
+);
+--> statement-breakpoint
+CREATE TABLE `employee_document` (
+	`id` varchar(24) NOT NULL,
+	`verified` boolean NOT NULL,
+	`unique_document_id` varchar(128),
+	`emp_id` varchar(24) NOT NULL,
+	`document_type_id` varchar(24) NOT NULL,
+	CONSTRAINT `employee_document_id` PRIMARY KEY(`id`)
+);
+--> statement-breakpoint
 CREATE TABLE `employee_profile` (
 	`emp_id` varchar(24) NOT NULL,
 	`joining_date` timestamp NOT NULL,
 	`emp_band` enum('U1','U2','U3') NOT NULL,
-	`dept` varchar(128) NOT NULL,
-	`designation` varchar(128) NOT NULL,
 	`salary` int NOT NULL,
 	`location` varchar(256) NOT NULL,
 	`dob` date NOT NULL,
-	`image_url` text,
 	`is_profile_updated` boolean NOT NULL DEFAULT false,
+	`dept_id` varchar(24) NOT NULL,
+	`designation_id` varchar(24) NOT NULL,
 	CONSTRAINT `employee_profile_emp_id` PRIMARY KEY(`emp_id`)
 );
 --> statement-breakpoint
@@ -93,7 +116,7 @@ CREATE TABLE `password_reset_token` (
 );
 --> statement-breakpoint
 CREATE TABLE `session` (
-	`id` varchar(24) NOT NULL,
+	`id` varchar(48) NOT NULL,
 	`expires_at` datetime NOT NULL,
 	`user_id` varchar(24) NOT NULL,
 	CONSTRAINT `session_id` PRIMARY KEY(`id`)
@@ -124,6 +147,7 @@ CREATE TABLE `user` (
 	`is_team_lead` boolean NOT NULL DEFAULT false,
 	`email_verified` timestamp,
 	`two_factor_enabled` boolean NOT NULL DEFAULT false,
+	`image_url` text,
 	CONSTRAINT `user_id` PRIMARY KEY(`id`),
 	CONSTRAINT `user_code_unique` UNIQUE(`code`)
 );
@@ -139,7 +163,12 @@ CREATE TABLE `verification_token` (
 ALTER TABLE `admin_profile` ADD CONSTRAINT `admin_profile_admin_id_user_id_fk` FOREIGN KEY (`admin_id`) REFERENCES `user`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `designation` ADD CONSTRAINT `designation_dept_id_department_id_fk` FOREIGN KEY (`dept_id`) REFERENCES `department`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `employee_attendance` ADD CONSTRAINT `employee_attendance_emp_id_user_id_fk` FOREIGN KEY (`emp_id`) REFERENCES `user`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `employee_document_file` ADD CONSTRAINT `employee_document_file_emp_document_id_employee_document_id_fk` FOREIGN KEY (`emp_document_id`) REFERENCES `employee_document`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `employee_document` ADD CONSTRAINT `employee_document_emp_id_user_id_fk` FOREIGN KEY (`emp_id`) REFERENCES `user`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `employee_document` ADD CONSTRAINT `employee_document_document_type_id_document_type_id_fk` FOREIGN KEY (`document_type_id`) REFERENCES `document_type`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `employee_profile` ADD CONSTRAINT `employee_profile_emp_id_user_id_fk` FOREIGN KEY (`emp_id`) REFERENCES `user`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `employee_profile` ADD CONSTRAINT `employee_profile_dept_id_department_id_fk` FOREIGN KEY (`dept_id`) REFERENCES `department`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `employee_profile` ADD CONSTRAINT `employee_profile_designation_id_designation_id_fk` FOREIGN KEY (`designation_id`) REFERENCES `designation`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `employee_shift` ADD CONSTRAINT `employee_shift_emp_id_user_id_fk` FOREIGN KEY (`emp_id`) REFERENCES `user`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `leave_balance` ADD CONSTRAINT `leave_balance_emp_id_user_id_fk` FOREIGN KEY (`emp_id`) REFERENCES `user`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `leave_balance` ADD CONSTRAINT `leave_balance_leave_type_id_leave_type_id_fk` FOREIGN KEY (`leave_type_id`) REFERENCES `leave_type`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint

@@ -11,6 +11,7 @@ import {
   time,
   int,
   date,
+  unique,
 } from "drizzle-orm/mysql-core";
 
 export const createTable = mysqlTableCreator((name) => name);
@@ -69,12 +70,13 @@ export const employeeProfileTable = mysqlTable("employee_profile", {
     .references(() => userTable.id),
   joiningDate: timestamp("joining_date", { mode: "date" }).notNull(),
   empBand: mysqlEnum("emp_band", ["U1", "U2", "U3"]).notNull(),
-  dept: varchar("dept", { length: 128 }).notNull(),
-  designation: varchar("designation", { length: 128 }).notNull(),
   salary: int("salary").notNull(),
   location: varchar("location", { length: 256 }).notNull(),
   dob: date("dob", { mode: "date" }).notNull(),
   isProfileUpdated: boolean("is_profile_updated").default(false).notNull(),
+  // FOREIGN KEY
+  deptId: varchar("dept_id", { length: 24 }).notNull().references(() => departmentTable.id),
+  designationId: varchar("designation_id", { length: 24 }).notNull().references(() => designationTable.id)
 });
 
 export const employeeProfileTableRelations = relations(
@@ -84,6 +86,14 @@ export const employeeProfileTableRelations = relations(
       fields: [employeeProfileTable.empId],
       references: [userTable.id],
     }),
+    department: one(departmentTable, {
+      fields: [employeeProfileTable.deptId],
+      references: [departmentTable.id]
+    }),
+    deisgnation: one(designationTable, {
+      fields: [employeeProfileTable.designationId],
+      references: [designationTable.id]
+    })
   }),
 );
 
@@ -105,14 +115,17 @@ export const designationTable = mysqlTable("designation", {
   id: varchar("id", {
     length: 24,
   }).primaryKey(),
-  name: varchar("name", { length: 128 }).unique().notNull(),
+  name: varchar("name", { length: 128 }).notNull(),
   // FOREIGN KEY RELATIONS
   deptId: varchar("dept_id", {
     length: 24,
   })
     .notNull()
     .references(() => departmentTable.id),
-});
+}, (designationTable) => ({
+  // UNIQUE DESIGNATIONS ACCORDING TO DEPARTMENT
+  deisgnationByDept: unique().on(designationTable.name, designationTable.deptId)
+}));
 
 export const designationTableRelations = relations(
   designationTable,

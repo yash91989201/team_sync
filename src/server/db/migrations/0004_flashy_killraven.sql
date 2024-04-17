@@ -1,1 +1,0 @@
-ALTER TABLE `employee_document` ADD `name` varchar(128) NOT NULL;
