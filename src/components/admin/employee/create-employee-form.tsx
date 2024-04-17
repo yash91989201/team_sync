@@ -150,22 +150,26 @@ export default function CreateEmployeeForm() {
         >
           <Card className="hidden w-96 md:flex">
             <CardHeader className="flex-row items-center gap-3 space-y-0">
-              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
+              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
                 <span>1</span>
               </div>
               <div className="mt-0">
-                <CardTitle className="text-xl">Personal Details</CardTitle>
+                <CardTitle className="text-xl text-gray-700">
+                  Personal Details
+                </CardTitle>
                 <CardDescription>Employee internal details.</CardDescription>
               </div>
             </CardHeader>
           </Card>
           <Card className="flex-1">
             <CardHeader className="flex-row items-center gap-3 space-y-0 md:hidden">
-              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
+              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
                 <span>1</span>
               </div>
               <div className="mt-0">
-                <CardTitle className="text-xl">Personal Details</CardTitle>
+                <CardTitle className="text-xl text-gray-700">
+                  Personal Details
+                </CardTitle>
                 <CardDescription>Employee internal details.</CardDescription>
               </div>
             </CardHeader>
@@ -307,22 +311,26 @@ export default function CreateEmployeeForm() {
         >
           <Card className="hidden w-96 md:flex">
             <CardHeader className="flex-row items-center gap-3 space-y-0">
-              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
+              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
                 <span>2</span>
               </div>
               <div className="mt-0">
-                <CardTitle className="text-xl">Professional Details</CardTitle>
+                <CardTitle className="text-xl text-gray-700">
+                  Professional Details
+                </CardTitle>
                 <CardDescription>Employee professonal details.</CardDescription>
               </div>
             </CardHeader>
           </Card>
           <Card className="flex-1" aria-label="Employee professional details">
             <CardHeader className="flex-row items-center gap-3 space-y-0 md:hidden">
-              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
+              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
                 <span>2</span>
               </div>
               <div className="mt-0">
-                <CardTitle className="text-xl">Professional Details</CardTitle>
+                <CardTitle className="text-xl text-gray-700">
+                  Professional Details
+                </CardTitle>
                 <CardDescription>Employee professonal details.</CardDescription>
               </div>
             </CardHeader>
@@ -333,10 +341,7 @@ export default function CreateEmployeeForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Department</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger className="bg-white">
                           <SelectValue placeholder="Select a department" />
@@ -363,10 +368,7 @@ export default function CreateEmployeeForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Designation</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger className="bg-white">
                           <SelectValue
@@ -377,9 +379,9 @@ export default function CreateEmployeeForm() {
                       </FormControl>
                       <SelectContent>
                         {designationByDept.length === 0 ? (
-                          <p className="p-1">
+                          <p className="px-3 py-2 text-sm text-gray-400">
                             {selectedDeptId.length === 0
-                              ? "First select a department"
+                              ? "Select a department to show designations"
                               : "Selected department has no designations"}
                           </p>
                         ) : (
@@ -461,11 +463,11 @@ export default function CreateEmployeeForm() {
                       <FormLabel>Employee Band</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select an employee band" />
+                            <SelectValue placeholder="Select employee band" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="w-24">
@@ -499,22 +501,26 @@ export default function CreateEmployeeForm() {
         >
           <Card className="hidden w-96 md:flex">
             <CardHeader className="flex-row items-center gap-3 space-y-0">
-              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
+              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
                 <span>3</span>
               </div>
               <div className="mt-0">
-                <CardTitle className="text-xl">Work shift Details</CardTitle>
+                <CardTitle className="text-xl text-gray-700">
+                  Work shift Details
+                </CardTitle>
                 <CardDescription>Employee shift details.</CardDescription>
               </div>
             </CardHeader>
           </Card>
           <Card className="flex-1">
             <CardHeader className="flex flex-row items-center gap-3 space-y-0 md:hidden">
-              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
+              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
                 <span>3</span>
               </div>
               <div className="mt-0">
-                <CardTitle className="text-xl">Work shift Details</CardTitle>
+                <CardTitle className="text-xl text-gray-700">
+                  Work shift Details
+                </CardTitle>
                 <CardDescription>Employee shift details.</CardDescription>
               </div>
             </CardHeader>
@@ -590,22 +596,26 @@ export default function CreateEmployeeForm() {
         >
           <Card className="hidden w-96 md:flex">
             <CardHeader className="flex-row items-center gap-3 space-y-0">
-              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
+              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
                 <span>4</span>
               </div>
               <div className="mt-0">
-                <CardTitle className="text-xl">Additional Options</CardTitle>
+                <CardTitle className="text-xl text-gray-700">
+                  Additional Options
+                </CardTitle>
                 <CardDescription>Employee additional options.</CardDescription>
               </div>
             </CardHeader>
           </Card>
           <Card className="flex-1">
             <CardHeader className="flex flex-row items-center gap-3 space-y-0 md:hidden">
-              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
+              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
                 <span>4</span>
               </div>
               <div className="mt-0">
-                <CardTitle className="text-xl">Additional Options</CardTitle>
+                <CardTitle className="text-xl text-gray-700">
+                  Additional Options
+                </CardTitle>
                 <CardDescription>Employee additional options.</CardDescription>
               </div>
             </CardHeader>
@@ -663,16 +673,25 @@ export default function CreateEmployeeForm() {
           aria-label="4 Click to create new employee"
         >
           <div className="hidden w-96 md:block" />
-          <Button
-            className="w-fit md:text-base md:font-semibold"
-            size="lg"
-            disabled={formState.isSubmitting}
-          >
-            Create new employee
-            {formState.isSubmitting && (
-              <Loader2 className="ml-3 animate-spin" />
-            )}
-          </Button>
+          <Card className="flex-1">
+            <CardHeader>
+              <CardDescription>
+                Confirm the above details before creating a new employee
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                className="ml-auto mr-0 md:text-base md:font-semibold"
+                size="lg"
+                disabled={formState.isSubmitting}
+              >
+                Create new employee
+                {formState.isSubmitting && (
+                  <Loader2 className="ml-3 animate-spin" />
+                )}
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </form>
     </Form>

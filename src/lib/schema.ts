@@ -76,17 +76,19 @@ export const CreateProfileImageSchema = z.object({
 export const CreateDepartmentSchema = z.object({
   name: z
     .string()
-    .min(2, { message: "Min. allowed length is 2." })
-    .max(128, { message: "Max. allowed length is 128." }),
+    .min(2, { message: "Min. allowed length is 4" })
+    .max(128, { message: "Max. allowed length is 128" }),
 });
 
 // DESIGNATION SCHEMAS
 export const CreateDesignationSchema = z.object({
-  deptId: z.string(),
   name: z
-    .string()
-    .min(6, { message: "Min. allowed length is 6." })
-    .max(64, { message: "Max. allowed length is 64." }),
+    .string({ required_error: "Designation is required." })
+    .min(6, { message: "Min. required length is 6" })
+    .max(64, { message: "Max. allowed length is 64" }),
+  deptId: z
+    .string({ required_error: "Department is required." })
+    .min(1, { message: "Select a department" }),
 });
 
 // DOCUMENT SCHEMAS

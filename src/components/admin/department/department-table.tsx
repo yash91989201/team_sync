@@ -7,10 +7,18 @@ import type { ColumnDef } from "@tanstack/react-table";
 // UI
 import { DataTable } from "@/components/admin/data-table";
 
+type DepartmentTableProps = DepartmentType & {
+  employees: {
+    empId: string;
+    deptId: string;
+    employeeCount: number;
+  }[];
+};
+
 export default function DepartmentTable({
   initialData,
 }: {
-  initialData: Awaited<DepartmentType[]>;
+  initialData: Awaited<DepartmentTableProps[]>;
 }) {
   const { data } = api.departmentRouter.getAll.useQuery(undefined, {
     initialData,
@@ -21,9 +29,17 @@ export default function DepartmentTable({
   return <DataTable columns={DEPARTMENT_TABLE_COLUMNS} data={data} />;
 }
 
-const DEPARTMENT_TABLE_COLUMNS: ColumnDef<DepartmentType>[] = [
+const DEPARTMENT_TABLE_COLUMNS: ColumnDef<DepartmentTableProps>[] = [
   {
     accessorKey: "name",
     header: "name",
+  },
+  {
+    accessorKey: "employeeCount",
+    header: "employees",
+    cell: ({ row }) =>
+      row.original.employees.length === 0
+        ? "0"
+        : row.original.employees[0]?.employeeCount,
   },
 ];

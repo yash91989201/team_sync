@@ -59,7 +59,7 @@ export default function CreateDepartmentForm() {
   return (
     <Form {...createDepartmentForm}>
       <form onSubmit={handleSubmit(createDepartmentAction)}>
-        <Card>
+        <Card className="w-96">
           <CardHeader>
             <CardTitle>Create new department</CardTitle>
             <CardDescription>

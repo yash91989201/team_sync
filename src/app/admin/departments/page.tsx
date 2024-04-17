@@ -26,7 +26,9 @@ export default async function DepartmentsPage() {
           <CardTitle className="text-2xl text-primary">
             All departments
           </CardTitle>
-          <CardDescription>Types of leaves employees can take</CardDescription>
+          <CardDescription>
+            Types of departments employee can belong to
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <DepartmentTable initialData={departments} />
