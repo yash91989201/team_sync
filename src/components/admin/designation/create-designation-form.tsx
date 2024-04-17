@@ -120,10 +120,10 @@ export default function CreateDesignationForm() {
           </CardContent>
           <CardFooter>
             <Button disabled={formState.isSubmitting}>
-              Create
               {formState.isSubmitting && (
-                <Loader2 className="ml-3 animate-spin" />
+                <Loader2 className="mr-3 animate-spin" />
               )}
+              <span>Create designation</span>
             </Button>
           </CardFooter>
         </Card>

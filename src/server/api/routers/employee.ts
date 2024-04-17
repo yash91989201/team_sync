@@ -90,6 +90,7 @@ export const employeeRouter = createTRPCRouter({
         emailVerified: new Date(),
         imageUrl,
       });
+
       // create profile for employee
       await ctx.db.insert(employeeProfileTable).values({
         empId: employeeId,

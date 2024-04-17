@@ -42,14 +42,14 @@ export default function CreateLeaveTypeForm() {
     resolver: zodResolver(CreateLeaveTypeSchema),
     defaultValues: {
       type: "",
-      daysAllowed: 5,
+      daysAllowed: 1,
       renewPeriod: "month",
       renewPeriodCount: 1,
       carryOver: false,
     },
   });
 
-  const { control, handleSubmit } = createLeaveTypeForm;
+  const { control, handleSubmit, reset } = createLeaveTypeForm;
 
   const { refetch: refetchLeaveTypes } =
     api.leaveRouter.getLeaveTypes.useQuery();
@@ -62,6 +62,13 @@ export default function CreateLeaveTypeForm() {
   > = async (formData) => {
     await createLeaveType(formData);
     await refetchLeaveTypes();
+    reset({
+      type: "",
+      carryOver: false,
+      daysAllowed: 1,
+      renewPeriodCount: 1,
+      renewPeriod: "month",
+    });
   };
 
   return (
@@ -173,7 +180,7 @@ export default function CreateLeaveTypeForm() {
           </CardContent>
           <CardFooter>
             <Button disabled={isPending}>
-              {isPending ? <Loader2 className="animate-spin" /> : null}
+              {isPending ? <Loader2 className="mr-1 animate-spin" /> : null}
               <span>Create leave type</span>
             </Button>
           </CardFooter>

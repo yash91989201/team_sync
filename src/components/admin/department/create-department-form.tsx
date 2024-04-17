@@ -83,10 +83,10 @@ export default function CreateDepartmentForm() {
           </CardContent>
           <CardFooter>
             <Button disabled={formState.isSubmitting}>
-              Create
               {formState.isSubmitting && (
-                <Loader2 className="ml-3 animate-spin" />
+                <Loader2 className="mr-3 animate-spin" />
               )}
+              <span>Create Department</span>
             </Button>
           </CardFooter>
         </Card>
