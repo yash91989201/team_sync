@@ -18,7 +18,7 @@ type DepartmentTableProps = DepartmentType & {
 export default function DepartmentTable({
   initialData,
 }: {
-  initialData: Awaited<DepartmentTableProps[]>;
+  initialData: DepartmentTableProps[];
 }) {
   const { data } = api.departmentRouter.getAll.useQuery(undefined, {
     initialData,

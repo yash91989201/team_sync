@@ -13,7 +13,7 @@ import { ArrowUpDown } from "lucide-react";
 export default function LeaveTypeTable({
   initialData,
 }: {
-  initialData: Awaited<LeaveTypeSchemaType[]>;
+  initialData: LeaveTypeSchemaType[];
 }) {
   const { data } = api.leaveRouter.getLeaveTypes.useQuery(undefined, {
     initialData,

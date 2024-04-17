@@ -22,7 +22,7 @@ function LogoutButtonInner() {
     <Button
       size="icon"
       variant="outline"
-      className="rounded-xl [&>svg]:size-4 text-red-500 hover:text-red-500 border-red-500 hover:bg-white"
+      className="rounded-xl border-red-500 text-red-500 hover:bg-white hover:text-red-500 [&>svg]:size-4"
     >
       {pending ? <Loader2 className="animate-spin" /> : <Power />}
     </Button>

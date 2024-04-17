@@ -33,11 +33,7 @@ import {
   CommandItem,
   CommandList,
 } from "@ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
 import { Badge } from "@ui/badge";
 import { Input } from "@ui/input";
 import { Button } from "@ui/button";
@@ -52,7 +48,7 @@ import { toast } from "sonner";
 // ICONS
 
 export default function CreateEmployeeDocumentForm() {
-  const [employeeSearchQuery, setEmployeeSearchQuery] = useState("")
+  const [employeeSearchQuery, setEmployeeSearchQuery] = useState("");
 
   const createDocumentTypeForm = useForm<CreateEmployeeDocumentFormSchemaType>({
     resolver: zodResolver(CreateEmployeeDocumentFormSchema),
@@ -64,9 +60,9 @@ export default function CreateEmployeeDocumentForm() {
       documents: [
         {
           id: generateId(15),
-          file: new File([], "")
-        }
-      ]
+          file: new File([], ""),
+        },
+      ],
     },
   });
   const { control, handleSubmit, watch, setValue } = createDocumentTypeForm;
@@ -79,30 +75,35 @@ export default function CreateEmployeeDocumentForm() {
   const { data: documentTypes = [], isLoading: isDocumentTypesLoading } =
     api.documentRouter.getTypes.useQuery();
 
-  const { mutateAsync: createEmployeeDocument } = api.documentRouter.createEmployeeDocument.useMutation()
+  const { mutateAsync: createEmployeeDocument } =
+    api.documentRouter.createEmployeeDocument.useMutation();
 
-  const selectedEmployeeId = watch("empId")
-  const selectedEmployee = employees.find(employee => employee.id === selectedEmployeeId)
+  const selectedEmployeeId = watch("empId");
+  const selectedEmployee = employees.find(
+    (employee) => employee.id === selectedEmployeeId,
+  );
 
   const createDocumentTypeAction: SubmitHandler<
     CreateEmployeeDocumentFormSchemaType
   > = async (formData) => {
-    const { documents } = formData
-    const files = documents.map(document => document.file)
+    const { documents } = formData;
+    const files = documents.map((document) => document.file);
     // first upload documents
-    const fileUploadRes = await uploadEmployeeDocuments(files)
+    const fileUploadRes = await uploadEmployeeDocuments(files);
 
     if (fileUploadRes.status !== "SUCCESS") {
-      toast.error("Document upload failed, please try again.")
-      return
+      toast.error("Document upload failed, please try again.");
+      return;
     }
-    const uploadedFilesData = fileUploadRes.data.filesData.map(fileData => ({ ...fileData, empDocumentId: formData.id }))
+    const uploadedFilesData = fileUploadRes.data.filesData.map((fileData) => ({
+      ...fileData,
+      empDocumentId: formData.id,
+    }));
 
     await createEmployeeDocument({
       documentFiles: uploadedFilesData,
-      ...formData
-    })
-
+      ...formData,
+    });
   };
 
   return (
@@ -120,11 +121,11 @@ export default function CreateEmployeeDocumentForm() {
                     <Button
                       role="combobox"
                       variant="outline"
-                      className={cn(
-                        "justify-between",
-                      )}
+                      className={cn("justify-between")}
                     >
-                      {selectedEmployee === undefined ? "Select Employee" : selectedEmployee.name}
+                      {selectedEmployee === undefined
+                        ? "Select Employee"
+                        : selectedEmployee.name}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </FormControl>
@@ -180,12 +181,17 @@ export default function CreateEmployeeDocumentForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Select Document Type</FormLabel>
-              <Select onValueChange={(value) => {
-                field.onChange(value)
-                const selectedDocumentType = documentTypes.find(documentType => documentType.id === value)
-                if (selectedDocumentType === undefined) return
-                setValue("documentType", selectedDocumentType)
-              }} defaultValue={field.value}>
+              <Select
+                onValueChange={(value) => {
+                  field.onChange(value);
+                  const selectedDocumentType = documentTypes.find(
+                    (documentType) => documentType.id === value,
+                  );
+                  if (selectedDocumentType === undefined) return;
+                  setValue("documentType", selectedDocumentType);
+                }}
+                defaultValue={field.value}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a document type" />
@@ -216,7 +222,6 @@ export default function CreateEmployeeDocumentForm() {
               <FormControl>
                 <Input
                   {...field}
-                  className="bg-white"
                   placeholder="For ex. Aadhar Card no. (optional)"
                 />
               </FormControl>
@@ -232,34 +237,33 @@ export default function CreateEmployeeDocumentForm() {
 }
 
 const DocumentsField = () => {
-
-  const { control, getValues, formState } = useFormContext<CreateEmployeeDocumentFormSchemaType>()
+  const { control, getValues, formState } =
+    useFormContext<CreateEmployeeDocumentFormSchemaType>();
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "documents"
-  })
+    name: "documents",
+  });
 
-  const selectedDocumentType = getValues("documentType")
-  const { requiredFiles = 1, fileType } = selectedDocumentType ?? {}
+  const selectedDocumentType = getValues("documentType");
+  const { requiredFiles = 1, fileType } = selectedDocumentType ?? {};
   const documentLength = getValues("documents").length;
 
   const addDocumentField = () => {
     append({
       id: generateId(15),
-      file: new File([], "")
-    })
-  }
+      file: new File([], ""),
+    });
+  };
 
   const deleteDocumentField = (index: number) => {
     remove(index);
   };
 
-  if (selectedDocumentType === undefined)
-    return null;
+  if (selectedDocumentType === undefined) return null;
 
-  return <div>
-    {
-      fields.map((document, index) => (
+  return (
+    <div>
+      {fields.map((document, index) => (
         <div key={index}>
           <FormField
             control={control}
@@ -276,8 +280,8 @@ const DocumentsField = () => {
                     dropzoneOptions={{
                       maxSize: MAX_FILE_SIZE.PROFILE_IMG,
                       accept: {
-                        [`${fileType}`]: []
-                      }
+                        [`${fileType}`]: [],
+                      },
                     }}
                   />
                 </FormControl>
@@ -285,19 +289,21 @@ const DocumentsField = () => {
               </FormItem>
             )}
           />
-          {
-            index + 1 <= requiredFiles && <Button type="button" onClick={() => deleteDocumentField(index)}>Remove</Button>
-          }
-
+          {index + 1 <= requiredFiles && (
+            <Button type="button" onClick={() => deleteDocumentField(index)}>
+              Remove
+            </Button>
+          )}
         </div>
-      ))
-    }
-    <p className="text-[0.8rem] font-medium text-destructive" >
-      {formState.errors.documents?.root?.message}
-    </p>
-    {
-      documentLength !== requiredFiles && <Button type="button" onClick={addDocumentField}>Add</Button>
-    }
-  </div>
-
-}
+      ))}
+      <p className="text-[0.8rem] font-medium text-destructive">
+        {formState.errors.documents?.root?.message}
+      </p>
+      {documentLength !== requiredFiles && (
+        <Button type="button" onClick={addDocumentField}>
+          Add
+        </Button>
+      )}
+    </div>
+  );
+};

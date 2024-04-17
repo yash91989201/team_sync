@@ -9,11 +9,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@ui/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
 import {
   Select,
   SelectContent,
@@ -84,7 +80,7 @@ export default function LeaveApplyForm({ leaveTypes }: LeaveApplyFormProps) {
                 <FormLabel>Leave Type</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger className="bg-white">
+                    <SelectTrigger>
                       <SelectValue placeholder="Select a leave type" />
                     </SelectTrigger>
                   </FormControl>
@@ -174,7 +170,7 @@ export default function LeaveApplyForm({ leaveTypes }: LeaveApplyFormProps) {
                 <FormLabel>Reviewer</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger className="bg-white">
+                    <SelectTrigger>
                       <SelectValue placeholder="Apply to" />
                     </SelectTrigger>
                   </FormControl>
@@ -202,7 +198,7 @@ export default function LeaveApplyForm({ leaveTypes }: LeaveApplyFormProps) {
                 <FormControl>
                   <Textarea
                     placeholder="Reason for leave (optional)"
-                    className="resize-none bg-white"
+                    className="resize-none"
                     {...field}
                   />
                 </FormControl>

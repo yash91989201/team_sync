@@ -93,7 +93,7 @@ export const CreateDesignationSchema = z.object({
 
 // DOCUMENT SCHEMAS
 export const CreateDocumentTypeSchema = DocumentTypeSchema.extend({
-  type: z.string().min(4, { message: "Min. required length is 4" }),
+  type: z.string({ required_error: "Document type is required." }).min(4, { message: "Min. required length is 4" }),
 });
 
 export const CreateEmployeeDocumentFormSchema = z.object({

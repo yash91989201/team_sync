@@ -16,7 +16,7 @@ type DesignationTableProps = DesignationType & {
 export default function DesignationTable({
   initialData,
 }: {
-  initialData: Awaited<DesignationTableProps[]>;
+  initialData: DesignationTableProps[];
 }) {
   const { data } = api.designationRouter.getAll.useQuery(undefined, {
     initialData,

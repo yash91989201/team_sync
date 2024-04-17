@@ -206,11 +206,7 @@ export default function CreateEmployeeForm() {
                     <FormItem className="flex-1">
                       <FormLabel>Name</FormLabel>
                       <FormControl>
-                        <Input
-                          {...field}
-                          className="bg-white"
-                          placeholder="Jane Doe"
-                        />
+                        <Input {...field} placeholder="Jane Doe" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -223,11 +219,7 @@ export default function CreateEmployeeForm() {
                     <FormItem className="flex-1">
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input
-                          {...field}
-                          className="bg-white"
-                          placeholder="example@mail.com"
-                        />
+                        <Input {...field} placeholder="example@mail.com" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -240,11 +232,7 @@ export default function CreateEmployeeForm() {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input
-                          {...field}
-                          className="bg-white"
-                          readOnly={true}
-                        />
+                        <Input {...field} readOnly={true} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -343,7 +331,7 @@ export default function CreateEmployeeForm() {
                     <FormLabel>Department</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger className="bg-white">
+                        <SelectTrigger>
                           <SelectValue placeholder="Select a department" />
                         </SelectTrigger>
                       </FormControl>
@@ -370,11 +358,8 @@ export default function CreateEmployeeForm() {
                     <FormLabel>Designation</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger className="bg-white">
-                          <SelectValue
-                            className="bg-white"
-                            placeholder="Select a designation"
-                          />
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a designation" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -408,11 +393,7 @@ export default function CreateEmployeeForm() {
                     <FormItem className="flex-1">
                       <FormLabel>Employee Code</FormLabel>
                       <FormControl>
-                        <Input
-                          {...field}
-                          className="bg-white"
-                          placeholder="Enter employee code"
-                        />
+                        <Input {...field} placeholder="Enter employee code" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -567,7 +548,7 @@ export default function CreateEmployeeForm() {
                         type="number"
                         step={15}
                         min={15}
-                        className="hide-input-spinner w-12 bg-white"
+                        className="hide-input-spinner w-12"
                         onChange={(event) =>
                           field.onChange(Number(event.target.value))
                         }
