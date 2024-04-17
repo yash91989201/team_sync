@@ -9,11 +9,22 @@ export const documentRouter = createTRPCRouter({
   getTypes: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.query.documentTypeTable.findMany();
   }),
+
   createDocumentType: protectedProcedure
     .input(CreateDocumentTypeSchema)
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(documentTypeTable).values(input);
     }),
+
+  getEmployeesDocuments: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.query.employeeDocumentTable.findMany({
+      with: {
+        documentFiles: true,
+        employee: true
+      }
+    })
+  }),
+
   createEmployeeDocument: protectedProcedure.input(CreateEmployeeDocumentInputSchema).mutation(async ({ ctx, input }) => {
     try {
       const {

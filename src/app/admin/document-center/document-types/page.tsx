@@ -27,7 +27,7 @@ export default async function DocumentTypesPage() {
             Document types
           </CardTitle>
           <CardDescription>
-            Types of documents that can be uploaded for employee
+            Types of documents that can be uploaded for an employee
           </CardDescription>
         </CardHeader>
         <CardContent>

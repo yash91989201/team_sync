@@ -74,65 +74,76 @@ export const employeeRouter = createTRPCRouter({
         imageUrl,
       } = input;
 
-      const employeeId = generateId(15);
-      const hashedPassword = await hashPassword(password);
-      const availableLeaveTypes = await ctx.db.query.leaveTypeTable.findMany();
+      try {
+        const employeeId = generateId(15);
+        const hashedPassword = await hashPassword(password);
+        const availableLeaveTypes = await ctx.db.query.leaveTypeTable.findMany();
 
-      // add employee to userTable
-      await ctx.db.insert(userTable).values({
-        id: employeeId,
-        code,
-        name,
-        email,
-        password: hashedPassword,
-        role,
-        isTeamLead,
-        emailVerified: new Date(),
-        imageUrl,
-      });
+        // add employee to userTable
+        await ctx.db.insert(userTable).values({
+          id: employeeId,
+          code,
+          name,
+          email,
+          password: hashedPassword,
+          role,
+          isTeamLead,
+          emailVerified: new Date(),
+          imageUrl,
+        });
 
-      // create profile for employee
-      await ctx.db.insert(employeeProfileTable).values({
-        empId: employeeId,
-        joiningDate,
-        deptId,
-        designationId,
-        salary,
-        location,
-        dob,
-        empBand,
-      });
+        // create profile for employee
+        await ctx.db.insert(employeeProfileTable).values({
+          empId: employeeId,
+          joiningDate,
+          deptId,
+          designationId,
+          salary,
+          location,
+          dob,
+          empBand,
+        });
 
-      // create shift timing for the employee
-      await ctx.db.insert(employeeShiftTable).values({
-        empId: employeeId,
-        shiftStart: shiftStart.toLocaleTimeString("en-IN", { hour12: false }),
-        shiftEnd: shiftEnd.toLocaleTimeString("en-IN", { hour12: false }),
-        breakMinutes,
-      });
+        // create shift timing for the employee
+        await ctx.db.insert(employeeShiftTable).values({
+          empId: employeeId,
+          shiftStart: shiftStart.toLocaleTimeString("en-IN", { hour12: false }),
+          shiftEnd: shiftEnd.toLocaleTimeString("en-IN", { hour12: false }),
+          breakMinutes,
+        });
 
-      if (availableLeaveTypes.length > 0) {
-        await Promise.all(
-          availableLeaveTypes.map(async (leaveType) => {
-            const [newLeaveBalance] = await ctx.db
-              .insert(leaveBalanceTable)
-              .values({
-                id: generateId(15),
-                leaveTypeId: leaveType.id,
-                empId: employeeId,
-                balance: leaveType.daysAllowed,
-                createdAt: new Date(),
-              });
-            return newLeaveBalance.affectedRows === 1;
-          }),
-        );
+        if (availableLeaveTypes.length > 0) {
+          await Promise.all(
+            availableLeaveTypes.map(async (leaveType) => {
+              const [newLeaveBalance] = await ctx.db
+                .insert(leaveBalanceTable)
+                .values({
+                  id: generateId(15),
+                  leaveTypeId: leaveType.id,
+                  empId: employeeId,
+                  balance: leaveType.daysAllowed,
+                  createdAt: new Date(),
+                });
+              return newLeaveBalance.affectedRows === 1;
+            }),
+          );
+        }
+        return {
+          status: "SUCCESS",
+          message: "Employee added successfully"
+        }
+      } catch (error) {
+        return {
+          status: "FAILED",
+          message: "Unable to add employee, please try again"
+        }
       }
     }),
 
   getAttendanceStatus: protectedProcedure.query(async ({ ctx }) => {
     const { id } = ctx.session.user;
-
     const currentDate = getCurrentDate();
+
     const employeeAttendance =
       await ctx.db.query.employeeAttendanceTable.findFirst({
         where: and(
@@ -140,6 +151,7 @@ export const employeeRouter = createTRPCRouter({
           eq(employeeAttendanceTable.date, currentDate),
         ),
       });
+
     return {
       isAttendanceMarked: !!employeeAttendance,
       isShiftComplete: employeeAttendance?.punchOut !== null,
@@ -148,8 +160,9 @@ export const employeeRouter = createTRPCRouter({
   }),
 
   punchIn: protectedProcedure.mutation(async ({ ctx }) => {
-    const punchIn = new Date().toLocaleTimeString("en-IN", { hour12: false });
     const { id } = ctx.session.user;
+    const punchIn = new Date().toLocaleTimeString("en-IN", { hour12: false });
+
     const [attendancePunchInQuery] = await ctx.db
       .insert(employeeAttendanceTable)
       .values({
@@ -158,10 +171,12 @@ export const employeeRouter = createTRPCRouter({
         date: getCurrentDate(),
         punchIn,
       });
+
     return {
       punchInSuccess: attendancePunchInQuery.affectedRows === 1,
     };
   }),
+
   punchOut: protectedProcedure
     .input(AttendancePunchOutSchema)
     .mutation(async ({ ctx, input }) => {
@@ -199,6 +214,7 @@ export const employeeRouter = createTRPCRouter({
         punchOutSuccess: attendancePunchOutQuery.affectedRows === 1,
       };
     }),
+
   leaveApply: protectedProcedure
     .input(LeaveApplySchema)
     .mutation(

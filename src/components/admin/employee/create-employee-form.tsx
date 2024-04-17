@@ -95,11 +95,7 @@ export default function CreateEmployeeForm() {
     });
   };
 
-  const selectedDept = watch("deptId");
-  const selectedDeptId =
-    departmentList.find((department) => department.name === selectedDept)?.id ??
-    "";
-
+  const selectedDeptId = watch("deptId");
   const designationByDept = designationList.filter(
     (designation) => designation.deptId === selectedDeptId,
   );
@@ -337,10 +333,7 @@ export default function CreateEmployeeForm() {
                       </FormControl>
                       <SelectContent>
                         {departmentList.map((department) => (
-                          <SelectItem
-                            key={department.id}
-                            value={department.name}
-                          >
+                          <SelectItem key={department.id} value={department.id}>
                             {department.name}
                           </SelectItem>
                         ))}
@@ -373,7 +366,7 @@ export default function CreateEmployeeForm() {
                           designationByDept.map((designation) => (
                             <SelectItem
                               key={designation.id}
-                              value={designation.name}
+                              value={designation.id}
                             >
                               {designation.name}
                             </SelectItem>

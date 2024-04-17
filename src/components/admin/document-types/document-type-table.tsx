@@ -6,6 +6,7 @@ import type { DocumentTypeSchemaType } from "@/lib/types";
 import type { ColumnDef } from "@tanstack/react-table";
 // UI
 import { DataTable } from "@/components/admin/data-table";
+import { DOCUMENT_FILE_TYPES_DISPLAY } from "@/constants";
 
 export default function DocumentTypeTable({
   initialData,
@@ -29,6 +30,7 @@ const DOCUMENT_TYPE_COLUMNS: ColumnDef<DocumentTypeSchemaType>[] = [
   {
     accessorKey: "fileType",
     header: "File type",
+    cell: ({ row }) => DOCUMENT_FILE_TYPES_DISPLAY[row.original.fileType],
   },
   {
     accessorKey: "requiredFiles",

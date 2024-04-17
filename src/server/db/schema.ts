@@ -323,7 +323,7 @@ export const employeDocumentTableRelations = relations(
       fields: [employeeDocumentTable.documentTypeId],
       references: [documentTypeTable.id],
     }),
-    documentFile: many(employeeDocumentFileTable),
+    documentFiles: many(employeeDocumentFileTable),
   }),
 );
 
@@ -343,7 +343,7 @@ export const employeeDocumentFileTable = mysqlTable("employee_document_file", {
 export const employeeDocumentFileTableRelations = relations(
   employeeDocumentFileTable,
   ({ one }) => ({
-    document: one(employeeDocumentTable, {
+    employeeDocument: one(employeeDocumentTable, {
       fields: [employeeDocumentFileTable.empDocumentId],
       references: [employeeDocumentTable.id],
     }),

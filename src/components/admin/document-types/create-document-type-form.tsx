@@ -47,7 +47,10 @@ export default function CreateDocumentTypeForm() {
       requiredFiles: 1,
     },
   });
-  const { control, handleSubmit, formState } = createDocumentTypeForm;
+  const { control, handleSubmit, formState, reset } = createDocumentTypeForm;
+
+  const { refetch: refetchDocumentTypes } =
+    api.documentRouter.getTypes.useQuery();
 
   const { mutateAsync: createDocumentType } =
     api.documentRouter.createDocumentType.useMutation();
@@ -56,12 +59,19 @@ export default function CreateDocumentTypeForm() {
     CreateDocumentTypeSchemaType
   > = async (formData) => {
     await createDocumentType(formData);
+    await refetchDocumentTypes();
+    reset({
+      id: generateId(15),
+      type: "",
+      fileType: "image/jpg",
+      requiredFiles: 1,
+    });
   };
 
   return (
     <Form {...createDocumentTypeForm}>
       <form onSubmit={handleSubmit(createDocumentTypeAction)}>
-        <Card className="w-96">
+        <Card className="sticky top-0 w-96">
           <CardHeader>
             <CardTitle>Create document type</CardTitle>
             <CardDescription>
@@ -118,13 +128,13 @@ export default function CreateDocumentTypeForm() {
                 name="requiredFiles"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>No. of Files</FormLabel>
+                    <FormLabel>Required files</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="number"
                         min={1}
-                        className="hide-input-spinner w-12"
+                        className="hide-input-spinner w-14"
                         onChange={(event) =>
                           field.onChange(Number(event.target.value))
                         }
