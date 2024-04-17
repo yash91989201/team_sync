@@ -108,6 +108,7 @@ export const departmentTableRelations = relations(
   departmentTable,
   ({ many }) => ({
     designation: many(designationTable),
+    employees: many(employeeProfileTable),
   }),
 );
 
@@ -129,11 +130,12 @@ export const designationTable = mysqlTable("designation", {
 
 export const designationTableRelations = relations(
   designationTable,
-  ({ one }) => ({
+  ({ one, many }) => ({
     department: one(departmentTable, {
       fields: [designationTable.deptId],
       references: [departmentTable.id],
     }),
+    employees: many(employeeProfileTable),
   }),
 );
 
