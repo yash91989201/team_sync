@@ -40,13 +40,13 @@ import { Button } from "@ui/button";
 import { Calendar } from "@ui/calendar";
 import { RadioGroup, RadioGroupItem } from "@ui/radio-group";
 // CUSTOM COMPONENTS
+import { SingleFileDropzone } from "@sharedComponents/single-file-dropzone";
 import EmployeeShiftTimePicker from "@/components/admin/employee/employee-shift-time-picker";
 // CONSTANTS
 import { MAX_FILE_SIZE } from "@/constants";
 // ICONS
-import { Loader2 } from "lucide-react";
+import { Asterisk, Loader2 } from "lucide-react";
 import { CalendarIcon } from "lucide-react";
-import { SingleFileDropzone } from "@sharedComponents/single-file-dropzone";
 
 export default function CreateEmployeeForm() {
   const shiftStart = new Date(new Date().setHours(10, 0, 0, 0));
@@ -676,6 +676,7 @@ export default function CreateEmployeeForm() {
           <Card className="flex-1">
             <CardHeader>
               <CardDescription>
+                <Asterisk className="inline size-4 align-super text-red-500" />
                 Confirm the above details before creating a new employee
               </CardDescription>
             </CardHeader>

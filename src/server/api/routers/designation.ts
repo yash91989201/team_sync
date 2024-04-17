@@ -7,7 +7,15 @@ import { CreateDesignationSchema } from "@/lib/schema";
 
 export const designationRouter = createTRPCRouter({
   getAll: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.designationTable.findMany();
+    return ctx.db.query.designationTable.findMany({
+      with: {
+        department: {
+          columns: {
+            name: true
+          }
+        },
+      }
+    });
   }),
   createNew: protectedProcedure
     .input(CreateDesignationSchema)
