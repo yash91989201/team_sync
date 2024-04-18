@@ -4,7 +4,7 @@ import { useState } from "react";
 import { generateId } from "lucia";
 import { CommandLoading } from "cmdk";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useFieldArray, useForm, useFormContext } from "react-hook-form";
+import { useForm } from "react-hook-form";
 // UTILS
 import { api } from "@/trpc/react";
 import { cn, uploadEmployeeDocuments } from "@/lib/utils";
@@ -40,7 +40,6 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -50,11 +49,12 @@ import { Input } from "@ui/input";
 import { Button } from "@ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
 // CUSTOM COMPONENTS
-import { SingleFileDropzone } from "@sharedComponents/single-file-dropzone";
+import { EmployeeDocFileInput } from "@/components/admin/employee-documents/employee-doc-file-input";
 // ICONS
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 // CONSTANTS
 import { MAX_FILE_SIZE } from "@/constants";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function CreateEmployeeDocumentForm() {
   const [employeeSearchQuery, setEmployeeSearchQuery] = useState("");
@@ -63,19 +63,25 @@ export default function CreateEmployeeDocumentForm() {
     resolver: zodResolver(CreateEmployeeDocumentFormSchema),
     defaultValues: {
       id: generateId(15),
-      empId: "",
       uniqueDocumentId: "",
       verified: false,
-      documents: [
-        {
-          id: generateId(15),
-          file: new File([], ""),
-        },
-      ],
     },
   });
-  const { control, handleSubmit, watch, setValue, formState } =
-    createDocumentTypeForm;
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    formState,
+    getValues,
+    reset,
+  } = createDocumentTypeForm;
+
+  const selectedDocumentType = getValues("documentType");
+  const { requiredFiles = 1, fileType } = selectedDocumentType ?? {};
+
+  const { refetch: refetchEmployeesDocuments } =
+    api.documentRouter.getEmployeesDocuments.useQuery();
 
   const { data: employees = [], isLoading: isEmployeesLoading } =
     api.employeeRouter.getByCodeOrName.useQuery({
@@ -96,8 +102,7 @@ export default function CreateEmployeeDocumentForm() {
   const createDocumentTypeAction: SubmitHandler<
     CreateEmployeeDocumentFormSchemaType
   > = async (formData) => {
-    const { documents } = formData;
-    const files = documents.map((document) => document.file);
+    const { files } = formData;
     // first upload documents
     const fileUploadRes = await uploadEmployeeDocuments(files);
 
@@ -114,6 +119,8 @@ export default function CreateEmployeeDocumentForm() {
       documentFiles: uploadedFilesData,
       ...formData,
     });
+    await refetchEmployeesDocuments();
+    reset();
   };
 
   return (
@@ -121,12 +128,9 @@ export default function CreateEmployeeDocumentForm() {
       <form onSubmit={handleSubmit(createDocumentTypeAction)}>
         <Card className="w-96">
           <CardHeader>
-            <CardTitle>Create new department</CardTitle>
-            <CardDescription>
-              you can add employees to a department
-            </CardDescription>
+            <CardTitle>Add employee documents</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
             <FormField
               name="empId"
               control={control}
@@ -211,7 +215,7 @@ export default function CreateEmployeeDocumentForm() {
                       if (selectedDocumentType === undefined) return;
                       setValue("documentType", selectedDocumentType);
                     }}
-                    defaultValue={field.value}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -220,11 +224,11 @@ export default function CreateEmployeeDocumentForm() {
                     </FormControl>
                     <SelectContent>
                       {isDocumentTypesLoading ? (
-                        <p className="px-3 py-2 text-sm text-gray-400">
+                        <p className="px-3 py-2 text-sm text-gray-600">
                           Loading document types...
                         </p>
                       ) : documentTypes.length === 0 ? (
-                        <p className="px-3 py-2 text-sm text-gray-400">
+                        <p className="px-3 py-2 text-sm text-gray-600">
                           No document types available
                         </p>
                       ) : (
@@ -256,16 +260,60 @@ export default function CreateEmployeeDocumentForm() {
                 </FormItem>
               )}
             />
-            <DocumentsField />
+
+            {selectedDocumentType === undefined ? null : (
+              <>
+                <FormField
+                  control={control}
+                  name="files"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {selectedDocumentType.type} images/files
+                      </FormLabel>
+                      <FormControl>
+                        <EmployeeDocFileInput
+                          value={field.value}
+                          onChange={field.onChange}
+                          dropzoneOptions={{
+                            maxSize: MAX_FILE_SIZE.PROFILE_IMG,
+                            accept: {
+                              [`${fileType}`]: [],
+                            },
+                            maxFiles: requiredFiles,
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={control}
+                  name="verified"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center gap-3 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal">
+                        Are documents verified ?
+                      </FormLabel>
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
           </CardContent>
           <CardFooter>
             <Button
-              className="flex items-center gap-3"
+              className="flex items-center gap-1"
               disabled={formState.isSubmitting}
             >
-              {formState.isSubmitting && (
-                <Loader2 className="mr-3 animate-spin" />
-              )}
+              {formState.isSubmitting && <Loader2 className="animate-spin" />}
               <span>Create Department</span>
             </Button>
           </CardFooter>
@@ -274,75 +322,3 @@ export default function CreateEmployeeDocumentForm() {
     </Form>
   );
 }
-
-const DocumentsField = () => {
-  const { control, getValues, formState } =
-    useFormContext<CreateEmployeeDocumentFormSchemaType>();
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "documents",
-  });
-
-  const selectedDocumentType = getValues("documentType");
-  const { requiredFiles = 1, fileType } = selectedDocumentType ?? {};
-  const documentLength = getValues("documents").length;
-
-  const addDocumentField = () => {
-    append({
-      id: generateId(15),
-      file: new File([], ""),
-    });
-  };
-
-  const deleteDocumentField = (index: number) => {
-    remove(index);
-  };
-
-  if (selectedDocumentType === undefined) return null;
-
-  return (
-    <div>
-      {fields.map((document, index) => (
-        <div key={index}>
-          <FormField
-            control={control}
-            name={`documents.${index}.file`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Document File</FormLabel>
-                <FormControl>
-                  <SingleFileDropzone
-                    value={field.value}
-                    onChange={field.onChange}
-                    width={160}
-                    height={160}
-                    dropzoneOptions={{
-                      maxSize: MAX_FILE_SIZE.PROFILE_IMG,
-                      accept: {
-                        [`${fileType}`]: [],
-                      },
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {index + 1 <= requiredFiles && (
-            <Button type="button" onClick={() => deleteDocumentField(index)}>
-              Remove
-            </Button>
-          )}
-        </div>
-      ))}
-      <p className="text-[0.8rem] font-medium text-destructive">
-        {formState.errors.documents?.root?.message}
-      </p>
-      {documentLength !== requiredFiles && (
-        <Button type="button" onClick={addDocumentField}>
-          Add
-        </Button>
-      )}
-    </div>
-  );
-};

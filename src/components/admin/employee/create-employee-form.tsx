@@ -40,7 +40,7 @@ import { Button } from "@ui/button";
 import { Calendar } from "@ui/calendar";
 import { RadioGroup, RadioGroupItem } from "@ui/radio-group";
 // CUSTOM COMPONENTS
-import { SingleFileDropzone } from "@sharedComponents/single-file-dropzone";
+import { EmployeeImageField } from "@/components/admin/employee/employee-image-field";
 import EmployeeShiftTimePicker from "@/components/admin/employee/employee-shift-time-picker";
 // CONSTANTS
 import { MAX_FILE_SIZE } from "@/constants";
@@ -177,7 +177,7 @@ export default function CreateEmployeeForm() {
                   render={({ field }) => (
                     <FormItem className="flex flex-col items-center justify-center">
                       <FormControl>
-                        <SingleFileDropzone
+                        <EmployeeImageField
                           value={field.value}
                           onChange={field.onChange}
                           width={120}
@@ -608,7 +608,7 @@ export default function CreateEmployeeForm() {
                           if (value === "yes") field.onChange(true);
                           else field.onChange(false);
                         }}
-                        defaultValue={field.value ? "yes" : "no"}
+                        value={field.value ? "yes" : "no"}
                         className="flex flex-col space-y-1"
                       >
                         <FormItem className="flex items-center space-x-3 space-y-0">

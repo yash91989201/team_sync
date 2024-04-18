@@ -12,6 +12,7 @@ import {
 // CUSTOM COMPONENTS
 import AdminMainWrapper from "@/components/admin/admin-main-wrapper";
 import CreateEmployeeDocumentForm from "@/components/admin/employee-documents/create-employee-document";
+import EmployeesDocumentsTable from "@/components/admin/employee-documents/employees-documents-table";
 
 export default async function EmployeeDocumentsPage() {
   await authPage("ADMIN");
@@ -27,7 +28,9 @@ export default async function EmployeeDocumentsPage() {
           </CardTitle>
           <CardDescription>Documents added for employees</CardDescription>
         </CardHeader>
-        <CardContent></CardContent>
+        <CardContent>
+          <EmployeesDocumentsTable initialData={employeesDocuments} />
+        </CardContent>
       </Card>
       <CreateEmployeeDocumentForm />
     </AdminMainWrapper>

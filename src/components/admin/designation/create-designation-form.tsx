@@ -62,7 +62,6 @@ export default function CreateDesignationForm() {
     await createDesignation(formData);
     await refetchDesignations();
     reset({
-      name: "",
       deptId: "",
     });
   };

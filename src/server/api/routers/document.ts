@@ -19,8 +19,13 @@ export const documentRouter = createTRPCRouter({
   getEmployeesDocuments: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.employeeDocumentTable.findMany({
       with: {
+        documentType: true,
         documentFiles: true,
-        employee: true
+        employee: {
+          columns: {
+            password: false,
+          }
+        }
       }
     })
   }),

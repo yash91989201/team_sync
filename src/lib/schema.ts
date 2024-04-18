@@ -98,23 +98,14 @@ export const CreateDocumentTypeSchema = DocumentTypeSchema.extend({
 
 export const CreateEmployeeDocumentFormSchema = z.object({
   id: z.string(),
-  empId: z.string(),
+  empId: z.string({ required_error: "Employee is required" }),
   documentTypeId: z.string(),
   documentType: DocumentTypeSchema,
   uniqueDocumentId: z.string().optional(),
   verified: z.boolean(),
-  // document list
-  documents: z.array(z.object({
-    id: z.string(),
-    file: z
-      .instanceof(File, { message: "File is required." })
-      .refine(
-        (file) => file.size <= MAX_FILE_SIZE.PROFILE_IMG,
-        "Max image size is 5MB.",
-      )
-  }))
-}).refine((schema) => schema.documents.length === schema.documentType.requiredFiles,
-  (schema) => ({ message: `Exactly ${schema.documentType.requiredFiles} files are required.`, path: ["documents"] }))
+  // files
+  files: z.array(z.instanceof(File))
+})
 
 export const CreateEmployeeDocumentInputSchema = z.object({
   id: z.string(),

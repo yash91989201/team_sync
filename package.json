@@ -67,6 +67,7 @@
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.51.1",
     "react-mail": "^0.0.1",
+    "react-pdf": "^7.7.1",
     "server-only": "^0.0.1",
     "sharp": "^0.33.3",
     "sonner": "^1.4.41",
@@ -76,6 +77,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@hookform/devtools": "^4.3.1",
     "@types/eslint": "^8.56.2",
     "@types/node": "^20.11.20",
     "@types/react": "^18.2.57",

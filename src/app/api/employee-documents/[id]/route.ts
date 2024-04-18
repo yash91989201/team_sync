@@ -14,7 +14,11 @@ export async function GET(
 
     const documentFile = await res.blob();
 
-    return new Response(documentFile);
+    return new Response(documentFile, {
+        headers: {
+            "Content-Type": fileData.file_type
+        }
+    });
 }
 
 export async function PATCH(

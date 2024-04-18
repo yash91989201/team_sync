@@ -45,7 +45,7 @@ const ERROR_MESSAGES = {
   },
 };
 
-const SingleFileDropzone = React.forwardRef<HTMLInputElement, InputProps>(
+const EmployeeImageField = React.forwardRef<HTMLInputElement, InputProps>(
   (
     { dropzoneOptions, width, height, value, className, disabled, onChange },
     ref,
@@ -139,7 +139,10 @@ const SingleFileDropzone = React.forwardRef<HTMLInputElement, InputProps>(
 
           {imageUrl ? (
             // Image Preview
-            <picture style={{ width, height }} className="rounded-full overflow-hidden">
+            <picture
+              style={{ width, height }}
+              className="overflow-hidden rounded-full"
+            >
               <img
                 className="h-full w-full object-cover"
                 src={imageUrl}
@@ -175,12 +178,14 @@ const SingleFileDropzone = React.forwardRef<HTMLInputElement, InputProps>(
         </div>
 
         {/* Error Text */}
-        <div className="mt-1 text-xs text-red-500 text-center">{errorMessage}</div>
+        <div className="mt-1 text-center text-xs text-red-500">
+          {errorMessage}
+        </div>
       </div>
     );
   },
 );
-SingleFileDropzone.displayName = "SingleImageDropzone";
+EmployeeImageField.displayName = "SingleImageDropzone";
 
 const Button = React.forwardRef<
   HTMLButtonElement,
@@ -204,4 +209,4 @@ const Button = React.forwardRef<
 });
 Button.displayName = "Button";
 
-export { SingleFileDropzone };
+export { EmployeeImageField };

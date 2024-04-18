@@ -11,7 +11,6 @@ export async function POST(request: Request) {
       .create(formData);
 
     const imageUrl = `${env.NEXT_SITE_URL}/api/profile-image/${uploadImageQuery.id}`;
-    console.log(uploadImageQuery);
 
     return Response.json({
       status: "SUCCESS",
