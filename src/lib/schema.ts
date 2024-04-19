@@ -10,10 +10,12 @@ import {
   employeeDocumentFileTable,
   employeeDocumentTable,
   employeeProfileTable,
+  employeeSalaryComponentTable,
   employeeShiftTable,
   leaveBalanceTable,
   leaveRequestTable,
   leaveTypeTable,
+  salaryComponentTable,
   userTable,
 } from "@/server/db/schema";
 // CONSTANTS
@@ -37,6 +39,8 @@ export const EmployeeDocumentSchema = createSelectSchema(employeeDocumentTable);
 export const EmployeeDocumentFileSchema = createSelectSchema(
   employeeDocumentFileTable,
 );
+export const SalaryComponentsSchema = createSelectSchema(salaryComponentTable)
+export const EmployeeSalaryComponentSchema = createSelectSchema(employeeSalaryComponentTable)
 // AUTH SCHEMAS
 export const AdminSignupSchema = z.object({
   name: z.string().min(6, { message: "Full name is required." }),
@@ -76,7 +80,7 @@ export const CreateProfileImageSchema = z.object({
 export const CreateDepartmentSchema = z.object({
   name: z
     .string()
-    .min(2, { message: "Min. allowed length is 4" })
+    .min(4, { message: "Min. allowed length is 4" })
     .max(128, { message: "Max. allowed length is 128" }),
 });
 
@@ -200,4 +204,12 @@ export const ApproveLeaveSchema = z.object({
 export const RejectLeaveSchema = z.object({
   leaveRequestId: z.string(),
   empId: z.string(),
+});
+
+// DEPARTMENT SCHEMAS
+export const CreateSalaryComponentSchema = z.object({
+  name: z
+    .string()
+    .min(4, { message: "Min. allowed length is 4" })
+    .max(128, { message: "Max. allowed length is 128" }),
 });

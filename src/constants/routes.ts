@@ -132,8 +132,8 @@ export const ADMIN_ROUTES: NavLinkProps[] = [
       },
       {
         Icon: LayoutPanelTop,
-        label: "Salary structure",
-        href: "/admin/payroll/salary-structure",
+        label: "Salary components",
+        href: "/admin/payroll/salary-components",
         matchExact: false,
         isNested: false,
         isChildLink: true,
