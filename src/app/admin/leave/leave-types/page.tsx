@@ -1,5 +1,6 @@
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 // UTILS
-import { api } from "@/trpc/server";
+import { apiHelper } from "@/trpc/server";
 import { authPage } from "@/server/helpers";
 // UI
 import {
@@ -17,7 +18,8 @@ import CreateLeaveTypeForm from "@/components/admin/leave/create-leave-type-form
 export default async function LeaveTypesPage() {
   await authPage("ADMIN");
 
-  const leaveTypes = await api.leaveRouter.getLeaveTypes();
+  await apiHelper.leaveRouter.getLeaveTypes.prefetch();
+  const leaveTypes = dehydrate(apiHelper.queryClient);
 
   return (
     <AdminMainWrapper className="flex gap-3">
@@ -27,7 +29,9 @@ export default async function LeaveTypesPage() {
           <CardDescription>Types of leaves employees can take</CardDescription>
         </CardHeader>
         <CardContent>
-          <LeaveTypeTable initialData={leaveTypes} />
+          <HydrationBoundary state={leaveTypes}>
+            <LeaveTypeTable />
+          </HydrationBoundary>
         </CardContent>
       </Card>
       <CreateLeaveTypeForm />

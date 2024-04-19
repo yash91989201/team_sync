@@ -15,13 +15,8 @@ type DepartmentTableProps = DepartmentType & {
   }[];
 };
 
-export default function DepartmentTable({
-  initialData,
-}: {
-  initialData: DepartmentTableProps[];
-}) {
-  const { data } = api.departmentRouter.getAll.useQuery(undefined, {
-    initialData,
+export default function DepartmentTable() {
+  const { data = [] } = api.departmentRouter.getAll.useQuery(undefined, {
     refetchOnMount: false,
     refetchOnReconnect: false,
   });

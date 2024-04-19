@@ -1,5 +1,6 @@
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 // UTILS
-import { api } from "@/trpc/server";
+import { apiHelper } from "@/trpc/server";
 import { authPage } from "@/server/helpers";
 // UI
 import {
@@ -17,7 +18,9 @@ import CreateSalaryComponentForm from "@/components/admin/payroll/create-salary-
 export default async function SalaryComponentsPage() {
   await authPage("ADMIN");
 
-  const salaryComponents = await api.salaryRouter.getComponents();
+  // const salaryComponents = await api.salaryRouter.getComponents();
+  await apiHelper.salaryRouter.getComponents.prefetch();
+  const salaryComponents = dehydrate(apiHelper.queryClient);
 
   return (
     <AdminMainWrapper className="flex gap-3">
@@ -31,7 +34,9 @@ export default async function SalaryComponentsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <SalaryComponentTable initialData={salaryComponents} />
+          <HydrationBoundary state={salaryComponents}>
+            <SalaryComponentTable />
+          </HydrationBoundary>
         </CardContent>
       </Card>
       <CreateSalaryComponentForm />

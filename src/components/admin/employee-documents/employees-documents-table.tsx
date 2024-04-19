@@ -20,19 +20,8 @@ type EmployeesDocumentsTableProps = EmployeeDocumentSchemaType & {
   documentFiles: EmployeeDocumentFileSchemaType[];
 };
 
-export default function EmployeesDocumentsTable({
-  initialData,
-}: {
-  initialData: EmployeesDocumentsTableProps[];
-}) {
-  const { data = [] } = api.documentRouter.getEmployeesDocuments.useQuery(
-    undefined,
-    {
-      initialData,
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-    },
-  );
+export default function EmployeesDocumentsTable() {
+  const { data = [] } = api.documentRouter.getEmployeesDocuments.useQuery();
 
   return <DataTable columns={DOCUMENT_TYPE_COLUMNS} data={data} />;
 }

@@ -7,16 +7,8 @@ import type { ColumnDef } from "@tanstack/react-table";
 // UI
 import { DataTable } from "@/components/admin/data-table";
 
-export default function SalaryComponentTable({
-  initialData,
-}: {
-  initialData: SalaryComponentType[];
-}) {
-  const { data } = api.salaryRouter.getComponents.useQuery(undefined, {
-    initialData,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-  });
+export default function SalaryComponentTable() {
+  const { data = [] } = api.salaryRouter.getComponents.useQuery();
 
   return <DataTable columns={DEPARTMENT_TABLE_COLUMNS} data={data} />;
 }

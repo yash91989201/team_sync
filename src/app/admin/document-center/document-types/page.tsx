@@ -1,5 +1,6 @@
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 // UTILS
-import { api } from "@/trpc/server";
+import { apiHelper } from "@/trpc/server";
 import { authPage } from "@/server/helpers";
 // UI
 import {
@@ -11,13 +12,14 @@ import {
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
 import AdminMainWrapper from "@/components/admin/admin-main-wrapper";
-import CreateDocumentTypeForm from "@/components/admin/document-types/create-document-type-form";
 import DocumentTypeTable from "@/components/admin/document-types/document-type-table";
+import CreateDocumentTypeForm from "@/components/admin/document-types/create-document-type-form";
 
 export default async function DocumentTypesPage() {
   await authPage("ADMIN");
 
-  const documentTypes = await api.documentRouter.getTypes();
+  await apiHelper.documentRouter.getTypes.prefetch();
+  const documentTypes = dehydrate(apiHelper.queryClient);
 
   return (
     <AdminMainWrapper className="flex gap-3">
@@ -31,7 +33,9 @@ export default async function DocumentTypesPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <DocumentTypeTable initialData={documentTypes} />
+          <HydrationBoundary state={documentTypes}>
+            <DocumentTypeTable />
+          </HydrationBoundary>
         </CardContent>
       </Card>
       <CreateDocumentTypeForm />

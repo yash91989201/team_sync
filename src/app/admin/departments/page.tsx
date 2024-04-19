@@ -1,5 +1,6 @@
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 // UTILS
-import { api } from "@/trpc/server";
+import { apiHelper } from "@/trpc/server";
 import { authPage } from "@/server/helpers";
 // UI
 import {
@@ -17,7 +18,8 @@ import CreateDepartmentForm from "@/components/admin/department/create-departmen
 export default async function DepartmentsPage() {
   await authPage("ADMIN");
 
-  const departments = await api.departmentRouter.getAll();
+  await apiHelper.departmentRouter.getAll.prefetch();
+  const departments = dehydrate(apiHelper.queryClient);
 
   return (
     <AdminMainWrapper className="flex gap-3">
@@ -31,7 +33,9 @@ export default async function DepartmentsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <DepartmentTable initialData={departments} />
+          <HydrationBoundary state={departments}>
+            <DepartmentTable />
+          </HydrationBoundary>
         </CardContent>
       </Card>
       <CreateDepartmentForm />

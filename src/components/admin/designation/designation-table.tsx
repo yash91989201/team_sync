@@ -13,16 +13,8 @@ type DesignationTableProps = DesignationType & {
   };
 };
 
-export default function DesignationTable({
-  initialData,
-}: {
-  initialData: DesignationTableProps[];
-}) {
-  const { data } = api.designationRouter.getAll.useQuery(undefined, {
-    initialData,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-  });
+export default function DesignationTable() {
+  const { data = [] } = api.designationRouter.getAll.useQuery();
 
   return <DataTable columns={DESIGNATION_TABLE_COLUMNS} data={data} />;
 }

@@ -1,8 +1,10 @@
 import "server-only";
 import { headers } from "next/headers";
 import { cache } from "react";
+import superjson from "superjson";
+import { createServerSideHelpers } from "@trpc/react-query/server";
 // UITLS
-import { createCaller } from "@/server/api/root";
+import { appRouter, createCaller } from "@/server/api/root";
 import { createTRPCContext } from "@/server/api/trpc";
 
 /**
@@ -16,6 +18,12 @@ const createContext = cache(() => {
   return createTRPCContext({
     headers: heads,
   });
+});
+
+export const apiHelper = createServerSideHelpers({
+  router: appRouter,
+  ctx: await createContext(),
+  transformer: superjson,
 });
 
 export const api = createCaller(createContext);

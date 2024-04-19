@@ -10,16 +10,8 @@ import { DataTable } from "@/components/admin/data-table";
 // ICONS
 import { ArrowUpDown } from "lucide-react";
 
-export default function LeaveTypeTable({
-  initialData,
-}: {
-  initialData: LeaveTypeSchemaType[];
-}) {
-  const { data } = api.leaveRouter.getLeaveTypes.useQuery(undefined, {
-    initialData,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-  });
+export default function LeaveTypeTable() {
+  const { data = [] } = api.leaveRouter.getLeaveTypes.useQuery();
 
   return <DataTable columns={LEAVE_TABLE_COLUMNS} data={data} />;
 }

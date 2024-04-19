@@ -8,16 +8,8 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/admin/data-table";
 import { DOCUMENT_FILE_TYPES_DISPLAY } from "@/constants";
 
-export default function DocumentTypeTable({
-  initialData,
-}: {
-  initialData: DocumentTypeSchemaType[];
-}) {
-  const { data = [] } = api.documentRouter.getTypes.useQuery(undefined, {
-    initialData,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-  });
+export default function DocumentTypeTable() {
+  const { data = [] } = api.documentRouter.getTypes.useQuery();
 
   return <DataTable columns={DOCUMENT_TYPE_COLUMNS} data={data} />;
 }
