@@ -68,4 +68,20 @@ const LEAVE_TABLE_COLUMNS: ColumnDef<LeaveTypeSchemaType>[] = [
     },
     cell: ({ row }) => (row.original.carryOver ? "yes" : "no"),
   },
+  {
+    accessorKey: "paidLeave",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="p-0 text-base font-semibold text-gray-700 hover:bg-transparent"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Paid leave
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => (row.original.paidLeave ? "yes" : "no"),
+  },
 ];

@@ -46,6 +46,7 @@ export default function CreateLeaveTypeForm() {
       renewPeriod: "month",
       renewPeriodCount: 1,
       carryOver: false,
+      paidLeave: false,
     },
   });
 
@@ -95,21 +96,18 @@ export default function CreateLeaveTypeForm() {
 
             <FormField
               control={control}
-              name="daysAllowed"
+              name="paidLeave"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Allowed days</FormLabel>
+                <FormItem className="flex items-center gap-3 space-y-0">
                   <FormControl>
-                    <Input
-                      {...field}
-                      type="number"
-                      className="hide-input-spinner w-16"
-                      onChange={(e) => {
-                        field.onChange(Number(e.target.value));
-                      }}
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormLabel className="text-sm font-normal">
+                    Is paid leave ?
+                  </FormLabel>
                 </FormItem>
               )}
             />
@@ -128,6 +126,27 @@ export default function CreateLeaveTypeForm() {
                   <FormLabel className="text-sm font-normal">
                     Allow carry over
                   </FormLabel>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={control}
+              name="daysAllowed"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Allowed days</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="number"
+                      className="hide-input-spinner w-16"
+                      onChange={(e) => {
+                        field.onChange(Number(e.target.value));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />

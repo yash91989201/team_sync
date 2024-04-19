@@ -176,6 +176,7 @@ export const CreateLeaveTypeSchema = z.object({
   renewPeriod: z.enum(["month", "year"]),
   renewPeriodCount: z.number(),
   carryOver: z.boolean(),
+  paidLeave: z.boolean().default(false)
 });
 
 export const LeaveApplySchema = z.object({
