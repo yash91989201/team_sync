@@ -355,15 +355,15 @@ export const salaryComponentTable = mysqlTable("salary_component", {
   id: varchar("id", {
     length: 24,
   }).primaryKey(),
-  name: varchar("name", { length: 256 }).unique(),
+  name: varchar("name", { length: 256 }).unique().notNull(),
 })
 
 export const employeeSalaryComponentTable = mysqlTable("employee_salary_component", {
   id: varchar("id", {
     length: 24,
   }).primaryKey(),
-  name: varchar("name", { length: 256 }),
-  amount: int("amount"),
+  name: varchar("name", { length: 256 }).notNull(),
+  amount: int("amount").notNull(),
   // FOREIGN KEY RELATIONS
   empId: varchar("emp_id", {
     length: 24,
