@@ -355,7 +355,7 @@ export const salaryComponentTable = mysqlTable("salary_component", {
   id: varchar("id", {
     length: 24,
   }).primaryKey(),
-  name: varchar("name", { length: 256 }),
+  name: varchar("name", { length: 256 }).unique(),
 })
 
 export const employeeSalaryComponentTable = mysqlTable("employee_salary_component", {
@@ -370,7 +370,10 @@ export const employeeSalaryComponentTable = mysqlTable("employee_salary_componen
   })
     .notNull()
     .references(() => userTable.id),
-})
+}, (empSalaryComponentTable) => ({
+  // UNIQUE DESIGNATIONS ACCORDING TO DEPARTMENT
+  empSalaryComponent: unique().on(empSalaryComponentTable.name, empSalaryComponentTable.empId)
+}))
 
 export const sessionTable = mysqlTable("session", {
   id: varchar("id", {
