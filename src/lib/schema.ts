@@ -128,8 +128,8 @@ export const CreateEmployeeDocumentInputSchema = z.object({
 export const GetEmployeeByQueryInput = z.object({ query: z.string() });
 
 export const CreateEmployeeSchema = z.object({
-  code: z.string(),
-  name: z.string(),
+  code: z.string({ required_error: "Employee code is required" }).min(4, { message: "Min. 4 characters is required." }),
+  name: z.string({ required_error: "Employee name is required" }).min(6, { message: "Full name is required" }),
   email: z.string().email(),
   password: z.string(),
   role: z.literal("EMPLOYEE"),
@@ -146,6 +146,13 @@ export const CreateEmployeeSchema = z.object({
   breakMinutes: z
     .number()
     .min(15, { message: "Min. break hours should be 15 min." }),
+  salaryComponents: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    amount: z.number()
+  })).min(1, {
+    message: "Min. 1 salary component is required"
+  })
 });
 
 export const CreateEmployeeInputSchema = CreateEmployeeSchema.extend({

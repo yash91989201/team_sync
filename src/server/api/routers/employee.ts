@@ -18,6 +18,7 @@ import {
   employeeShiftTable,
   employeeProfileTable,
   employeeAttendanceTable,
+  employeeSalaryComponentTable,
 } from "@/server/db/schema";
 // SCHEMAS
 import {
@@ -64,6 +65,7 @@ export const employeeRouter = createTRPCRouter({
         joiningDate,
         deptId,
         designationId,
+        salaryComponents,
         salary,
         dob,
         location,
@@ -111,6 +113,9 @@ export const employeeRouter = createTRPCRouter({
           shiftEnd: shiftEnd.toLocaleTimeString("en-IN", { hour12: false }),
           breakMinutes,
         });
+
+        const employeeSalaryComponents = salaryComponents.map((salaryComponent) => ({ ...salaryComponent, empId: employeeId }))
+        await ctx.db.insert(employeeSalaryComponentTable).values(employeeSalaryComponents)
 
         if (availableLeaveTypes.length > 0) {
           await Promise.all(

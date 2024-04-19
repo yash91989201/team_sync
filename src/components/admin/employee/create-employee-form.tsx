@@ -42,6 +42,7 @@ import { RadioGroup, RadioGroupItem } from "@ui/radio-group";
 // CUSTOM COMPONENTS
 import { EmployeeImageField } from "@/components/admin/employee/employee-image-field";
 import EmployeeShiftTimePicker from "@/components/admin/employee/employee-shift-time-picker";
+import SalaryComponentsField from "@/components/admin/employee/salary-components-field";
 // CONSTANTS
 import { MAX_FILE_SIZE } from "@/constants";
 // ICONS
@@ -83,12 +84,12 @@ export default function CreateEmployeeForm() {
 
   const { mutateAsync: createEmployee } =
     api.employeeRouter.createNew.useMutation();
+  console.debug(formState.errors);
 
   const createEmployeeAction: SubmitHandler<
     CreateEmployeeFormSchemaType
   > = async (formData) => {
     const { imageUrl } = await uploadProfileImage(formData.profileImage);
-
     await createEmployee({
       ...formData,
       imageUrl,
@@ -118,6 +119,11 @@ export default function CreateEmployeeForm() {
     resetField("shiftEnd");
     resetField("breakMinutes");
   };
+
+  const clearSalaryDetailFields = () => {
+    resetField("salaryComponents", { defaultValue: [] });
+  };
+
   const clearAdditionalDetailFields = () => {
     resetField("isTeamLead", { defaultValue: false });
   };
@@ -541,7 +547,7 @@ export default function CreateEmployeeForm() {
                         type="number"
                         step={15}
                         min={15}
-                        className="hide-input-spinner w-12"
+                        className="hide-input-spinner w-14"
                         onChange={(event) =>
                           field.onChange(Number(event.target.value))
                         }
@@ -563,7 +569,7 @@ export default function CreateEmployeeForm() {
           </Card>
         </div>
 
-        {/*additional options*/}
+        {/*salary component options*/}
         <div
           className="flex items-start gap-3"
           aria-label="4 Employee additional options section"
@@ -572,6 +578,55 @@ export default function CreateEmployeeForm() {
             <CardHeader className="flex-row items-center gap-3 space-y-0">
               <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
                 <span>4</span>
+              </div>
+              <div className="mt-0">
+                <CardTitle className="text-xl text-gray-700">
+                  Salary Details
+                </CardTitle>
+                <CardDescription>
+                  employee&apos;s salary details
+                </CardDescription>
+              </div>
+            </CardHeader>
+          </Card>
+          <Card className="flex-1">
+            <CardHeader className="flex flex-row items-center gap-3 space-y-0 md:hidden">
+              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
+                <span>4</span>
+              </div>
+              <div className="mt-0">
+                <CardTitle className="text-xl text-gray-700">
+                  Salary Details
+                </CardTitle>
+                <CardDescription>
+                  Add amounts for salary components
+                </CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent className="md:p-6">
+              <SalaryComponentsField />
+            </CardContent>
+            <CardFooter className="flex justify-end">
+              <Button
+                variant="outline"
+                type="button"
+                onClick={clearSalaryDetailFields}
+              >
+                Clear Section
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+
+        {/*additional options*/}
+        <div
+          className="flex items-start gap-3"
+          aria-label="5 Employee additional options section"
+        >
+          <Card className="hidden w-96 md:flex">
+            <CardHeader className="flex-row items-center gap-3 space-y-0">
+              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
+                <span>5</span>
               </div>
               <div className="mt-0">
                 <CardTitle className="text-xl text-gray-700">
