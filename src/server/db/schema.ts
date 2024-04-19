@@ -190,6 +190,7 @@ export const leaveTypeTable = mysqlTable("leave_type", {
   renewPeriod: mysqlEnum("renew_period", ["month", "year"]).notNull(),
   renewPeriodCount: int("renew_period_count").notNull(),
   carryOver: boolean("carry_over").default(false).notNull(),
+  paidLeave: boolean("paid_leave").default(false),
 });
 
 export const leaveTypeTableRelations = relations(
@@ -349,6 +350,27 @@ export const employeeDocumentFileTableRelations = relations(
     }),
   }),
 );
+
+export const salaryComponentTable = mysqlTable("salary_component", {
+  id: varchar("id", {
+    length: 24,
+  }).primaryKey(),
+  name: varchar("name", { length: 256 }),
+})
+
+export const employeeSalaryComponentTable = mysqlTable("employee_salary_component", {
+  id: varchar("id", {
+    length: 24,
+  }).primaryKey(),
+  name: varchar("name", { length: 256 }),
+  amount: int("amount"),
+  // FOREIGN KEY RELATIONS
+  empId: varchar("emp_id", {
+    length: 24,
+  })
+    .notNull()
+    .references(() => userTable.id),
+})
 
 export const sessionTable = mysqlTable("session", {
   id: varchar("id", {
