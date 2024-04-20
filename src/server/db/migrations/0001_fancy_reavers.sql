@@ -1,1 +1,0 @@
-ALTER TABLE `employee_document_file` ADD `name` varchar(256);

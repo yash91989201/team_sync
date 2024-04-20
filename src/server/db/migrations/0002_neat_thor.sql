@@ -1,1 +1,0 @@
-ALTER TABLE `employee_document_file` DROP COLUMN `name`;

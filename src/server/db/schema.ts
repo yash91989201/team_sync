@@ -90,7 +90,7 @@ export const employeeProfileTableRelations = relations(
       fields: [employeeProfileTable.deptId],
       references: [departmentTable.id]
     }),
-    deisgnation: one(designationTable, {
+    designation: one(designationTable, {
       fields: [employeeProfileTable.designationId],
       references: [designationTable.id]
     })

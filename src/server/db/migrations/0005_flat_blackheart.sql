@@ -1,2 +1,0 @@
-ALTER TABLE `employee_salary_component` ADD CONSTRAINT `employee_salary_component_name_emp_id_unique` UNIQUE(`name`,`emp_id`);--> statement-breakpoint
-ALTER TABLE `salary_component` ADD CONSTRAINT `salary_component_name_unique` UNIQUE(`name`);
