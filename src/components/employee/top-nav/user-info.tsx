@@ -1,3 +1,5 @@
+// UTILS
+import { api } from "@/trpc/react";
 // CUSTOM HOOKS
 import useUser from "@/hooks/use-user";
 // UI
@@ -9,7 +11,8 @@ export default function UserInfo() {
   if (!isLoggedIn) return null;
   if (user === undefined) return null;
 
-  const { name, imageUrl } = user;
+  const { name, role, imageUrl } = user;
+  const { data: employeeProfile } = api.employeeRouter.getProfile.useQuery();
 
   const avatarUrl =
     imageUrl ??
@@ -21,12 +24,12 @@ export default function UserInfo() {
         <AvatarImage src={avatarUrl} alt={name} />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
-      <div className="flex flex-col items-start gap-1">
-        <p className="text-lg font-medium">{name}</p>
-        <p className="rounded-full bg-primary p-1 px-2 text-xs text-white">
-          ADMIN
-        </p>
-      </div>
+      <p className="flex flex-col items-start gap-1">
+        <span className="text-lg font-medium">{name}</span>
+        <span className="text-xs text-gray-600">
+          {role === "ADMIN" ? "Admin" : employeeProfile?.designation.name}
+        </span>
+      </p>
     </div>
   );
 }

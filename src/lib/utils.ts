@@ -11,6 +11,7 @@ import {
   isSameMonth,
   isSameYear,
   isBefore,
+  format,
 } from "date-fns";
 import { clsx } from "clsx";
 import { toast } from "sonner";
@@ -259,6 +260,25 @@ export function getDateRangeByRenewPeriod({
   }
 
   return distinctDateRange;
+}
+
+export function getBalancePeriod(props: {
+  renewPeriod: "month" | "year";
+  renewPeriodCount: number;
+  referenceDate?: Date;
+}): string {
+  const { startDate, endDate } = getRenewPeriodRange(props)
+  console.debug(startDate, endDate)
+  if (props.renewPeriod === "month") {
+    const balanceStart = format(startDate, "do MMM")
+    const balanceEnd = format(endDate, "do MMM")
+    return `${balanceStart} - ${balanceEnd}`
+  }
+  else {
+    const balanceStart = format(startDate, "MM")
+    const balanceEnd = format(endDate, "MM")
+    return `${balanceStart} - ${balanceEnd}`
+  }
 }
 
 export async function uploadProfileImage(

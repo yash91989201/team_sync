@@ -42,16 +42,22 @@ export const employeeRouter = createTRPCRouter({
         ),
       });
     }),
+
   getAll: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.userTable.findMany({
       where: eq(userTable.role, "EMPLOYEE"),
     });
   }),
+
   getProfile: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.employeeProfileTable.findFirst({
       where: eq(employeeProfileTable.empId, ctx.session.user.id),
+      with: {
+        designation: true,
+      }
     })
   }),
+
   createNew: protectedProcedure
     .input(CreateEmployeeInputSchema)
     .mutation(async ({ ctx, input }) => {
@@ -162,6 +168,20 @@ export const employeeRouter = createTRPCRouter({
       isShiftComplete: employeeAttendance?.punchOut !== null,
       attendanceData: employeeAttendance,
     };
+  }),
+
+  getLeaveApplications: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.query.leaveRequestTable.findMany({
+      where: eq(leaveRequestTable.empId, ctx.session.user.id),
+      with: {
+        reviewer: {
+          columns: {
+            password: false,
+          }
+        },
+        leaveType: true,
+      }
+    })
   }),
 
   punchIn: protectedProcedure.mutation(async ({ ctx }) => {
@@ -330,4 +350,5 @@ export const employeeRouter = createTRPCRouter({
         };
       },
     ),
+
 });
