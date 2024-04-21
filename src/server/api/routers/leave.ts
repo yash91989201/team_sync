@@ -1,6 +1,6 @@
 import { generateId } from "lucia";
 import { isSameDay } from "date-fns";
-import { and, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 // UTILS
 import { getDateRangeByRenewPeriod } from "@/lib/utils";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
@@ -27,6 +27,7 @@ export const leaveRouter = createTRPCRouter({
         ...input,
       });
     }),
+
   getAllLeaveRequests: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.leaveRequestTable.findMany({
       with: {
@@ -35,9 +36,13 @@ export const leaveRouter = createTRPCRouter({
       },
     });
   }),
+
   getLeaveTypes: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.leaveTypeTable.findMany();
+    return ctx.db.query.leaveTypeTable.findMany({
+      orderBy: [asc(leaveTypeTable.daysAllowed)]
+    });
   }),
+
   getLeaveBalances: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.leaveBalanceTable.findMany({
       with: {
@@ -45,11 +50,13 @@ export const leaveRouter = createTRPCRouter({
       },
     });
   }),
+
   getLeaveReviewers: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.userTable.findMany({
       where: eq(userTable.role, "ADMIN"),
     });
   }),
+
   approveLeave: protectedProcedure
     .input(ApproveLeaveSchema)
     .mutation(async ({ ctx, input }) => {
@@ -58,6 +65,7 @@ export const leaveRouter = createTRPCRouter({
         .set({ status: "approved" })
         .where(eq(leaveRequestTable.id, input.leaveRequestId));
     }),
+
   rejectLeave: protectedProcedure
     .input(RejectLeaveSchema)
     .mutation(

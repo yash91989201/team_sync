@@ -19,7 +19,7 @@ import LeaveApplicationTable from "@/components/employee/leave/leave-application
 export default async function LeaveApplyPage() {
   await authPage("EMPLOYEE");
 
-  const leaveTypes = await api.leaveRouter.getLeaveTypes();
+  const leaveTypes = await api.employeeRouter.getLeaveTypes();
   await apiHelper.employeeRouter.getLeaveApplications.prefetch();
   const leaveApplications = dehydrate(apiHelper.queryClient);
 

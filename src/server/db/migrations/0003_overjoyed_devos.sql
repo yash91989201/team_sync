@@ -1,0 +1,1 @@
+ALTER TABLE `employee_leave_type` ADD PRIMARY KEY(`emp_id`,`leave_type_id`);

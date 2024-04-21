@@ -12,6 +12,7 @@ import {
   int,
   date,
   unique,
+  primaryKey,
 } from "drizzle-orm/mysql-core";
 
 export const createTable = mysqlTableCreator((name) => name);
@@ -189,8 +190,8 @@ export const leaveTypeTable = mysqlTable("leave_type", {
   daysAllowed: int("days_allowed").notNull(),
   renewPeriod: mysqlEnum("renew_period", ["month", "year"]).notNull(),
   renewPeriodCount: int("renew_period_count").notNull(),
-  carryOver: boolean("carry_over").default(false).notNull(),
-  paidLeave: boolean("paid_leave").default(false),
+  carryOver: boolean("carry_over").notNull(),
+  paidLeave: boolean("paid_leave").notNull(),
 });
 
 export const leaveTypeTableRelations = relations(
@@ -200,6 +201,17 @@ export const leaveTypeTableRelations = relations(
     leaveBalance: many(leaveBalanceTable),
   }),
 );
+
+export const employeeLeaveTypeTable = mysqlTable("employee_leave_type", {
+  empId: varchar("emp_id", {
+    length: 24,
+  }).notNull().references(() => userTable.id),
+  leaveTypeId: varchar("leave_type_id", {
+    length: 24,
+  }).notNull().references(() => leaveTypeTable.id),
+}, (employeeLeaveTypeTable) => ({
+  employeeLeaveId: primaryKey({ name: "employeeLeaveId", columns: [employeeLeaveTypeTable.empId, employeeLeaveTypeTable.leaveTypeId] })
+}))
 
 export const leaveRequestTable = mysqlTable("leave_request", {
   id: varchar("id", {

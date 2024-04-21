@@ -111,7 +111,7 @@ export default function LeaveApplyForm({ leaveTypes }: LeaveApplyFormProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {leaveTypes?.map((leaveType) => (
+                      {leaveTypes.map((leaveType) => (
                         <SelectItem key={leaveType.id} value={leaveType.id}>
                           {leaveType.type}
                         </SelectItem>

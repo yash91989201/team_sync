@@ -48,6 +48,7 @@ import { MAX_FILE_SIZE } from "@/constants";
 // ICONS
 import { Asterisk, Loader2 } from "lucide-react";
 import { CalendarIcon } from "lucide-react";
+import LeaveTypesField from "./leave-types-field";
 
 export default function CreateEmployeeForm() {
   const shiftStart = new Date(new Date().setHours(10, 0, 0, 0));
@@ -56,14 +57,11 @@ export default function CreateEmployeeForm() {
 
   const createEmployeeForm = useForm<CreateEmployeeFormSchemaType>({
     defaultValues: {
-      code: "",
       name: "",
       email: "",
       password: "password",
       role: "EMPLOYEE",
       isTeamLead: false,
-      deptId: "",
-      designationId: "",
       location: "",
       salary: 10000,
       empBand: "U3",
@@ -96,7 +94,7 @@ export default function CreateEmployeeForm() {
     });
   };
 
-  const selectedDeptId = watch("deptId");
+  const selectedDeptId = watch("deptId") ?? "";
   const designationByDept = designationList.filter(
     (designation) => designation.deptId === selectedDeptId,
   );
@@ -122,6 +120,10 @@ export default function CreateEmployeeForm() {
 
   const clearSalaryDetailFields = () => {
     resetField("salaryComponents", { defaultValue: [] });
+  };
+
+  const clearLeaveTypesField = () => {
+    resetField("leaveTypes", { defaultValue: [] });
   };
 
   const clearAdditionalDetailFields = () => {
@@ -384,7 +386,7 @@ export default function CreateEmployeeForm() {
                   </FormItem>
                 )}
               />
-              <div className="flex items-center gap-3">
+              <div className="flex items-end gap-3">
                 <FormField
                   control={control}
                   name="code"
@@ -618,7 +620,7 @@ export default function CreateEmployeeForm() {
           </Card>
         </div>
 
-        {/*additional options*/}
+        {/*leave details*/}
         <div
           className="flex items-start gap-3"
           aria-label="5 Employee additional options section"
@@ -627,6 +629,55 @@ export default function CreateEmployeeForm() {
             <CardHeader className="flex-row items-center gap-3 space-y-0">
               <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
                 <span>5</span>
+              </div>
+              <div className="mt-0">
+                <CardTitle className="text-xl text-gray-700">
+                  Leave Details
+                </CardTitle>
+                <CardDescription>
+                  Types of leaves employee can take
+                </CardDescription>
+              </div>
+            </CardHeader>
+          </Card>
+          <Card className="flex-1">
+            <CardHeader className="flex flex-row items-center gap-3 space-y-0 md:hidden">
+              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
+                <span>5</span>
+              </div>
+              <div className="mt-0">
+                <CardTitle className="text-xl text-gray-700">
+                  Leave Details
+                </CardTitle>
+                <CardDescription>
+                  Types of leaves employee can take
+                </CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent className="md:p-6">
+              <LeaveTypesField />
+            </CardContent>
+            <CardFooter className="flex justify-end">
+              <Button
+                variant="outline"
+                type="button"
+                onClick={clearLeaveTypesField}
+              >
+                Clear Section
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+
+        {/*additional options*/}
+        <div
+          className="flex items-start gap-3"
+          aria-label="5 Employee additional options section"
+        >
+          <Card className="hidden w-96 md:flex">
+            <CardHeader className="flex-row items-center gap-3 space-y-0">
+              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
+                <span>6</span>
               </div>
               <div className="mt-0">
                 <CardTitle className="text-xl text-gray-700">
@@ -639,7 +690,7 @@ export default function CreateEmployeeForm() {
           <Card className="flex-1">
             <CardHeader className="flex flex-row items-center gap-3 space-y-0 md:hidden">
               <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
-                <span>4</span>
+                <span>6</span>
               </div>
               <div className="mt-0">
                 <CardTitle className="text-xl text-gray-700">

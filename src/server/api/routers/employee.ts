@@ -1,5 +1,5 @@
 import { generateId } from "lucia";
-import { and, eq, like, or } from "drizzle-orm";
+import { and, eq, getTableColumns, like, or } from "drizzle-orm";
 import { isWithinInterval, format } from "date-fns";
 // UTILS
 import {
@@ -19,6 +19,7 @@ import {
   employeeProfileTable,
   employeeAttendanceTable,
   employeeSalaryComponentTable,
+  employeeLeaveTypeTable,
 } from "@/server/db/schema";
 // SCHEMAS
 import {
@@ -29,6 +30,12 @@ import {
 } from "@/lib/schema";
 
 export const employeeRouter = createTRPCRouter({
+  getAll: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.query.userTable.findMany({
+      where: eq(userTable.role, "EMPLOYEE"),
+    });
+  }),
+
   getByCodeOrName: protectedProcedure
     .input(GetEmployeeByQueryInput)
     .query(({ ctx, input }) => {
@@ -43,12 +50,6 @@ export const employeeRouter = createTRPCRouter({
       });
     }),
 
-  getAll: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.userTable.findMany({
-      where: eq(userTable.role, "EMPLOYEE"),
-    });
-  }),
-
   getProfile: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.employeeProfileTable.findFirst({
       where: eq(employeeProfileTable.empId, ctx.session.user.id),
@@ -56,6 +57,21 @@ export const employeeRouter = createTRPCRouter({
         designation: true,
       }
     })
+  }),
+
+  getLeaveTypes: protectedProcedure.query(({ ctx }) => {
+    return ctx.db
+      .select({
+        ...getTableColumns(leaveTypeTable)
+      })
+      .from(leaveTypeTable)
+      .innerJoin(
+        employeeLeaveTypeTable,
+        and(
+          eq(employeeLeaveTypeTable.empId, ctx.session.user.id),
+          eq(leaveTypeTable.id, employeeLeaveTypeTable.leaveTypeId)
+        )
+      )
   }),
 
   createNew: protectedProcedure
@@ -80,11 +96,16 @@ export const employeeRouter = createTRPCRouter({
         shiftEnd,
         breakMinutes,
         imageUrl,
+        leaveTypes,
       } = input;
 
       try {
         const employeeId = generateId(15);
         const hashedPassword = await hashPassword(password);
+        const empLeaveTypeIds = leaveTypes.map(({ id }) => id)
+        const empLeaveTypeData = leaveTypes.map(({ id }) => ({ empId: employeeId, leaveTypeId: id }))
+        const employeeSalaryComponents = salaryComponents.map((salaryComponent) => ({ ...salaryComponent, empId: employeeId }))
+
         const availableLeaveTypes = await ctx.db.query.leaveTypeTable.findMany();
 
         // add employee to userTable
@@ -120,12 +141,15 @@ export const employeeRouter = createTRPCRouter({
           breakMinutes,
         });
 
-        const employeeSalaryComponents = salaryComponents.map((salaryComponent) => ({ ...salaryComponent, empId: employeeId }))
         await ctx.db.insert(employeeSalaryComponentTable).values(employeeSalaryComponents)
+
+        await ctx.db.insert(employeeLeaveTypeTable).values(empLeaveTypeData)
 
         if (availableLeaveTypes.length > 0) {
           await Promise.all(
             availableLeaveTypes.map(async (leaveType) => {
+              if (!empLeaveTypeIds.includes(leaveType.id)) return
+
               const [newLeaveBalance] = await ctx.db
                 .insert(leaveBalanceTable)
                 .values({
@@ -139,6 +163,7 @@ export const employeeRouter = createTRPCRouter({
             }),
           );
         }
+
         return {
           status: "SUCCESS",
           message: "Employee added successfully"
