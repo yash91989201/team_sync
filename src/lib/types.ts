@@ -57,11 +57,13 @@ export type EmployeeDocumentFileSchemaType = z.infer<
 >;
 export type SalaryComponentType = z.infer<typeof SalaryComponentsSchema>
 export type EmployeeSalaryComponentType = z.infer<typeof EmployeeSalaryComponentSchema>
+
 // AUTH TYPES
 export type AdminSignupSchemaType = z.infer<typeof AdminSignupSchema>;
 export type LoginSchemaType = z.infer<typeof LoginSchema>;
 export type NewVerificationSchemaType = z.infer<typeof NewVerificationSchema>;
 export type ResetPasswordSchemaType = z.infer<typeof ResetPasswordSchema>;
+
 // FORM TYPES
 export type CreateDepartmentSchemaType = z.infer<typeof CreateDepartmentSchema>;
 export type CreateDesignationSchemaType = z.infer<
@@ -89,6 +91,14 @@ export type CreateEmployeeDocumentFormSchemaType = z.infer<
   typeof CreateEmployeeDocumentFormSchema
 >;
 export type CreateSalaryComponentSchemaType = z.infer<typeof CreateSalaryComponentSchema>
+
+// DATA TABLE TYPES
+export type EmployeesDocumentsTableProps = EmployeeDocumentSchemaType & {
+  employee: Omit<UserType, "password">;
+  documentType: DocumentTypeSchemaType;
+  documentFiles: EmployeeDocumentFileSchemaType[];
+};
+
 // OTHER TYPES
 export type UserSessionType =
   | {

@@ -5,7 +5,7 @@ import { api } from "@/trpc/react";
 import type { DocumentTypeSchemaType } from "@/lib/types";
 import type { ColumnDef } from "@tanstack/react-table";
 // UI
-import { DataTable } from "@/components/admin/data-table";
+import { DataTable } from "@sharedComponents/data-table";
 import { DOCUMENT_FILE_TYPES_DISPLAY } from "@/constants";
 
 export default function DocumentTypeTable() {

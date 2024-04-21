@@ -6,7 +6,7 @@ import { getBalancePeriod } from "@/lib/utils";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { LeaveTypeSchemaType, LeaveBalanceSchemaType } from "@/lib/types";
 // UI
-import { DataTable } from "@/components/admin/data-table";
+import { DataTable } from "@sharedComponents/data-table";
 
 type LeaveBalancesTableProps = LeaveBalanceSchemaType & {
   leaveType: LeaveTypeSchemaType;

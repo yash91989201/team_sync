@@ -5,7 +5,7 @@ import { api } from "@/trpc/react";
 import type { SalaryComponentType } from "@/lib/types";
 import type { ColumnDef } from "@tanstack/react-table";
 // UI
-import { DataTable } from "@/components/admin/data-table";
+import { DataTable } from "@sharedComponents/data-table";
 
 export default function SalaryComponentTable() {
   const { data = [] } = api.salaryRouter.getComponents.useQuery();

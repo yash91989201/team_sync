@@ -9,7 +9,7 @@ import type {
 } from "@/lib/types";
 import type { ColumnDef } from "@tanstack/react-table";
 // UI
-import { DataTable } from "@/components/admin/data-table";
+import { DataTable } from "@sharedComponents/data-table";
 
 type LeaveApplicationTableProps = LeaveRequestSchemaType & {
   reviewer: Omit<UserType, "password">;

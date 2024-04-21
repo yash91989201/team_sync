@@ -6,7 +6,7 @@ import type { LeaveTypeSchemaType } from "@/lib/types";
 import type { ColumnDef } from "@tanstack/react-table";
 // UI
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/admin/data-table";
+import { DataTable } from "@sharedComponents/data-table";
 // ICONS
 import { ArrowUpDown } from "lucide-react";
 

@@ -5,7 +5,7 @@ import { api } from "@/trpc/react";
 import type { DesignationType } from "@/lib/types";
 import type { ColumnDef } from "@tanstack/react-table";
 // UI
-import { DataTable } from "@/components/admin/data-table";
+import { DataTable } from "@sharedComponents/data-table";
 
 type DesignationTableProps = DesignationType & {
   department: {

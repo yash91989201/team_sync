@@ -20,6 +20,7 @@ import {
   employeeAttendanceTable,
   employeeSalaryComponentTable,
   employeeLeaveTypeTable,
+  employeeDocumentTable,
 } from "@/server/db/schema";
 // SCHEMAS
 import {
@@ -72,6 +73,21 @@ export const employeeRouter = createTRPCRouter({
           eq(leaveTypeTable.id, employeeLeaveTypeTable.leaveTypeId)
         )
       )
+  }),
+
+  getDocuments: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.query.employeeDocumentTable.findMany({
+      where: eq(employeeDocumentTable.empId, ctx.session.user.id),
+      with: {
+        documentType: true,
+        documentFiles: true,
+        employee: {
+          columns: {
+            password: false,
+          }
+        }
+      }
+    })
   }),
 
   createNew: protectedProcedure
