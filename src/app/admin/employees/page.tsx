@@ -1,13 +1,39 @@
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 // UTILS
+import { apiHelper } from "@/trpc/server";
 import { authPage } from "@/server/helpers";
+// UI
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 // CUSTOM COMPONENTS
-import EmployeeList from "@/components/admin/employee/employee-list";
+import { EmployeesTable } from "@/components/admin/tables";
+import AdminMainWrapper from "@/components/admin/admin-main-wrapper";
 
 export default async function EmployeePage() {
   await authPage("ADMIN");
+  await apiHelper.employeeRouter.getAll.prefetch();
+  const employeeList = dehydrate(apiHelper.queryClient);
+
   return (
-    <>
-      <EmployeeList />
-    </>
+    <AdminMainWrapper>
+      <Card className="h-fit flex-1">
+        <CardHeader>
+          <CardTitle className="text-2xl text-primary">
+            Employee directory
+          </CardTitle>
+          <CardDescription>list of all employees</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <HydrationBoundary state={employeeList}>
+            <EmployeesTable />
+          </HydrationBoundary>
+        </CardContent>
+      </Card>
+    </AdminMainWrapper>
   );
 }

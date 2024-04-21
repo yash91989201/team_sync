@@ -34,7 +34,6 @@ export async function POST(request: Request) {
             }
         });
     } catch (error) {
-        console.log(error);
         return Response.json({
             status: "FAILED",
             message: "Unable to upload profile image",

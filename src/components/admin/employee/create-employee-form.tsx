@@ -1,5 +1,7 @@
 "use client";
+import { toast } from "sonner";
 import { format } from "date-fns";
+import { generateId } from "lucia";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 // UTILS
@@ -40,20 +42,25 @@ import { Button } from "@ui/button";
 import { Calendar } from "@ui/calendar";
 import { RadioGroup, RadioGroupItem } from "@ui/radio-group";
 // CUSTOM COMPONENTS
+import LeaveTypesField from "./leave-types-field";
 import { EmployeeImageField } from "@/components/admin/employee/employee-image-field";
 import EmployeeShiftTimePicker from "@/components/admin/employee/employee-shift-time-picker";
 import SalaryComponentsField from "@/components/admin/employee/salary-components-field";
 // CONSTANTS
 import { MAX_FILE_SIZE } from "@/constants";
 // ICONS
-import { Asterisk, Loader2 } from "lucide-react";
-import { CalendarIcon } from "lucide-react";
-import LeaveTypesField from "./leave-types-field";
+import {
+  Asterisk,
+  ClipboardCopy,
+  Loader2,
+  RotateCw,
+  CalendarIcon,
+} from "lucide-react";
 
 export default function CreateEmployeeForm() {
+  const currentYear = new Date().getFullYear();
   const shiftStart = new Date(new Date().setHours(10, 0, 0, 0));
   const shiftEnd = new Date(new Date().setHours(8, 0, 0, 0));
-  const currentYear = new Date().getFullYear();
 
   const createEmployeeForm = useForm<CreateEmployeeFormSchemaType>({
     defaultValues: {
@@ -72,7 +79,7 @@ export default function CreateEmployeeForm() {
     resolver: zodResolver(CreateEmployeeFormSchema),
   });
 
-  const { control, handleSubmit, formState, watch, resetField } =
+  const { control, handleSubmit, formState, watch, resetField, getValues } =
     createEmployeeForm;
 
   const { data: departmentList = [] } = api.departmentRouter.getAll.useQuery();
@@ -82,17 +89,6 @@ export default function CreateEmployeeForm() {
 
   const { mutateAsync: createEmployee } =
     api.employeeRouter.createNew.useMutation();
-  console.debug(formState.errors);
-
-  const createEmployeeAction: SubmitHandler<
-    CreateEmployeeFormSchemaType
-  > = async (formData) => {
-    const { imageUrl } = await uploadProfileImage(formData.profileImage);
-    await createEmployee({
-      ...formData,
-      imageUrl,
-    });
-  };
 
   const selectedDeptId = watch("deptId") ?? "";
   const designationByDept = designationList.filter(
@@ -103,13 +99,18 @@ export default function CreateEmployeeForm() {
     resetField("name");
     resetField("email");
     resetField("dob");
+    resetField("profileImage");
+    resetField("password", {
+      defaultValue: "password",
+    });
   };
+
   const clearProfessionalDetailFields = () => {
     resetField("designationId", { defaultValue: "" });
     resetField("deptId", { defaultValue: "" });
     resetField("joiningDate");
     resetField("empBand");
-    resetField("code");
+    resetField("code", { defaultValue: "" });
   };
 
   const clearShiftDetailFields = () => {
@@ -128,6 +129,27 @@ export default function CreateEmployeeForm() {
 
   const clearAdditionalDetailFields = () => {
     resetField("isTeamLead", { defaultValue: false });
+  };
+
+  const createEmployeeAction: SubmitHandler<
+    CreateEmployeeFormSchemaType
+  > = async (formData) => {
+    const { imageUrl } = await uploadProfileImage(formData.profileImage);
+    const actionResponse = await createEmployee({
+      ...formData,
+      imageUrl,
+    });
+    if (actionResponse.status === "SUCCESS") {
+      toast.success(actionResponse.message);
+      clearPersonalDetailFields();
+      clearProfessionalDetailFields();
+      clearShiftDetailFields();
+      clearSalaryDetailFields();
+      clearLeaveTypesField();
+      clearAdditionalDetailFields();
+    } else {
+      toast.error(actionResponse.message);
+    }
   };
 
   return (
@@ -233,11 +255,41 @@ export default function CreateEmployeeForm() {
                   control={control}
                   name="password"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex-1">
                       <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input {...field} readOnly={true} />
-                      </FormControl>
+                      <div className="flex items-center gap-1">
+                        <FormControl>
+                          <Input {...field} readOnly={true} />
+                        </FormControl>
+                        <Button
+                          size="icon"
+                          type="button"
+                          variant="outline"
+                          onClick={async () => {
+                            const currentPassword = getValues("password");
+                            await navigator.clipboard.writeText(
+                              currentPassword,
+                            );
+                            toast.success("Password copied to clipboard");
+                          }}
+                          className="flex-shrink-0 rounded-xl"
+                        >
+                          <ClipboardCopy className="size-4" />
+                        </Button>
+                        <Button
+                          size="icon"
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            resetField("password", {
+                              defaultValue: generateId(15),
+                            });
+                          }}
+                          className="flex-shrink-0 rounded-xl"
+                        >
+                          <RotateCw className="size-4" />
+                        </Button>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}

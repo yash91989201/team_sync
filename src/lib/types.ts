@@ -92,11 +92,41 @@ export type CreateEmployeeDocumentFormSchemaType = z.infer<
 >;
 export type CreateSalaryComponentSchemaType = z.infer<typeof CreateSalaryComponentSchema>
 
-// DATA TABLE TYPES
+// ADMIN DATA TABLE TYPES
 export type EmployeesDocumentsTableProps = EmployeeDocumentSchemaType & {
   employee: Omit<UserType, "password">;
   documentType: DocumentTypeSchemaType;
   documentFiles: EmployeeDocumentFileSchemaType[];
+};
+
+export type DepartmentTableProps = DepartmentType & {
+  employees: {
+    empId: string;
+    deptId: string;
+    employeeCount: number;
+  }[];
+};
+
+export type DesignationTableProps = DesignationType & {
+  department: {
+    name: string;
+  };
+};
+// EMPLOYEE DATA TABLE TYPES
+export type EmployeesTableProps = Omit<UserType, "password"> & {
+  employeeProfile: EmployeeProfileType & {
+    department: DepartmentType | null;
+    designation: DesignationType | null
+  } | null
+}
+
+export type LeaveBalancesTableProps = LeaveBalanceSchemaType & {
+  leaveType: LeaveTypeSchemaType;
+};
+
+export type LeaveApplicationTableProps = LeaveRequestSchemaType & {
+  reviewer: Omit<UserType, "password">;
+  leaveType: LeaveTypeSchemaType;
 };
 
 // OTHER TYPES

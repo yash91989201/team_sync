@@ -11,8 +11,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
+import { EmployeeDocumentsTable } from "@/components/employee/tables";
 import EmployeeMainWrapper from "@/components/employee/employee-main-wrapper";
-import EmployeeDocumentsTable from "@/components/employee/document-center/employee-documents-table";
 
 export default async function DocumentCenterPage() {
   await authPage("EMPLOYEE");

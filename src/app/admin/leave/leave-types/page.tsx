@@ -11,8 +11,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
+import { LeaveTypeTable } from "@/components/admin/tables";
 import AdminMainWrapper from "@/components/admin/admin-main-wrapper";
-import LeaveTypeTable from "@/components/admin/leave/leave-type-table";
 import CreateLeaveTypeForm from "@/components/admin/leave/create-leave-type-form";
 
 export default async function LeaveTypesPage() {

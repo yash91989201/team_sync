@@ -173,6 +173,10 @@ export const CreateEmployeeFormSchema = CreateEmployeeSchema.extend({
     ),
 });
 
+export const DeleteEmployeeSchema = z.object({
+  empId: z.string()
+})
+
 // EMPLOYEE ATTENDANCE SCHEMAS
 export const AttendancePunchOutSchema = z.object({
   attendanceId: z.string(),

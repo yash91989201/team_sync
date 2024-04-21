@@ -11,8 +11,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
+import { DocumentTypeTable } from "@/components/admin/tables";
 import AdminMainWrapper from "@/components/admin/admin-main-wrapper";
-import DocumentTypeTable from "@/components/admin/document-types/document-type-table";
 import CreateDocumentTypeForm from "@/components/admin/document-types/create-document-type-form";
 
 export default async function DocumentTypesPage() {

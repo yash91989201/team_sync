@@ -270,13 +270,13 @@ export function getBalancePeriod(props: {
   const { startDate, endDate } = getRenewPeriodRange(props)
   console.debug(startDate, endDate)
   if (props.renewPeriod === "month") {
-    const balanceStart = format(startDate, "do MMM")
+    const balanceStart = format(startDate, "do")
     const balanceEnd = format(endDate, "do MMM")
     return `${balanceStart} - ${balanceEnd}`
   }
   else {
-    const balanceStart = format(startDate, "MM")
-    const balanceEnd = format(endDate, "MM")
+    const balanceStart = format(startDate, "MMM")
+    const balanceEnd = format(endDate, "MMM yyyy")
     return `${balanceStart} - ${balanceEnd}`
   }
 }

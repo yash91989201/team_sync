@@ -1,3 +1,4 @@
+"use client";
 // CUSTOM HOOKS
 import useUser from "@/hooks/use-user";
 // UI
@@ -21,7 +22,7 @@ export default function UserInfo() {
         <AvatarImage src={avatarUrl} alt={name} />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
-      <div className="flex flex-col items-start gap-1">
+      <div className="flex flex-col items-start gap-0.5">
         <p className="text-lg font-medium">{name}</p>
         <p className="rounded-full bg-primary p-1 px-2 text-xs text-white">
           ADMIN

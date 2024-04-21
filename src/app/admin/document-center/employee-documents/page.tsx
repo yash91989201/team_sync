@@ -11,9 +11,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
+import { EmployeesDocumentsTable } from "@/components/admin/tables";
 import AdminMainWrapper from "@/components/admin/admin-main-wrapper";
 import CreateEmployeeDocumentForm from "@/components/admin/employee-documents/create-employee-document";
-import EmployeesDocumentsTable from "@/components/admin/employee-documents/employees-documents-table";
 
 export default async function EmployeeDocumentsPage() {
   await authPage("ADMIN");

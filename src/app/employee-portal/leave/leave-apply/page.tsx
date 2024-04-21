@@ -12,9 +12,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
+import { LeaveApplicationTable } from "@/components/employee/tables";
 import LeaveApplyForm from "@/components/employee/leave/leave-apply-form";
 import EmployeeMainWrapper from "@/components/employee/employee-main-wrapper";
-import LeaveApplicationTable from "@/components/employee/leave/leave-application-table";
 
 export default async function LeaveApplyPage() {
   await authPage("EMPLOYEE");

@@ -11,7 +11,7 @@ export default function UserInfo() {
   if (!isLoggedIn) return null;
   if (user === undefined) return null;
 
-  const { name, role, imageUrl } = user;
+  const { name, imageUrl } = user;
   const { data: employeeProfile } = api.employeeRouter.getProfile.useQuery();
 
   const avatarUrl =
@@ -24,10 +24,10 @@ export default function UserInfo() {
         <AvatarImage src={avatarUrl} alt={name} />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
-      <p className="flex flex-col items-start gap-1">
+      <p className="flex flex-col items-start gap-0.5">
         <span className="text-lg font-medium">{name}</span>
-        <span className="text-xs text-gray-600">
-          {role === "ADMIN" ? "Admin" : employeeProfile?.designation.name}
+        <span className="rounded-full bg-primary p-1 px-2 text-xs text-white">
+          {employeeProfile?.designation.name}
         </span>
       </p>
     </div>
