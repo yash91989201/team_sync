@@ -1,15 +1,18 @@
+import Link from "next/link";
+import { toast } from "sonner";
+// UITLS
 import { api } from "@/trpc/react";
 // UI
-import { Button } from "@ui/button";
+import { Button, buttonVariants } from "@ui/button";
 // ICONS
 import { Loader2, Pencil, Trash } from "lucide-react";
-import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 export function EmployeeTableActions({ empId }: { empId: string }) {
   const { refetch: refetchEmployees } = api.employeeRouter.getAll.useQuery();
 
   const { mutateAsync: deleteEmployee, isPending: isDeleting } =
-    api.employeeRouter.deleteEmployee.useMutation();
+    api.adminRouter.deleteEmployee.useMutation();
 
   const deleteEmployeeAction = async () => {
     const actionResponse = await deleteEmployee({ empId });
@@ -24,13 +27,20 @@ export function EmployeeTableActions({ empId }: { empId: string }) {
 
   return (
     <div className="space-x-1.5">
-      <Button
-        variant="outline"
-        size="icon"
-        className="text-blue rounded-xl border-blue-500 text-blue-500 hover:border-blue-500 hover:bg-white hover:text-blue-500"
+      <Link
+        href={`/admin/employees/${empId}/update-employee`}
+        className={cn(
+          buttonVariants({
+            size: "icon",
+            variant: "outline",
+            className:
+              "rounded-xl  text-blue-500  hover:border-blue-500 hover:bg-white hover:text-blue-500",
+          }),
+          "border-blue-500 ",
+        )}
       >
         <Pencil className="size-4" />
-      </Button>
+      </Link>
       <Button
         variant="outline"
         size="icon"

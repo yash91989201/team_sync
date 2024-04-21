@@ -8,10 +8,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "@/trpc/react";
 import { cn, uploadProfileImage } from "@/lib/utils";
 // SCHEMAS
-import { CreateEmployeeFormSchema } from "@/lib/schema";
+import { UpdateEmployeeFormSchema } from "@/lib/schema";
 // TYPES
 import type { SubmitHandler } from "react-hook-form";
-import type { CreateEmployeeFormSchemaType } from "@/lib/types";
+import type { UpdateEmployeeFormSchemaType } from "@/lib/types";
 // UI
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
 import {
@@ -57,12 +57,12 @@ import {
   CalendarIcon,
 } from "lucide-react";
 
-export default function CreateEmployeeForm() {
+export default function UpdateEmployeeForm() {
   const currentYear = new Date().getFullYear();
   const shiftStart = new Date(new Date().setHours(10, 0, 0, 0));
   const shiftEnd = new Date(new Date().setHours(8, 0, 0, 0));
 
-  const createEmployeeForm = useForm<CreateEmployeeFormSchemaType>({
+  const createEmployeeForm = useForm<UpdateEmployeeFormSchemaType>({
     defaultValues: {
       name: "",
       email: "",
@@ -76,7 +76,7 @@ export default function CreateEmployeeForm() {
       shiftEnd,
       breakMinutes: 60,
     },
-    resolver: zodResolver(CreateEmployeeFormSchema),
+    resolver: zodResolver(UpdateEmployeeFormSchema),
   });
 
   const { control, handleSubmit, formState, watch, resetField, getValues } =
@@ -87,8 +87,8 @@ export default function CreateEmployeeForm() {
   const { data: designationList = [] } =
     api.designationRouter.getAll.useQuery();
 
-  const { mutateAsync: createEmployee } =
-    api.adminRouter.createEmployee.useMutation();
+  const { mutateAsync: updateEmployee } =
+    api.adminRouter.updateEmployee.useMutation();
 
   const selectedDeptId = watch("deptId") ?? "";
   const designationByDept = designationList.filter(
@@ -131,11 +131,11 @@ export default function CreateEmployeeForm() {
     resetField("isTeamLead", { defaultValue: false });
   };
 
-  const createEmployeeAction: SubmitHandler<
-    CreateEmployeeFormSchemaType
+  const updateEmployeeAction: SubmitHandler<
+    UpdateEmployeeFormSchemaType
   > = async (formData) => {
     const { imageUrl } = await uploadProfileImage(formData.profileImage);
-    const actionResponse = await createEmployee({
+    const actionResponse = await updateEmployee({
       ...formData,
       imageUrl,
     });
@@ -156,16 +156,12 @@ export default function CreateEmployeeForm() {
     <Form {...createEmployeeForm}>
       <form
         className="flex flex-col gap-6"
-        onSubmit={handleSubmit(createEmployeeAction)}
+        onSubmit={handleSubmit(updateEmployeeAction)}
       >
         <Card aria-hidden>
           <CardHeader>
-            <CardTitle className="text-2xl text-primary">
-              Create New Employee
-            </CardTitle>
-            <CardDescription>
-              Add details and create new employee
-            </CardDescription>
+            <CardTitle className="text-2xl text-primary">Update data</CardTitle>
+            <CardDescription>update details for</CardDescription>
           </CardHeader>
         </Card>
 

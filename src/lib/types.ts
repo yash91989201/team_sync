@@ -33,6 +33,9 @@ import type {
   SalaryComponentsSchema,
   EmployeeSalaryComponentSchema,
   CreateSalaryComponentSchema,
+  UpdateEmployeeSchema,
+  UpdateEmployeeFormSchema,
+  UpdateEmployeeInputSchema,
 } from "@/lib/schema";
 // TYPES
 import type { z } from "zod";
@@ -81,6 +84,13 @@ export type CreateEmployeeInputSchemaType = z.infer<
 >;
 export type CreateProfileImageSchemaType = z.infer<
   typeof CreateProfileImageSchema
+>;
+export type UpdateEmployeeSchemaType = z.infer<typeof UpdateEmployeeSchema>;
+export type UpdateEmployeeFormSchemaType = z.infer<
+  typeof UpdateEmployeeFormSchema
+>;
+export type UpdateEmployeeInputSchemaType = z.infer<
+  typeof UpdateEmployeeInputSchema
 >;
 export type CreateLeaveTypeSchemaType = z.infer<typeof CreateLeaveTypeSchema>;
 export type LeaveApplySchemaType = z.infer<typeof LeaveApplySchema>;
