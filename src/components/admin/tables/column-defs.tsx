@@ -11,6 +11,7 @@ import type {
 import type { ColumnDef } from "@tanstack/react-table";
 // UI
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@ui/avatar";
 // CUSTOM COMPONENTS
 import { EmployeeTableActions, LeaveTypeTableActions } from "./column-actions";
 import DocumentsPreview from "@/components/shared/documents-preview";
@@ -132,6 +133,15 @@ export const EMPLOYEES_TABLE: ColumnDef<EmployeesTableProps>[] = [
   {
     accessorKey: "name",
     header: "Name",
+    cell: ({ row }) => (
+      <div className="flex items-center gap-3">
+        <Avatar className="h-14 w-14">
+          <AvatarImage src={row.original.imageUrl!} alt={row.original.name} />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
+        <p>{row.original.name}</p>
+      </div>
+    ),
   },
   {
     accessorKey: "employeeProfile",

@@ -820,13 +820,11 @@ export default function CreateEmployeeForm() {
             </CardHeader>
             <CardContent>
               <Button
-                className="md:text-base md:font-semibold"
+                className="gap-1 md:text-base md:font-semibold"
                 size="lg"
                 disabled={formState.isSubmitting}
               >
-                {formState.isSubmitting && (
-                  <Loader2 className="mr-3 animate-spin" />
-                )}
+                {formState.isSubmitting && <Loader2 className="animate-spin" />}
                 <span>Create new employee</span>
               </Button>
             </CardContent>
