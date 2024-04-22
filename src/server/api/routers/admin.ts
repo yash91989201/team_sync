@@ -31,6 +31,14 @@ import {
 import type { EmployeeLeaveTypeSchemaType, EmployeeSalaryComponentType, GetEmployeeDataResponse } from "@/lib/types";
 
 export const adminRouter = createTRPCRouter({
+  getData: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.query.userTable.findFirst({
+      where: eq(userTable.id, ctx.session.user.id),
+      with: {
+        adminProfile: true,
+      }
+    })
+  }),
   // get employee data for update
   getEmployeeData:
     protectedProcedure

@@ -49,7 +49,7 @@ export const userTableRelations = relations(userTable, ({ one, many }) => ({
 
 export const adminProfileTable = mysqlTable("admin_profile", {
   // FOREIGN KEY AS PRIMAY KEY - SINCE USER - ADMIN PROFILE IS ONE-ONE RELATIONSHIP
-  admin_id: varchar("admin_id", { length: 24 })
+  adminId: varchar("admin_id", { length: 24 })
     .primaryKey()
     .references(() => userTable.id),
 });
@@ -58,7 +58,7 @@ export const adminProfileTableRelations = relations(
   adminProfileTable,
   ({ one }) => ({
     admin: one(userTable, {
-      fields: [adminProfileTable.admin_id],
+      fields: [adminProfileTable.adminId],
       references: [userTable.id],
     }),
   }),
