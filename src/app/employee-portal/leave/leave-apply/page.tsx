@@ -1,7 +1,7 @@
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 // UTILS
 import { api } from "@/trpc/server";
-import { apiHelper } from "@/trpc/server";
+import { apiHelper } from "@/trpc/helpers";
 import { authPage } from "@/server/helpers";
 // UI
 import {

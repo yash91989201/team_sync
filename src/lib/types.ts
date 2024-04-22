@@ -34,8 +34,7 @@ import type {
   EmployeeSalaryComponentSchema,
   CreateSalaryComponentSchema,
   UpdateEmployeeSchema,
-  UpdateEmployeeFormSchema,
-  UpdateEmployeeInputSchema,
+  EmployeeLeaveTypeSchema,
 } from "@/lib/schema";
 // TYPES
 import type { z } from "zod";
@@ -51,6 +50,7 @@ export type DesignationType = z.infer<typeof DesignationSchema>;
 export type EmployeeShiftType = z.infer<typeof EmployeeShiftSchema>;
 export type EmployeeAttendanceType = z.infer<typeof EmployeeAttendanceSchema>;
 export type LeaveTypeSchemaType = z.infer<typeof LeaveTypeSchema>;
+export type EmployeeLeaveTypeSchemaType = z.infer<typeof EmployeeLeaveTypeSchema>
 export type LeaveRequestSchemaType = z.infer<typeof LeaveRequestSchema>;
 export type LeaveBalanceSchemaType = z.infer<typeof LeaveBalanceSchema>;
 export type DocumentTypeSchemaType = z.infer<typeof DocumentTypeSchema>;
@@ -85,12 +85,11 @@ export type CreateEmployeeInputSchemaType = z.infer<
 export type CreateProfileImageSchemaType = z.infer<
   typeof CreateProfileImageSchema
 >;
-export type UpdateEmployeeSchemaType = z.infer<typeof UpdateEmployeeSchema>;
-export type UpdateEmployeeFormSchemaType = z.infer<
-  typeof UpdateEmployeeFormSchema
->;
-export type UpdateEmployeeInputSchemaType = z.infer<
-  typeof UpdateEmployeeInputSchema
+export type EmployeeDataForUpdateType = z.infer<typeof UpdateEmployeeSchema> & {
+  name: string;
+}
+export type UpdateEmployeeSchemaType = z.infer<
+  typeof UpdateEmployeeSchema
 >;
 export type CreateLeaveTypeSchemaType = z.infer<typeof CreateLeaveTypeSchema>;
 export type LeaveApplySchemaType = z.infer<typeof LeaveApplySchema>;
@@ -170,7 +169,7 @@ type GetEmployeeDataFailed = {
 type GetEmployeeDataSuccess = {
   status: "SUCCESS";
   message: string;
-  data: UpdateEmployeeSchemaType
+  data: EmployeeDataForUpdateType
 }
 
-export type GetEmployeeDataRes = GetEmployeeDataFailed | GetEmployeeDataSuccess
+export type GetEmployeeDataResponse = GetEmployeeDataFailed | GetEmployeeDataSuccess

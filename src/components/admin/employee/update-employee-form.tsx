@@ -1,17 +1,20 @@
 "use client";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { generateId } from "lucia";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 // UTILS
+import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
-import { cn, uploadProfileImage } from "@/lib/utils";
 // SCHEMAS
-import { UpdateEmployeeFormSchema } from "@/lib/schema";
+import { UpdateEmployeeSchema } from "@/lib/schema";
 // TYPES
 import type { SubmitHandler } from "react-hook-form";
-import type { UpdateEmployeeFormSchemaType } from "@/lib/types";
+import type {
+  EmployeeDataForUpdateType,
+  UpdateEmployeeSchemaType,
+} from "@/lib/types";
 // UI
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
 import {
@@ -43,44 +46,25 @@ import { Calendar } from "@ui/calendar";
 import { RadioGroup, RadioGroupItem } from "@ui/radio-group";
 // CUSTOM COMPONENTS
 import LeaveTypesField from "./leave-types-field";
-import { EmployeeImageField } from "@/components/admin/employee/employee-image-field";
-import EmployeeShiftTimePicker from "@/components/admin/employee/employee-shift-time-picker";
 import SalaryComponentsField from "@/components/admin/employee/salary-components-field";
-// CONSTANTS
-import { MAX_FILE_SIZE } from "@/constants";
+import EmployeeShiftTimePicker from "@/components/admin/employee/employee-shift-time-picker";
 // ICONS
-import {
-  Asterisk,
-  ClipboardCopy,
-  Loader2,
-  RotateCw,
-  CalendarIcon,
-} from "lucide-react";
+import { Asterisk, Loader2, CalendarIcon } from "lucide-react";
 
-export default function UpdateEmployeeForm() {
-  const currentYear = new Date().getFullYear();
-  const shiftStart = new Date(new Date().setHours(10, 0, 0, 0));
-  const shiftEnd = new Date(new Date().setHours(8, 0, 0, 0));
+export default function UpdateEmployeeForm({
+  employeeData,
+}: {
+  employeeData: EmployeeDataForUpdateType;
+}) {
+  const router = useRouter();
 
-  const createEmployeeForm = useForm<UpdateEmployeeFormSchemaType>({
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "password",
-      role: "EMPLOYEE",
-      isTeamLead: false,
-      location: "",
-      salary: 10000,
-      empBand: "U3",
-      shiftStart,
-      shiftEnd,
-      breakMinutes: 60,
-    },
-    resolver: zodResolver(UpdateEmployeeFormSchema),
+  const updateEmployeeForm = useForm<UpdateEmployeeSchemaType>({
+    defaultValues: employeeData,
+    resolver: zodResolver(UpdateEmployeeSchema),
   });
 
-  const { control, handleSubmit, formState, watch, resetField, getValues } =
-    createEmployeeForm;
+  const { control, handleSubmit, formState, watch, resetField } =
+    updateEmployeeForm;
 
   const { data: departmentList = [] } = api.departmentRouter.getAll.useQuery();
 
@@ -95,22 +79,12 @@ export default function UpdateEmployeeForm() {
     (designation) => designation.deptId === selectedDeptId,
   );
 
-  const clearPersonalDetailFields = () => {
-    resetField("name");
-    resetField("email");
-    resetField("dob");
-    resetField("profileImage");
-    resetField("password", {
-      defaultValue: "password",
-    });
-  };
-
   const clearProfessionalDetailFields = () => {
-    resetField("designationId", { defaultValue: "" });
-    resetField("deptId", { defaultValue: "" });
+    resetField("designationId");
+    resetField("deptId");
     resetField("joiningDate");
     resetField("empBand");
-    resetField("code", { defaultValue: "" });
+    resetField("code");
   };
 
   const clearShiftDetailFields = () => {
@@ -120,229 +94,45 @@ export default function UpdateEmployeeForm() {
   };
 
   const clearSalaryDetailFields = () => {
-    resetField("salaryComponents", { defaultValue: [] });
+    resetField("salaryComponents");
   };
 
   const clearLeaveTypesField = () => {
-    resetField("leaveTypes", { defaultValue: [] });
+    resetField("leaveTypes");
   };
 
   const clearAdditionalDetailFields = () => {
-    resetField("isTeamLead", { defaultValue: false });
+    resetField("isTeamLead");
   };
 
-  const updateEmployeeAction: SubmitHandler<
-    UpdateEmployeeFormSchemaType
-  > = async (formData) => {
-    const { imageUrl } = await uploadProfileImage(formData.profileImage);
-    const actionResponse = await updateEmployee({
-      ...formData,
-      imageUrl,
-    });
+  const updateEmployeeAction: SubmitHandler<UpdateEmployeeSchemaType> = async (
+    formData,
+  ) => {
+    const actionResponse = await updateEmployee(formData);
     if (actionResponse.status === "SUCCESS") {
       toast.success(actionResponse.message);
-      clearPersonalDetailFields();
-      clearProfessionalDetailFields();
-      clearShiftDetailFields();
-      clearSalaryDetailFields();
-      clearLeaveTypesField();
-      clearAdditionalDetailFields();
+      router.refresh();
     } else {
       toast.error(actionResponse.message);
     }
   };
 
   return (
-    <Form {...createEmployeeForm}>
+    <Form {...updateEmployeeForm}>
       <form
         className="flex flex-col gap-6"
         onSubmit={handleSubmit(updateEmployeeAction)}
       >
         <Card aria-hidden>
           <CardHeader>
-            <CardTitle className="text-2xl text-primary">Update data</CardTitle>
-            <CardDescription>update details for</CardDescription>
+            <CardTitle className="text-2xl text-primary">
+              Update employees data
+            </CardTitle>
+            <CardDescription>
+              update details for {employeeData.name}
+            </CardDescription>
           </CardHeader>
         </Card>
-
-        {/* Personal details */}
-        <div
-          className="flex items-start gap-3"
-          aria-label="1 Employee personal details section"
-        >
-          <Card className="hidden w-96 md:flex">
-            <CardHeader className="flex-row items-center gap-3 space-y-0">
-              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
-                <span>1</span>
-              </div>
-              <div className="mt-0">
-                <CardTitle className="text-xl text-gray-700">
-                  Personal Details
-                </CardTitle>
-                <CardDescription>Employee internal details.</CardDescription>
-              </div>
-            </CardHeader>
-          </Card>
-          <Card className="flex-1">
-            <CardHeader className="flex-row items-center gap-3 space-y-0 md:hidden">
-              <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
-                <span>1</span>
-              </div>
-              <div className="mt-0">
-                <CardTitle className="text-xl text-gray-700">
-                  Personal Details
-                </CardTitle>
-                <CardDescription>Employee internal details.</CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3 md:p-6">
-              <div className="flex items-center justify-center">
-                <FormField
-                  control={control}
-                  name="profileImage"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col items-center justify-center">
-                      <FormControl>
-                        <EmployeeImageField
-                          value={field.value}
-                          onChange={field.onChange}
-                          width={120}
-                          height={120}
-                          className="rounded-full"
-                          dropzoneOptions={{
-                            maxSize: MAX_FILE_SIZE.PROFILE_IMG,
-                          }}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="flex gap-3">
-                <FormField
-                  control={control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Jane Doe" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="example@mail.com" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Password</FormLabel>
-                      <div className="flex items-center gap-1">
-                        <FormControl>
-                          <Input {...field} readOnly={true} />
-                        </FormControl>
-                        <Button
-                          size="icon"
-                          type="button"
-                          variant="outline"
-                          onClick={async () => {
-                            const currentPassword = getValues("password");
-                            await navigator.clipboard.writeText(
-                              currentPassword,
-                            );
-                            toast.success("Password copied to clipboard");
-                          }}
-                          className="flex-shrink-0 rounded-xl"
-                        >
-                          <ClipboardCopy className="size-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          type="button"
-                          variant="outline"
-                          onClick={() => {
-                            resetField("password", {
-                              defaultValue: generateId(15),
-                            });
-                          }}
-                          className="flex-shrink-0 rounded-xl"
-                        >
-                          <RotateCw className="size-4" />
-                        </Button>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <FormField
-                control={control}
-                name="dob"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Date of Birth</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-48 justify-start px-2 text-left font-normal",
-                              !field.value && "text-muted-foreground",
-                            )}
-                          >
-                            <CalendarIcon className="mr-3 size-4 opacity-50" />
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>dd/mm/yyyy</span>
-                            )}
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          fromYear={currentYear - 60}
-                          toYear={currentYear - 18}
-                          captionLayout="dropdown-buttons"
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-            <CardFooter className="flex justify-end">
-              <Button
-                variant="outline"
-                type="button"
-                onClick={clearPersonalDetailFields}
-              >
-                Clear Section
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
 
         {/*professional details*/}
         <div
@@ -352,7 +142,7 @@ export default function UpdateEmployeeForm() {
           <Card className="hidden w-96 md:flex">
             <CardHeader className="flex-row items-center gap-3 space-y-0">
               <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
-                <span>2</span>
+                <span>1</span>
               </div>
               <div className="mt-0">
                 <CardTitle className="text-xl text-gray-700">
@@ -365,7 +155,7 @@ export default function UpdateEmployeeForm() {
           <Card className="flex-1" aria-label="Employee professional details">
             <CardHeader className="flex-row items-center gap-3 space-y-0 md:hidden">
               <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
-                <span>2</span>
+                <span>1</span>
               </div>
               <div className="mt-0">
                 <CardTitle className="text-xl text-gray-700">
@@ -381,7 +171,13 @@ export default function UpdateEmployeeForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Department</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        resetField("designationId", { defaultValue: "" });
+                      }}
+                      value={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a department" />
@@ -518,7 +314,7 @@ export default function UpdateEmployeeForm() {
                 type="button"
                 onClick={clearProfessionalDetailFields}
               >
-                Clear Section
+                Reset Section
               </Button>
             </CardFooter>
           </Card>
@@ -532,7 +328,7 @@ export default function UpdateEmployeeForm() {
           <Card className="hidden w-96 md:flex">
             <CardHeader className="flex-row items-center gap-3 space-y-0">
               <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
-                <span>3</span>
+                <span>2</span>
               </div>
               <div className="mt-0">
                 <CardTitle className="text-xl text-gray-700">
@@ -545,7 +341,7 @@ export default function UpdateEmployeeForm() {
           <Card className="flex-1">
             <CardHeader className="flex flex-row items-center gap-3 space-y-0 md:hidden">
               <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
-                <span>3</span>
+                <span>2</span>
               </div>
               <div className="mt-0">
                 <CardTitle className="text-xl text-gray-700">
@@ -613,7 +409,7 @@ export default function UpdateEmployeeForm() {
                 type="button"
                 onClick={clearShiftDetailFields}
               >
-                Clear Section
+                Reset Section
               </Button>
             </CardFooter>
           </Card>
@@ -627,7 +423,7 @@ export default function UpdateEmployeeForm() {
           <Card className="hidden w-96 md:flex">
             <CardHeader className="flex-row items-center gap-3 space-y-0">
               <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
-                <span>4</span>
+                <span>3</span>
               </div>
               <div className="mt-0">
                 <CardTitle className="text-xl text-gray-700">
@@ -642,7 +438,7 @@ export default function UpdateEmployeeForm() {
           <Card className="flex-1">
             <CardHeader className="flex flex-row items-center gap-3 space-y-0 md:hidden">
               <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
-                <span>4</span>
+                <span>3</span>
               </div>
               <div className="mt-0">
                 <CardTitle className="text-xl text-gray-700">
@@ -662,7 +458,7 @@ export default function UpdateEmployeeForm() {
                 type="button"
                 onClick={clearSalaryDetailFields}
               >
-                Clear Section
+                Reset Section
               </Button>
             </CardFooter>
           </Card>
@@ -676,7 +472,7 @@ export default function UpdateEmployeeForm() {
           <Card className="hidden w-96 md:flex">
             <CardHeader className="flex-row items-center gap-3 space-y-0">
               <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
-                <span>5</span>
+                <span>4</span>
               </div>
               <div className="mt-0">
                 <CardTitle className="text-xl text-gray-700">
@@ -691,7 +487,7 @@ export default function UpdateEmployeeForm() {
           <Card className="flex-1">
             <CardHeader className="flex flex-row items-center gap-3 space-y-0 md:hidden">
               <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
-                <span>5</span>
+                <span>4</span>
               </div>
               <div className="mt-0">
                 <CardTitle className="text-xl text-gray-700">
@@ -711,7 +507,7 @@ export default function UpdateEmployeeForm() {
                 type="button"
                 onClick={clearLeaveTypesField}
               >
-                Clear Section
+                Reset Section
               </Button>
             </CardFooter>
           </Card>
@@ -725,7 +521,7 @@ export default function UpdateEmployeeForm() {
           <Card className="hidden w-96 md:flex">
             <CardHeader className="flex-row items-center gap-3 space-y-0">
               <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
-                <span>6</span>
+                <span>5</span>
               </div>
               <div className="mt-0">
                 <CardTitle className="text-xl text-gray-700">
@@ -738,7 +534,7 @@ export default function UpdateEmployeeForm() {
           <Card className="flex-1">
             <CardHeader className="flex flex-row items-center gap-3 space-y-0 md:hidden">
               <div className="flex size-9 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
-                <span>6</span>
+                <span>5</span>
               </div>
               <div className="mt-0">
                 <CardTitle className="text-xl text-gray-700">
@@ -790,7 +586,7 @@ export default function UpdateEmployeeForm() {
                 type="button"
                 onClick={clearAdditionalDetailFields}
               >
-                Clear Section
+                Reset Section
               </Button>
             </CardFooter>
           </Card>
@@ -817,7 +613,7 @@ export default function UpdateEmployeeForm() {
                 {formState.isSubmitting && (
                   <Loader2 className="mr-3 animate-spin" />
                 )}
-                <span>Create new employee</span>
+                <span>Update employee</span>
               </Button>
             </CardContent>
           </Card>

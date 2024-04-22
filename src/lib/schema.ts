@@ -9,6 +9,7 @@ import {
   employeeAttendanceTable,
   employeeDocumentFileTable,
   employeeDocumentTable,
+  employeeLeaveTypeTable,
   employeeProfileTable,
   employeeSalaryComponentTable,
   employeeShiftTable,
@@ -32,6 +33,7 @@ export const EmployeeAttendanceSchema = createSelectSchema(
   employeeAttendanceTable,
 );
 export const LeaveTypeSchema = createSelectSchema(leaveTypeTable);
+export const EmployeeLeaveTypeSchema = createSelectSchema(employeeLeaveTypeTable)
 export const LeaveRequestSchema = createSelectSchema(leaveRequestTable);
 export const LeaveBalanceSchema = createSelectSchema(leaveBalanceTable);
 export const DocumentTypeSchema = createSelectSchema(documentTypeTable);
@@ -183,16 +185,12 @@ export const CreateEmployeeFormSchema = CreateEmployeeSchema.extend({
 });
 
 export const UpdateEmployeeSchema = z.object({
+  empId: z.string(),
   code: z.string({ required_error: "Employee code is required" }).min(4, { message: "Min. 4 characters is required" }),
-  name: z.string({ required_error: "Employee name is required" }).min(6, { message: "Full name is required" }),
-  email: z.string().email(),
-  password: z.string(),
-  role: z.literal("EMPLOYEE"),
   isTeamLead: z.boolean(),
   joiningDate: z.date({ required_error: "Joining date is required" }),
   deptId: z.string({ required_error: "Department is required" }),
   designationId: z.string({ required_error: "Designation is required" }),
-  dob: z.date(),
   location: z.string(),
   salary: z.number(),
   empBand: z.enum(["U1", "U2", "U3"]),
@@ -209,23 +207,6 @@ export const UpdateEmployeeSchema = z.object({
     message: "Min. 1 salary component is required"
   }),
   leaveTypes: z.array(LeaveTypeSchema).min(1, { message: "Min. 1 leave type is required." })
-});
-
-export const UpdateEmployeeInputSchema = CreateEmployeeSchema.extend({
-  imageUrl: z.string().nullable(),
-});
-
-export const UpdateEmployeeFormSchema = CreateEmployeeSchema.extend({
-  profileImage: z
-    .instanceof(File, { message: "Employee Image is required." })
-    .refine(
-      (file) => file.size <= MAX_FILE_SIZE.PROFILE_IMG,
-      "Max image size is 5MB.",
-    )
-    .refine(
-      (file) => ACCEPTED_FILE_MIME_TYPES.PROFILE_IMG.includes(file.type),
-      "only .webp .jpg .png .svg files are accepted.",
-    ),
 });
 
 export const DeleteEmployeeSchema = z.object({

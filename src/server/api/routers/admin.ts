@@ -1,5 +1,5 @@
 import { generateId } from "lucia";
-import { eq, getTableColumns, sql } from "drizzle-orm";
+import { and, eq, getTableColumns, sql } from "drizzle-orm";
 // UTILS
 import { pbClient } from "@/server/pb/config";
 import { getShiftTimeDate } from "@/lib/utils";
@@ -7,86 +7,88 @@ import { hashPassword } from "@/server/helpers";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // DB TABLES
 import {
-  employeeAttendanceTable,
-  employeeDocumentFileTable,
-  employeeDocumentTable,
-  employeeLeaveTypeTable,
-  employeeProfileTable,
-  employeeSalaryComponentTable,
-  employeeShiftTable,
+  userTable,
+  sessionTable,
+  leaveTypeTable,
   leaveBalanceTable,
   leaveRequestTable,
-  leaveTypeTable,
-  sessionTable,
-  userTable
+  employeeShiftTable,
+  employeeProfileTable,
+  employeeDocumentTable,
+  employeeLeaveTypeTable,
+  employeeAttendanceTable,
+  employeeDocumentFileTable,
+  employeeSalaryComponentTable,
 } from "@/server/db/schema";
 // SCHEMAS
 import {
   CreateEmployeeInputSchema,
   DeleteEmployeeSchema,
   GetEmployeeByIdInput,
-  UpdateEmployeeInputSchema
+  UpdateEmployeeSchema
 } from "@/lib/schema";
 // TYPES
-import type { GetEmployeeDataRes } from "@/lib/types";
+import type { EmployeeLeaveTypeSchemaType, EmployeeSalaryComponentType, GetEmployeeDataResponse } from "@/lib/types";
 
 export const adminRouter = createTRPCRouter({
   // get employee data for update
-  getEmployeeData: protectedProcedure.input(GetEmployeeByIdInput).query(async ({ ctx, input }): Promise<GetEmployeeDataRes> => {
-    const { empId } = input
+  getEmployeeData:
+    protectedProcedure
+      .input(GetEmployeeByIdInput)
+      .query(async ({ ctx, input }): Promise<GetEmployeeDataResponse> => {
+        const { empId } = input
 
-    const employee = await ctx.db.query.userTable.findFirst({
-      where: eq(userTable.id, empId),
-      columns: {
-        password: false,
-      }
-    })
+        const employee = await ctx.db.query.userTable.findFirst({
+          where: eq(userTable.id, empId),
+          columns: {
+            password: false,
+          }
+        })
 
-    if (employee === undefined) {
-      return {
-        status: "FAILED",
-        message: "Employee doesnot exists or have been deleted by other"
-      }
-    }
+        if (employee === undefined) {
+          return {
+            status: "FAILED",
+            message: "Employee doesnot exists or have been deleted by other"
+          }
+        }
 
-    const { empId: _empId1, ...empProfileData } = (await ctx.db.query.employeeProfileTable.findFirst({
-      where: eq(employeeProfileTable.empId, empId),
-    }))!
+        const { empId: _empId1, ...empProfileData } = (await ctx.db.query.employeeProfileTable.findFirst({
+          where: eq(employeeProfileTable.empId, empId),
+        }))!
 
-    const { shiftStart, shiftEnd, breakMinutes } = (await ctx.db.query.employeeShiftTable.findFirst({
-      where: eq(employeeShiftTable.empId, empId)
-    }))!
+        const { shiftStart, shiftEnd, breakMinutes } = (await ctx.db.query.employeeShiftTable.findFirst({
+          where: eq(employeeShiftTable.empId, empId)
+        }))!
 
-    const salaryComponents = await ctx.db.query.employeeSalaryComponentTable.findMany({
-      where: eq(employeeSalaryComponentTable.empId, empId)
-    })
+        const salaryComponents = await ctx.db.query.employeeSalaryComponentTable.findMany({
+          where: eq(employeeSalaryComponentTable.empId, empId)
+        })
 
-    const leaveTypes = await ctx.db
-      .select({
-        ...getTableColumns(leaveTypeTable)
-      })
-      .from(leaveTypeTable)
-      .innerJoin(employeeLeaveTypeTable, eq(employeeLeaveTypeTable.leaveTypeId, leaveTypeTable.id))
+        const leaveTypes = await ctx.db
+          .select({
+            ...getTableColumns(leaveTypeTable)
+          })
+          .from(leaveTypeTable)
+          .innerJoin(employeeLeaveTypeTable, eq(employeeLeaveTypeTable.leaveTypeId, leaveTypeTable.id))
 
-    return {
-      status: "SUCCESS",
-      message: "Fetched employee data successfully",
-      data: {
-        code: employee.code,
-        name: employee.name,
-        email: employee.email,
-        password: "",
-        role: "EMPLOYEE",
-        isTeamLead: employee.isTeamLead,
-        ...empProfileData,
-        salaryComponents,
-        leaveTypes,
-        shiftStart: getShiftTimeDate(shiftStart),
-        shiftEnd: getShiftTimeDate(shiftEnd),
-        breakMinutes,
-      }
-    }
-  }),
+        return {
+          status: "SUCCESS",
+          message: "Fetched employee data successfully",
+          data: {
+            name: employee.name,
+            empId,
+            code: employee.code,
+            isTeamLead: employee.isTeamLead,
+            ...empProfileData,
+            salaryComponents,
+            leaveTypes,
+            shiftStart: getShiftTimeDate(shiftStart),
+            shiftEnd: getShiftTimeDate(shiftEnd),
+            breakMinutes,
+          }
+        }
+
+      }),
 
   createEmployee: protectedProcedure
     .input(CreateEmployeeInputSchema)
@@ -190,14 +192,165 @@ export const adminRouter = createTRPCRouter({
       }
     }),
 
-  updateEmployee: protectedProcedure.input(UpdateEmployeeInputSchema).mutation(async ({ ctx }) => {
-    //
-    return {
-      status: "",
-      message: ""
-    }
+  updateEmployee:
+    protectedProcedure
+      .input(UpdateEmployeeSchema)
+      .mutation(async ({ ctx, input }): Promise<{ status: "SUCCESS"; message: string } | { status: "FAILED", message: string; }> => {
+        try {
+          const {
+            empId,
+            code,
+            isTeamLead,
+            joiningDate,
+            deptId,
+            designationId,
+            salaryComponents,
+            salary,
+            location,
+            empBand,
+            shiftStart,
+            shiftEnd,
+            breakMinutes,
+            leaveTypes,
+          } = input;
 
-  }),
+          await ctx.db.update(userTable)
+            .set({
+              code,
+              isTeamLead
+            })
+            .where(eq(userTable.id, empId))
+
+          await ctx.db.update(employeeProfileTable)
+            .set({
+              joiningDate,
+              deptId,
+              designationId,
+              salary,
+              location,
+              empBand,
+            })
+            .where(eq(employeeProfileTable.empId, empId))
+
+          await ctx.db.update(employeeShiftTable)
+            .set({
+              shiftStart: shiftStart.toLocaleTimeString("en-IN", { hour12: false }),
+              shiftEnd: shiftEnd.toLocaleTimeString("en-IN", { hour12: false }),
+              breakMinutes
+            })
+            .where(eq(employeeShiftTable.empId, empId))
+
+          const empSalaryComponents = await ctx.db.query.employeeSalaryComponentTable
+            .findMany({
+              where: eq(employeeSalaryComponentTable.empId, empId)
+            })
+
+          const newSalaryComponents: EmployeeSalaryComponentType[] = []
+          const updatedSalaryComponents: EmployeeSalaryComponentType[] = []
+          const deletedSalaryComponents: EmployeeSalaryComponentType[] = []
+
+          salaryComponents.forEach((salaryComponent) => {
+            const existingSalaryComponent = empSalaryComponents.find(empSalaryComponent => empSalaryComponent.id === salaryComponent.id)
+
+            if (existingSalaryComponent === undefined) {
+              newSalaryComponents.push({ ...salaryComponent, empId })
+              return
+            }
+
+            if (salaryComponent.amount !== existingSalaryComponent.amount) {
+              updatedSalaryComponents.push({ ...salaryComponent, empId })
+            }
+          })
+
+          empSalaryComponents.forEach((empSalaryComponent) => {
+            const salaryComponent = salaryComponents.find(salaryComponent => salaryComponent.id === empSalaryComponent.id)
+            if (salaryComponent === undefined) {
+              deletedSalaryComponents.push({ ...empSalaryComponent, empId })
+            }
+          })
+
+          if (newSalaryComponents.length > 0) {
+            await ctx.db.insert(employeeSalaryComponentTable).values(newSalaryComponents)
+          }
+
+          if (updatedSalaryComponents.length > 0) {
+            await Promise.all(updatedSalaryComponents.map(async ({ id, amount, empId }) => {
+              await ctx.db.update(employeeSalaryComponentTable).set({
+                amount,
+              }).where(
+                and(
+                  eq(employeeSalaryComponentTable.id, id,),
+                  eq(employeeSalaryComponentTable.empId, empId)
+                )
+              )
+            }))
+          }
+
+          if (deletedSalaryComponents.length > 0) {
+            await Promise.all(deletedSalaryComponents.map(async ({ id, empId }) => {
+              await ctx.db
+                .delete(employeeSalaryComponentTable)
+                .where(
+                  and(
+                    eq(employeeSalaryComponentTable.id, id,),
+                    eq(employeeSalaryComponentTable.empId, empId)
+                  )
+                )
+            }))
+          }
+
+          const empLeaveTypes = await ctx.db.query.employeeLeaveTypeTable.findMany({
+            where: eq(employeeLeaveTypeTable.empId, empId)
+          })
+
+          const newLeaveTypes: EmployeeLeaveTypeSchemaType[] = []
+          const deletedLeaveTypes: EmployeeLeaveTypeSchemaType[] = []
+
+          leaveTypes.forEach(({ id: leaveTypeId }) => {
+            const empLeaveType = empLeaveTypes.find(empLeaveType => empLeaveType.leaveTypeId === leaveTypeId)
+            if (empLeaveType === undefined) {
+              newLeaveTypes.push({ empId, leaveTypeId })
+            }
+          })
+
+          empLeaveTypes.forEach(({ leaveTypeId }) => {
+            const leaveType = leaveTypes.find(leaveType => leaveType.id === leaveTypeId)
+            if (leaveType === undefined) {
+              deletedLeaveTypes.push({ empId, leaveTypeId })
+            }
+          })
+
+          if (newLeaveTypes.length > 0) {
+            await ctx.db.insert(employeeLeaveTypeTable).values(newLeaveTypes)
+          }
+
+          if (deletedLeaveTypes.length > 0) {
+            await Promise.all(deletedLeaveTypes.map(async ({ leaveTypeId, empId }) => {
+              await ctx.db
+                .delete(employeeLeaveTypeTable)
+                .where(
+                  and(
+                    eq(employeeLeaveTypeTable.empId, empId),
+                    eq(employeeLeaveTypeTable.leaveTypeId, leaveTypeId),
+                  )
+                )
+            }))
+            return {
+              status: "SUCCESS",
+              message: "Employee updated successfully"
+            }
+          }
+        } catch (error) {
+          return {
+            status: "FAILED",
+            message: "Unable to update employee, please try again"
+          }
+        }
+        return {
+          status: "FAILED",
+          message: "Unable to update employee, please try again"
+        }
+      }),
 
   deleteEmployee: protectedProcedure.input(DeleteEmployeeSchema).mutation(async ({ ctx, input }) => {
     const { empId } = input
