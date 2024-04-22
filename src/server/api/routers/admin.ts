@@ -335,20 +335,17 @@ export const adminRouter = createTRPCRouter({
                   )
                 )
             }))
-            return {
-              status: "SUCCESS",
-              message: "Employee updated successfully"
-            }
+          }
+          return {
+            status: "SUCCESS",
+            message: "Employee updated successfully"
           }
         } catch (error) {
+          console.log(error)
           return {
             status: "FAILED",
             message: "Unable to update employee, please try again"
           }
-        }
-        return {
-          status: "FAILED",
-          message: "Unable to update employee, please try again"
         }
       }),
 
