@@ -8,10 +8,12 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import {
   ApproveLeaveSchema,
   CreateLeaveTypeSchema,
+  DeleteLeaveTypeSchema,
   RejectLeaveSchema,
 } from "@/lib/schema";
 // DB TABLES
 import {
+  employeeLeaveTypeTable,
   leaveBalanceTable,
   leaveRequestTable,
   leaveTypeTable,
@@ -134,4 +136,17 @@ export const leaveRouter = createTRPCRouter({
         };
       },
     ),
+
+  deleteLeaveType: protectedProcedure.input(DeleteLeaveTypeSchema).mutation(async ({ ctx, input }) => {
+    const { id: leaveTypeId } = input
+    // todo : take in consideration when employee has already taken a leave.
+
+    await ctx.db.delete(employeeLeaveTypeTable).where(eq(employeeLeaveTypeTable.leaveTypeId, leaveTypeId))
+
+    await ctx.db.delete(leaveBalanceTable).where(eq(leaveBalanceTable.leaveTypeId, leaveTypeId))
+
+    await ctx.db.delete(leaveRequestTable).where(eq(leaveRequestTable.leaveTypeId, leaveTypeId))
+
+    await ctx.db.delete(leaveTypeTable).where(eq(leaveTypeTable.id, leaveTypeId))
+  }),
 });

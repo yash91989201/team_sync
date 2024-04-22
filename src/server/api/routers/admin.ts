@@ -1,9 +1,10 @@
 import { generateId } from "lucia";
-import { eq, sql } from "drizzle-orm";
+import { eq, getTableColumns, sql } from "drizzle-orm";
 // UTILS
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { hashPassword } from "@/server/helpers";
 import { pbClient } from "@/server/pb/config";
+import { getShiftTimeDate } from "@/lib/utils";
+import { hashPassword } from "@/server/helpers";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // DB TABLES
 import {
   employeeAttendanceTable,
@@ -15,6 +16,7 @@ import {
   employeeShiftTable,
   leaveBalanceTable,
   leaveRequestTable,
+  leaveTypeTable,
   sessionTable,
   userTable
 } from "@/server/db/schema";
@@ -22,10 +24,70 @@ import {
 import {
   CreateEmployeeInputSchema,
   DeleteEmployeeSchema,
+  GetEmployeeByIdInput,
   UpdateEmployeeInputSchema
 } from "@/lib/schema";
+// TYPES
+import type { GetEmployeeDataRes } from "@/lib/types";
 
 export const adminRouter = createTRPCRouter({
+  // get employee data for update
+  getEmployeeData: protectedProcedure.input(GetEmployeeByIdInput).query(async ({ ctx, input }): Promise<GetEmployeeDataRes> => {
+    const { empId } = input
+
+    const employee = await ctx.db.query.userTable.findFirst({
+      where: eq(userTable.id, empId),
+      columns: {
+        password: false,
+      }
+    })
+
+    if (employee === undefined) {
+      return {
+        status: "FAILED",
+        message: "Employee doesnot exists or have been deleted by other"
+      }
+    }
+
+    const { empId: _empId1, ...empProfileData } = (await ctx.db.query.employeeProfileTable.findFirst({
+      where: eq(employeeProfileTable.empId, empId),
+    }))!
+
+    const { shiftStart, shiftEnd, breakMinutes } = (await ctx.db.query.employeeShiftTable.findFirst({
+      where: eq(employeeShiftTable.empId, empId)
+    }))!
+
+    const salaryComponents = await ctx.db.query.employeeSalaryComponentTable.findMany({
+      where: eq(employeeSalaryComponentTable.empId, empId)
+    })
+
+    const leaveTypes = await ctx.db
+      .select({
+        ...getTableColumns(leaveTypeTable)
+      })
+      .from(leaveTypeTable)
+      .innerJoin(employeeLeaveTypeTable, eq(employeeLeaveTypeTable.leaveTypeId, leaveTypeTable.id))
+
+    return {
+      status: "SUCCESS",
+      message: "Fetched employee data successfully",
+      data: {
+        code: employee.code,
+        name: employee.name,
+        email: employee.email,
+        password: "",
+        role: "EMPLOYEE",
+        isTeamLead: employee.isTeamLead,
+        ...empProfileData,
+        salaryComponents,
+        leaveTypes,
+        shiftStart: getShiftTimeDate(shiftStart),
+        shiftEnd: getShiftTimeDate(shiftEnd),
+        breakMinutes,
+      }
+    }
+  }),
+
   createEmployee: protectedProcedure
     .input(CreateEmployeeInputSchema)
     .mutation(async ({ ctx, input }) => {

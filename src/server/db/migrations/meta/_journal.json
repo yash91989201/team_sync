@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1713582617254,
-      "tag": "0000_empty_the_hand",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1713632161164,
-      "tag": "0001_little_sir_ram",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1713635564975,
-      "tag": "0002_curvy_fixer",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1713668630291,
-      "tag": "0003_overjoyed_devos",
+      "when": 1713753504500,
+      "tag": "0000_whole_william_stryker",
       "breakpoints": true
     }
   ]

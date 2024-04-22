@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { toast } from "sonner";
 // UITLS
+import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
 // UI
 import { Button, buttonVariants } from "@ui/button";
 // ICONS
 import { Loader2, Pencil, Trash } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export function EmployeeTableActions({ empId }: { empId: string }) {
   const { refetch: refetchEmployees } = api.employeeRouter.getAll.useQuery();
@@ -51,5 +51,30 @@ export function EmployeeTableActions({ empId }: { empId: string }) {
         {isDeleting ? <Loader2 /> : <Trash />}
       </Button>
     </div>
+  );
+}
+
+export function LeaveTypeTableActions({ id }: { id: string }) {
+  const { refetch: refetchLeaveTypes } =
+    api.leaveRouter.getLeaveTypes.useQuery();
+  const { mutateAsync: deleteLeaveType, isPending } =
+    api.leaveRouter.deleteLeaveType.useMutation();
+
+  const deleteLeaveTypeAction = async () => {
+    await deleteLeaveType({ id });
+    toast.success("Deleted leave type successfully");
+    await refetchLeaveTypes();
+  };
+
+  return (
+    <Button
+      variant="outline"
+      size="icon"
+      className="rounded-xl border-red-500 text-red-500 hover:border-red-500 hover:bg-white hover:text-red-500 [&>svg]:size-4"
+      disabled={isPending}
+      onClick={deleteLeaveTypeAction}
+    >
+      {isPending ? <Loader2 /> : <Trash />}
+    </Button>
   );
 }

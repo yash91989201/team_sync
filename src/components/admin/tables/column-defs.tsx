@@ -12,7 +12,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 // UI
 import { Button } from "@/components/ui/button";
 // CUSTOM COMPONENTS
-import { EmployeeTableActions } from "./column-actions";
+import { EmployeeTableActions, LeaveTypeTableActions } from "./column-actions";
 import DocumentsPreview from "@/components/shared/documents-preview";
 // CONSTANTS
 import { DOCUMENT_FILE_TYPES_DISPLAY } from "@/constants";
@@ -22,11 +22,11 @@ import { ArrowUpDown } from "lucide-react";
 export const DEPARTMENT_TABLE: ColumnDef<DepartmentTableProps>[] = [
   {
     accessorKey: "name",
-    header: "name",
+    header: "Name",
   },
   {
     accessorKey: "employeeCount",
-    header: "employees",
+    header: "Employees",
     cell: ({ row }) =>
       row.original.employees.length === 0
         ? "0"
@@ -37,7 +37,7 @@ export const DEPARTMENT_TABLE: ColumnDef<DepartmentTableProps>[] = [
 export const DESIGNATION_TABLE: ColumnDef<DesignationTableProps>[] = [
   {
     accessorKey: "name",
-    header: "name",
+    header: "Name",
   },
   {
     accessorKey: "Department",
@@ -105,6 +105,10 @@ export const LEAVE_TYPE_TABLE: ColumnDef<LeaveTypeSchemaType>[] = [
       );
     },
     cell: ({ row }) => (row.original.paidLeave ? "yes" : "no"),
+  },
+  {
+    accessorKey: "actions",
+    cell: ({ row }) => <LeaveTypeTableActions id={row.original.id} />,
   },
 ];
 

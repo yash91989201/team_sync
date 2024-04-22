@@ -159,3 +159,18 @@ export type NavLinkProps = {
   childrens?: NavLinkProps[];
   isChildLink: boolean;
 };
+
+// get employee data for update response
+type GetEmployeeDataFailed = {
+  status: "FAILED";
+  message: string;
+  error?: string;
+}
+
+type GetEmployeeDataSuccess = {
+  status: "SUCCESS";
+  message: string;
+  data: UpdateEmployeeSchemaType
+}
+
+export type GetEmployeeDataRes = GetEmployeeDataFailed | GetEmployeeDataSuccess

@@ -109,6 +109,15 @@ export function getShiftTimeWithPeriod(time: string) {
   return `${hour - 12}:${minute} PM`;
 }
 
+export function getShiftTimeDate(time: string): Date {
+  const [shiftHour = 0, shiftMinute = 0, shiftSecond = 0] = time
+    .split(":")
+    .map(Number);
+
+  const shiftTime = new Date().setHours(shiftHour, shiftMinute, shiftSecond)
+  return new Date(shiftTime)
+}
+
 export function getCurrentTimeWithPeriod() {
   const now = new Date();
   const hours = now.getHours();

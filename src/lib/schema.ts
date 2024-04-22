@@ -126,6 +126,7 @@ export const CreateEmployeeDocumentInputSchema = z.object({
 
 // EMPLOYEE SCHEMAS
 export const GetEmployeeByQueryInput = z.object({ query: z.string() });
+export const GetEmployeeByIdInput = z.object({ empId: z.string() })
 
 export const CreateEmployeeSchema = z.object({
   code: z.string({ required_error: "Employee code is required" }).min(4, { message: "Min. 4 characters is required" }),
@@ -240,6 +241,10 @@ export const CreateLeaveTypeSchema = z.object({
   carryOver: z.boolean(),
   paidLeave: z.boolean().default(false)
 });
+
+export const DeleteLeaveTypeSchema = z.object({
+  id: z.string()
+})
 
 export const LeaveApplySchema = z.object({
   leaveTypeId: z.string().min(1, { message: "Select a leave type." }),

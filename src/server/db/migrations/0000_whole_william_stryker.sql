@@ -52,6 +52,12 @@ CREATE TABLE `employee_document` (
 	CONSTRAINT `employee_document_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
+CREATE TABLE `employee_leave_type` (
+	`emp_id` varchar(24) NOT NULL,
+	`leave_type_id` varchar(24) NOT NULL,
+	CONSTRAINT `employeeLeaveId` PRIMARY KEY(`emp_id`,`leave_type_id`)
+);
+--> statement-breakpoint
 CREATE TABLE `employee_profile` (
 	`emp_id` varchar(24) NOT NULL,
 	`joining_date` timestamp NOT NULL,
@@ -111,8 +117,8 @@ CREATE TABLE `leave_type` (
 	`days_allowed` int NOT NULL,
 	`renew_period` enum('month','year') NOT NULL,
 	`renew_period_count` int NOT NULL,
-	`carry_over` boolean NOT NULL DEFAULT false,
-	`paid_leave` boolean DEFAULT false,
+	`carry_over` boolean NOT NULL,
+	`paid_leave` boolean NOT NULL,
 	CONSTRAINT `leave_type_id` PRIMARY KEY(`id`),
 	CONSTRAINT `leave_type_type_unique` UNIQUE(`type`)
 );
@@ -183,6 +189,8 @@ ALTER TABLE `employee_attendance` ADD CONSTRAINT `employee_attendance_emp_id_use
 ALTER TABLE `employee_document_file` ADD CONSTRAINT `employee_document_file_emp_document_id_employee_document_id_fk` FOREIGN KEY (`emp_document_id`) REFERENCES `employee_document`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `employee_document` ADD CONSTRAINT `employee_document_emp_id_user_id_fk` FOREIGN KEY (`emp_id`) REFERENCES `user`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `employee_document` ADD CONSTRAINT `employee_document_document_type_id_document_type_id_fk` FOREIGN KEY (`document_type_id`) REFERENCES `document_type`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `employee_leave_type` ADD CONSTRAINT `employee_leave_type_emp_id_user_id_fk` FOREIGN KEY (`emp_id`) REFERENCES `user`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `employee_leave_type` ADD CONSTRAINT `employee_leave_type_leave_type_id_leave_type_id_fk` FOREIGN KEY (`leave_type_id`) REFERENCES `leave_type`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `employee_profile` ADD CONSTRAINT `employee_profile_emp_id_user_id_fk` FOREIGN KEY (`emp_id`) REFERENCES `user`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `employee_profile` ADD CONSTRAINT `employee_profile_dept_id_department_id_fk` FOREIGN KEY (`dept_id`) REFERENCES `department`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `employee_profile` ADD CONSTRAINT `employee_profile_designation_id_designation_id_fk` FOREIGN KEY (`designation_id`) REFERENCES `designation`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint

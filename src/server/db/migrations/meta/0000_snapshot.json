@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "8eb895b9-a869-4a95-84a5-06b0e69eb9c3",
+  "id": "f62d3d17-b044-4b65-8833-4f143937ff81",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "admin_profile": {
@@ -377,6 +377,64 @@
           "name": "employee_document_id",
           "columns": [
             "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "employee_leave_type": {
+      "name": "employee_leave_type",
+      "columns": {
+        "emp_id": {
+          "name": "emp_id",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "leave_type_id": {
+          "name": "leave_type_id",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "employee_leave_type_emp_id_user_id_fk": {
+          "name": "employee_leave_type_emp_id_user_id_fk",
+          "tableFrom": "employee_leave_type",
+          "tableTo": "user",
+          "columnsFrom": [
+            "emp_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "employee_leave_type_leave_type_id_leave_type_id_fk": {
+          "name": "employee_leave_type_leave_type_id_leave_type_id_fk",
+          "tableFrom": "employee_leave_type",
+          "tableTo": "leave_type",
+          "columnsFrom": [
+            "leave_type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "employeeLeaveId": {
+          "name": "employeeLeaveId",
+          "columns": [
+            "emp_id",
+            "leave_type_id"
           ]
         }
       },
@@ -873,16 +931,14 @@
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": false
+          "autoincrement": false
         },
         "paid_leave": {
           "name": "paid_leave",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": false
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
