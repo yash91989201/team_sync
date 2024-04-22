@@ -1,15 +1,15 @@
 import { generateId } from "lucia";
-import { sql } from "drizzle-orm";
+import { sql, eq } from "drizzle-orm";
 // UTILS
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // DB TABLES
 import { departmentTable, employeeProfileTable } from "@/server/db/schema";
 // SCHEMAS
-import { CreateDepartmentSchema } from "@/lib/schema";
+import { CreateDepartmentSchema, UpdateDepartmentSchema } from "@/lib/schema";
 
 export const departmentRouter = createTRPCRouter({
-  getAll: protectedProcedure.query(async ({ ctx }) => {
-    const deptWithEmpCount = await ctx.db.query.departmentTable.findMany({
+  getAll: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.query.departmentTable.findMany({
       with: {
         employees: {
           columns: {
@@ -22,9 +22,8 @@ export const departmentRouter = createTRPCRouter({
         },
       },
     })
-
-    return deptWithEmpCount
   }),
+
   createNew: protectedProcedure
     .input(CreateDepartmentSchema)
     .mutation(async ({ ctx, input }) => {
@@ -33,4 +32,13 @@ export const departmentRouter = createTRPCRouter({
         name: input.name,
       });
     }),
+
+  updateDepartment: protectedProcedure
+    .input(UpdateDepartmentSchema)
+    .mutation(({ ctx, input }) => {
+      return ctx.db
+        .update(departmentTable)
+        .set({ name: input.name })
+        .where(eq(departmentTable.id, input.id))
+    })
 });
