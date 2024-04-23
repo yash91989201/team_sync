@@ -67,6 +67,9 @@ export const validateRequest = cache(
 declare module "lucia" {
   interface Register {
     Lucia: typeof lucia;
-    DatabaseUserAttributes: Omit<UserType, "password">;
+    DatabaseUserAttributes: DatabaseUserAttributes;
   }
 }
+
+// eslint-disable-next-line
+interface DatabaseUserAttributes extends Omit<UserType, "password"> { }
