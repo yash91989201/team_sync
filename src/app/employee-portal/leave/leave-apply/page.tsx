@@ -1,8 +1,7 @@
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 // UTILS
-import { api } from "@/trpc/server";
-import { apiHelper } from "@/trpc/helpers";
 import { authPage } from "@/server/helpers";
+import { api, createApiHelper } from "@/trpc/server";
 // UI
 import {
   Card,
@@ -20,6 +19,7 @@ export default async function LeaveApplyPage() {
   await authPage("EMPLOYEE");
 
   const leaveTypes = await api.employeeRouter.getLeaveTypes();
+  const apiHelper = await createApiHelper();
   await apiHelper.employeeRouter.getLeaveApplications.prefetch();
   const leaveApplications = dehydrate(apiHelper.queryClient);
 

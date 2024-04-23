@@ -1,6 +1,6 @@
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 // UTILS
-import { apiHelper } from "@/trpc/helpers";
+import { createApiHelper } from "@/trpc/server";
 import { authPage } from "@/server/helpers";
 // UI
 import {
@@ -19,6 +19,7 @@ export default async function SalaryComponentsPage() {
   await authPage("ADMIN");
 
   // const salaryComponents = await api.salaryRouter.getComponents();
+  const apiHelper = await createApiHelper();
   await apiHelper.salaryRouter.getComponents.prefetch();
   const salaryComponents = dehydrate(apiHelper.queryClient);
 

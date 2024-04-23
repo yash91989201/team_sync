@@ -1,6 +1,6 @@
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 // UTILS
-import { apiHelper } from "@/trpc/helpers";
+import { createApiHelper } from "@/trpc/server";
 import { authPage } from "@/server/helpers";
 // UI
 import {
@@ -18,6 +18,7 @@ import CreateDepartmentForm from "@/components/admin/department/create-departmen
 export default async function DepartmentsPage() {
   await authPage("ADMIN");
 
+  const apiHelper = await createApiHelper();
   await apiHelper.departmentRouter.getAll.prefetch();
   const departments = dehydrate(apiHelper.queryClient);
 

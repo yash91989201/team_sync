@@ -1,6 +1,6 @@
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 // UTILS
-import { apiHelper } from "@/trpc/helpers";
+import { createApiHelper } from "@/trpc/server";
 import { authPage } from "@/server/helpers";
 // UI
 import {
@@ -18,6 +18,7 @@ import CreateLeaveTypeForm from "@/components/admin/leave/create-leave-type-form
 export default async function LeaveTypesPage() {
   await authPage("ADMIN");
 
+  const apiHelper = await createApiHelper();
   await apiHelper.leaveRouter.getLeaveTypes.prefetch();
   const leaveTypes = dehydrate(apiHelper.queryClient);
 

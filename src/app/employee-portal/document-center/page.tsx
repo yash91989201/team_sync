@@ -1,6 +1,6 @@
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 // UTILS
-import { apiHelper } from "@/trpc/helpers";
+import { createApiHelper } from "@/trpc/server";
 import { authPage } from "@/server/helpers";
 // UI
 import {
@@ -17,6 +17,7 @@ import EmployeeMainWrapper from "@/components/employee/employee-main-wrapper";
 export default async function DocumentCenterPage() {
   await authPage("EMPLOYEE");
 
+  const apiHelper = await createApiHelper();
   await apiHelper.employeeRouter.getDocuments.prefetch();
   const employeeDocuments = dehydrate(apiHelper.queryClient);
 
