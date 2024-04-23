@@ -58,7 +58,6 @@ export default function LeaveApplyForm({ leaveTypes }: LeaveApplyFormProps) {
     defaultValues: {
       leaveTypeId: "",
       reviewerId: "",
-      reason: "",
     },
   });
 
@@ -241,10 +240,8 @@ export default function LeaveApplyForm({ leaveTypes }: LeaveApplyFormProps) {
           </CardContent>
           <CardFooter>
             <Button className="gap-1" disabled={formState.isSubmitting}>
-              {formState.isSubmitting && (
-                <Loader2 className="mr-3 animate-spin" />
-              )}
-              <span>Create Department</span>
+              {formState.isSubmitting && <Loader2 className="animate-spin" />}
+              <span>Apply for leave</span>
             </Button>
           </CardFooter>
         </Card>

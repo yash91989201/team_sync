@@ -33,7 +33,11 @@ export const leaveRouter = createTRPCRouter({
   getAllLeaveRequests: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.leaveRequestTable.findMany({
       with: {
-        employee: true,
+        employee: {
+          columns: {
+            password: false
+          }
+        },
         leaveType: true,
       },
     });

@@ -1,5 +1,6 @@
+import { format } from "date-fns";
 // UTILS
-import { getBalancePeriod } from "@/lib/utils";
+import { cn, getBalancePeriod, getLeaveDateString } from "@/lib/utils";
 // TYPES
 import type {
   LeaveBalancesTableProps,
@@ -7,6 +8,8 @@ import type {
   EmployeesDocumentsTableProps,
 } from "@/lib/types";
 import type { ColumnDef } from "@tanstack/react-table";
+// UI
+import { Badge } from "lucide-react";
 // CUSTOM COMPONENTS
 import DocumentsPreview from "@sharedComponents/documents-preview";
 
@@ -73,7 +76,47 @@ export const LEAVE_BALANCES_TABLE: ColumnDef<LeaveBalancesTableProps>[] = [
 export const LEAVE_APPLICATION_TABLE: ColumnDef<LeaveApplicationTableProps>[] =
   [
     {
+      accessorKey: "appliedOn",
+      header: "Applied On",
+      cell: ({ row }) => format(row.original.appliedOn, "do MMM yy"),
+    },
+    {
+      accessorKey: "leaveDays",
+      header: "Leave days",
+    },
+    {
+      accessorKey: "leaveDate",
+      header: "Leave Date",
+      cell: ({ row }) =>
+        getLeaveDateString({
+          fromDate: row.original.fromDate,
+          toDate: row.original.toDate,
+          leaveDays: row.original.leaveDays,
+          renewPeriod: row.original.leaveType.renewPeriod,
+        }),
+    },
+    {
       accessorKey: "status",
       header: "Status",
+      cell: ({ row }) => {
+        const status = row.original.status;
+        return (
+          <Badge
+            className={cn(
+              status === "pending" && "bg-amber-500",
+              status === "approved" && "bg-green-500",
+              status === "rejected" && "bg-red-500",
+              "rounded-xl text-white",
+            )}
+          >
+            {status}
+          </Badge>
+        );
+      },
+    },
+    {
+      accessorKey: "reviewer",
+      header: "Reviewer",
+      cell: ({ row }) => row.original.reviewer.name,
     },
   ];

@@ -290,6 +290,22 @@ export function getBalancePeriod(props: {
   }
 }
 
+export function getLeaveDateString({ leaveDays, renewPeriod, fromDate, toDate }: {
+  leaveDays: number;
+  renewPeriod: "month" | "year"
+  fromDate: Date;
+  toDate: Date;
+}): string {
+
+  if (leaveDays === 1) {
+    return format(fromDate, "do MMM")
+  } else if (renewPeriod === "month") {
+    return `${format(fromDate, "do MMM")} - ${format(toDate, "do MMM")}`
+  } else {
+    return `${format(fromDate, "d/MM/yy")} - ${format(toDate, "d/MM/yy")}`
+  }
+}
+
 export async function uploadProfileImage(
   image: File,
 ): Promise<{ imageUrl: string | null }> {

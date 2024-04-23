@@ -25,7 +25,7 @@ import { ArrowDownToLine, Eye } from "lucide-react";
 type FilesPreviewProps = {
   files: EmployeeDocumentFileSchemaType[];
   documentType: DocumentTypeSchemaType;
-  employee: Omit<UserType, "password">;
+  employee: UserType;
 };
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;

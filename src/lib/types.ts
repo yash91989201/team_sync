@@ -42,7 +42,7 @@ import type { Session } from "lucia";
 import type { LucideIcon } from "lucide-react";
 
 // DB TABLE TYPES
-export type UserType = z.infer<typeof UserSchema>;
+export type UserType = Omit<z.infer<typeof UserSchema>, "password">;
 export type EmployeeProfileType = z.infer<typeof EmployeeProfileSchema>;
 export type AdminProfileType = z.infer<typeof AdminProfileSchema>;
 export type DepartmentType = z.infer<typeof DepartmentSchema>;
@@ -103,7 +103,7 @@ export type CreateSalaryComponentSchemaType = z.infer<typeof CreateSalaryCompone
 
 // ADMIN DATA TABLE TYPES
 export type EmployeesDocumentsTableProps = EmployeeDocumentSchemaType & {
-  employee: Omit<UserType, "password">;
+  employee: UserType;
   documentType: DocumentTypeSchemaType;
   documentFiles: EmployeeDocumentFileSchemaType[];
 };
@@ -121,8 +121,14 @@ export type DesignationTableProps = DesignationType & {
     name: string;
   };
 };
+
+export type LeaveRequestTableProps = LeaveRequestSchemaType & {
+  employee: UserType;
+  leaveType: LeaveTypeSchemaType
+}
+
 // EMPLOYEE DATA TABLE TYPES
-export type EmployeesTableProps = Omit<UserType, "password"> & {
+export type EmployeesTableProps = UserType & {
   employeeProfile: EmployeeProfileType & {
     department: DepartmentType | null;
     designation: DesignationType | null
@@ -134,14 +140,14 @@ export type LeaveBalancesTableProps = LeaveBalanceSchemaType & {
 };
 
 export type LeaveApplicationTableProps = LeaveRequestSchemaType & {
-  reviewer: Omit<UserType, "password">;
+  reviewer: UserType;
   leaveType: LeaveTypeSchemaType;
 };
 
 // OTHER TYPES
 export type UserSessionType =
   | {
-    user: Omit<UserType, "password">;
+    user: UserType;
     session: Session;
   }
   | {

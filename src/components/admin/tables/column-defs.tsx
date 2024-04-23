@@ -1,4 +1,6 @@
 import { format } from "date-fns";
+// UTILS
+import { cn, getLeaveDateString } from "@/lib/utils";
 // TYPES
 import type {
   DepartmentTableProps,
@@ -6,6 +8,7 @@ import type {
   DocumentTypeSchemaType,
   EmployeesDocumentsTableProps,
   EmployeesTableProps,
+  LeaveRequestTableProps,
   LeaveTypeSchemaType,
 } from "@/lib/types";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -13,12 +16,17 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@ui/avatar";
 // CUSTOM COMPONENTS
-import { EmployeeTableActions, LeaveTypeTableActions } from "./column-actions";
+import {
+  EmployeeTableActions,
+  LeaveRequestsTableActions,
+  LeaveTypeTableActions,
+} from "./column-actions";
 import DocumentsPreview from "@/components/shared/documents-preview";
 // CONSTANTS
 import { DOCUMENT_FILE_TYPES_DISPLAY } from "@/constants";
 // ICONS
 import { ArrowUpDown } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export const DEPARTMENT_TABLE: ColumnDef<DepartmentTableProps>[] = [
   {
@@ -202,3 +210,66 @@ export const EMPLOYEES_DOCUMENTS_TABLE: ColumnDef<EmployeesDocumentsTableProps>[
       header: "Verified",
     },
   ];
+
+export const LEAVE_REQUESTS_TABLE: ColumnDef<LeaveRequestTableProps>[] = [
+  {
+    accessorKey: "employee",
+    header: "Applied by",
+    cell: ({ row }) => row.original.employee.name,
+  },
+  {
+    accessorKey: "leaveDays",
+    header: "Leave days",
+  },
+  {
+    accessorKey: "leaveDate",
+    header: "Leave Date",
+    cell: ({ row }) =>
+      getLeaveDateString({
+        fromDate: row.original.fromDate,
+        toDate: row.original.toDate,
+        leaveDays: row.original.leaveDays,
+        renewPeriod: row.original.leaveType.renewPeriod,
+      }),
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.original.status;
+      return (
+        <Badge
+          className={cn(
+            status === "pending" && "bg-amber-500",
+            status === "approved" && "bg-green-500",
+            status === "rejected" && "bg-red-500",
+            "rounded-xl text-white",
+          )}
+        >
+          {status}
+        </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: "appliedOn",
+    header: "Applied On",
+    cell: ({ row }) => format(row.original.appliedOn, "do MMM yy"),
+  },
+  {
+    accessorKey: "reason",
+    header: "Reason",
+    cell: ({ row }) => row.original.reason ?? "Not given",
+  },
+  {
+    accessorKey: "actions",
+    header: "Accept / Reject",
+    cell: ({ row }) => (
+      <LeaveRequestsTableActions
+        status={row.original.status}
+        empId={row.original.employee.id}
+        leaveRequestId={row.original.id}
+      />
+    ),
+  },
+];

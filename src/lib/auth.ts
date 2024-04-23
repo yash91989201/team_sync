@@ -72,4 +72,4 @@ declare module "lucia" {
 }
 
 // eslint-disable-next-line
-interface DatabaseUserAttributes extends Omit<UserType, "password"> { }
+interface DatabaseUserAttributes extends UserType { }

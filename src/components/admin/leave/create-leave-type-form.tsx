@@ -198,8 +198,8 @@ export default function CreateLeaveTypeForm() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button disabled={isPending}>
-              {isPending ? <Loader2 className="mr-1 animate-spin" /> : null}
+            <Button className="gap-1" disabled={isPending}>
+              {isPending ? <Loader2 className="animate-spin" /> : null}
               <span>Create leave type</span>
             </Button>
           </CardFooter>

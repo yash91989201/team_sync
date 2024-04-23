@@ -3,10 +3,13 @@ import { toast } from "sonner";
 // UITLS
 import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
+import { buttonVariants } from "@ui/button";
+// TYPES
+import type { LeaveRequestSchemaType } from "@/lib/types";
 // UI
-import { Button, buttonVariants } from "@ui/button";
+import { Button } from "@ui/button";
 // ICONS
-import { Loader2, Pencil, Trash } from "lucide-react";
+import { Check, Loader2, Pencil, Trash, X } from "lucide-react";
 
 export function EmployeeTableActions({ empId }: { empId: string }) {
   const { refetch: refetchEmployees } = api.employeeRouter.getAll.useQuery();
@@ -76,5 +79,57 @@ export function LeaveTypeTableActions({ id }: { id: string }) {
     >
       {isPending ? <Loader2 /> : <Trash />}
     </Button>
+  );
+}
+
+export function LeaveRequestsTableActions({
+  empId,
+  status,
+  leaveRequestId,
+}: {
+  empId: string;
+  leaveRequestId: string;
+  status: LeaveRequestSchemaType["status"];
+}) {
+  const { refetch: refetchAllLeaveRequests } =
+    api.leaveRouter.getAllLeaveRequests.useQuery();
+
+  const { mutate: rejectLeave, isPending: isRejectingLeave } =
+    api.leaveRouter.rejectLeave.useMutation({
+      onSuccess: async () => {
+        await refetchAllLeaveRequests();
+      },
+    });
+
+  const { mutate: approveLeave, isPending: isApprovingLeave } =
+    api.leaveRouter.approveLeave.useMutation({
+      onSuccess: async () => {
+        await refetchAllLeaveRequests();
+      },
+    });
+
+  if (status !== "pending") return "N/A";
+
+  return (
+    <div className="flex items-center gap-3">
+      <Button
+        variant="outline"
+        size="icon"
+        className="rounded-xl border-green-500  text-green-500 hover:bg-white hover:text-green-500 [&>svg]:size-4"
+        onClick={() => approveLeave({ leaveRequestId })}
+        disabled={isRejectingLeave || isApprovingLeave}
+      >
+        {isApprovingLeave ? <Loader2 className="animate-spin" /> : <Check />}
+      </Button>
+      <Button
+        size="icon"
+        variant="outline"
+        className="rounded-xl border-red-500  text-red-500 hover:bg-white hover:text-red-500 [&>svg]:size-4"
+        onClick={() => rejectLeave({ empId, leaveRequestId })}
+        disabled={isRejectingLeave || isApprovingLeave}
+      >
+        {isRejectingLeave ? <Loader2 className="animate-spin" /> : <X />}
+      </Button>
+    </div>
   );
 }
