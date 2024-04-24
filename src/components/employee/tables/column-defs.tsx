@@ -9,7 +9,7 @@ import type {
 } from "@/lib/types";
 import type { ColumnDef } from "@tanstack/react-table";
 // UI
-import { Badge } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 // CUSTOM COMPONENTS
 import DocumentsPreview from "@sharedComponents/documents-preview";
 
