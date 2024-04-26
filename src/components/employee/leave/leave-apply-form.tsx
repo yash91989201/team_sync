@@ -75,13 +75,13 @@ export default function LeaveApplyForm({ leaveTypes }: LeaveApplyFormProps) {
   const leaveApplyAction: SubmitHandler<LeaveApplySchemaType> = async (
     formData,
   ) => {
-    const res = await leaveApply(formData);
-    if (res.status === "SUCCESS") {
+    const actionResponse = await leaveApply(formData);
+    if (actionResponse.status === "SUCCESS") {
       reset();
       await refetchLeaveApplications();
-      toast.success(res.message);
+      toast.success(actionResponse.message);
     } else {
-      toast.error(res.message);
+      toast.error(actionResponse.message);
     }
   };
 

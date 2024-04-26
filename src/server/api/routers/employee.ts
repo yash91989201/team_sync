@@ -197,104 +197,114 @@ export const employeeRouter = createTRPCRouter({
         const empId = ctx.session.user.id;
         const { leaveDate, reason, leaveTypeId, reviewerId, leaveDays } = input;
 
-        const leaveType = await ctx.db.query.leaveTypeTable.findFirst({
-          where: eq(leaveTypeTable.id, leaveTypeId),
-        });
-
-        if (leaveType === undefined) {
-          return { status: "FAILED", message: "No such leave type exists" };
-        }
-
-        const { renewPeriod, renewPeriodCount, daysAllowed } = leaveType;
-
-        const leaveDateRange = getDateRangeByRenewPeriod({
-          leaveDate,
-          renewPeriod,
-          renewPeriodCount,
-        });
-
-        const existingLeaveBalances =
-          await ctx.db.query.leaveBalanceTable.findMany({
-            where: and(
-              eq(leaveBalanceTable.empId, empId),
-              eq(leaveBalanceTable.leaveTypeId, leaveTypeId),
-            ),
+        try {
+          const leaveType = await ctx.db.query.leaveTypeTable.findFirst({
+            where: eq(leaveTypeTable.id, leaveTypeId),
           });
 
-        const updatedLeaveBalances = leaveDateRange.map((leaveDate) => {
-          const existingLeaveBalance = existingLeaveBalances.find(
-            ({ createdAt }) =>
-              isWithinInterval(createdAt, {
-                start: leaveDate.startDate,
-                end: leaveDate.endDate,
-              }),
-          );
-          if (existingLeaveBalance === undefined) {
+          if (leaveType === undefined) {
+            return { status: "FAILED", message: "No such leave type exists" };
+          }
+
+          const { renewPeriod, renewPeriodCount, daysAllowed } = leaveType;
+          const leaveDateRange = getDateRangeByRenewPeriod({
+            leaveDate,
+            renewPeriod,
+            renewPeriodCount,
+          });
+
+          const existingLeaveBalances =
+            await ctx.db.query.leaveBalanceTable.findMany({
+              where: and(
+                eq(leaveBalanceTable.empId, empId),
+                eq(leaveBalanceTable.leaveTypeId, leaveTypeId),
+              ),
+            })
+
+          const updatedLeaveBalances = leaveDateRange.map((leaveDate) => {
+            const existingLeaveBalance = existingLeaveBalances.find(
+              ({ createdAt }) =>
+                isWithinInterval(createdAt, {
+                  start: leaveDate.startDate,
+                  end: leaveDate.endDate,
+                }),
+            );
+            if (existingLeaveBalance === undefined) {
+              return {
+                id: generateId(15),
+                createdAt: leaveDate.startDate,
+                balance: daysAllowed - leaveDate.days,
+                empId,
+                leaveTypeId,
+                status: "create",
+              };
+            }
             return {
-              id: generateId(15),
+              id: existingLeaveBalance.id,
               createdAt: leaveDate.startDate,
-              balance: daysAllowed - leaveDate.days,
+              balance: existingLeaveBalance.balance - leaveDate.days,
               empId,
               leaveTypeId,
-              status: "create",
+              status: "update",
+            };
+          });
+
+
+          const negativeBalance = updatedLeaveBalances.filter(
+            ({ balance }) => balance < 0,
+          );
+
+          if (negativeBalance.length > 0) {
+            const negativeBalancePeriods = negativeBalance
+              .map(({ createdAt }) => {
+                const dateFormatter = leaveType.renewPeriod === "month" ? "MMM" : "yyyy"
+                return format(createdAt, dateFormatter)
+              })
+              .join(", ");
+
+            return {
+              status: "FAILED",
+              message: `Not enough leave balance for ${negativeBalancePeriods} ${leaveType.renewPeriod}${negativeBalance.length === 1 ? "" : "s"}`,
             };
           }
-          return {
-            id: existingLeaveBalance.id,
-            createdAt: leaveDate.startDate,
-            balance: existingLeaveBalance.balance - leaveDate.days,
-            empId,
+
+          await ctx.db.insert(leaveRequestTable).values({
+            id: generateId(15),
             leaveTypeId,
-            status: "update",
+            fromDate: leaveDate.from,
+            toDate: leaveDate.to,
+            leaveDays,
+            reason,
+            appliedOn: new Date(),
+            status: "pending",
+            empId,
+            reviewerId,
+          });
+
+          await Promise.all(
+            updatedLeaveBalances.map(async (leaveBalance) => {
+              if (leaveBalance.status === "update") {
+                await ctx.db
+                  .update(leaveBalanceTable)
+                  .set({ balance: leaveBalance.balance })
+                  .where(eq(leaveBalanceTable.id, leaveBalance.id));
+              } else {
+                const { status: _, ...leaveBalanceData } = leaveBalance;
+                await ctx.db.insert(leaveBalanceTable).values(leaveBalanceData);
+              }
+            }),
+          );
+
+          return {
+            status: "SUCCESS",
+            message: "Leave applied",
           };
-        });
-
-        const negativeBalance = updatedLeaveBalances.filter(
-          ({ balance }) => balance < 0,
-        );
-
-        if (negativeBalance.length > 0) {
-          const negativeBalanceMonths = negativeBalance
-            .map(({ createdAt }) => format(createdAt, "MMMM"))
-            .join(", ");
-
+        } catch (error) {
           return {
             status: "FAILED",
-            message: `Not enough leave balance for ${negativeBalanceMonths} month(s)`,
+            message: "Leave applied",
           };
         }
-
-        await ctx.db.insert(leaveRequestTable).values({
-          id: generateId(15),
-          leaveTypeId,
-          fromDate: leaveDate.from,
-          toDate: leaveDate.to,
-          leaveDays,
-          reason,
-          appliedOn: new Date(),
-          status: "pending",
-          empId,
-          reviewerId,
-        });
-
-        await Promise.all(
-          updatedLeaveBalances.map(async (leaveBalance) => {
-            if (leaveBalance.status === "update") {
-              await ctx.db
-                .update(leaveBalanceTable)
-                .set({ balance: leaveBalance.balance })
-                .where(eq(leaveBalanceTable.id, leaveBalance.id));
-            } else {
-              const { status: _, ...leaveBalanceData } = leaveBalance;
-              await ctx.db.insert(leaveBalanceTable).values(leaveBalanceData);
-            }
-          }),
-        );
-
-        return {
-          status: "SUCCESS",
-          message: "Leave applied",
-        };
       },
     ),
 });
