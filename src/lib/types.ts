@@ -35,6 +35,9 @@ import type {
   CreateSalaryComponentSchema,
   UpdateEmployeeSchema,
   EmployeeLeaveTypeSchema,
+  HolidaySchema,
+  CreateHolidaySchema,
+  UpdateHolidaySchema,
 } from "@/lib/schema";
 // TYPES
 import type { z } from "zod";
@@ -60,6 +63,7 @@ export type EmployeeDocumentFileSchemaType = z.infer<
 >;
 export type SalaryComponentType = z.infer<typeof SalaryComponentsSchema>
 export type EmployeeSalaryComponentType = z.infer<typeof EmployeeSalaryComponentSchema>
+export type HolidaySchemaType = z.infer<typeof HolidaySchema>
 
 // AUTH TYPES
 export type AdminSignupSchemaType = z.infer<typeof AdminSignupSchema>;
@@ -143,6 +147,10 @@ export type LeaveApplicationTableProps = LeaveRequestSchemaType & {
   reviewer: UserType;
   leaveType: LeaveTypeSchemaType;
 };
+
+export type CreateHolidaySchemaType = z.infer<typeof CreateHolidaySchema>
+export type UpdateHolidaySchemaType = z.infer<typeof UpdateHolidaySchema>
+
 
 // OTHER TYPES
 export type UserSessionType =

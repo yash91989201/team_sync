@@ -88,6 +88,13 @@ CREATE TABLE `employee_shift` (
 	CONSTRAINT `employee_shift_emp_id` PRIMARY KEY(`emp_id`)
 );
 --> statement-breakpoint
+CREATE TABLE `holiday` (
+	`id` varchar(24) NOT NULL,
+	`name` varchar(256) NOT NULL,
+	`date` date NOT NULL,
+	CONSTRAINT `holiday_id` PRIMARY KEY(`id`)
+);
+--> statement-breakpoint
 CREATE TABLE `leave_balance` (
 	`id` varchar(24) NOT NULL,
 	`createdAt` date NOT NULL,

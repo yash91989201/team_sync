@@ -1,12 +1,13 @@
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 // TRPC ROUTERS
+import { adminRouter } from "@/server/api/routers/admin";
 import { leaveRouter } from "@/server/api/routers/leave";
 import { salaryRouter } from "@/server/api/routers/salary";
+import { holidayRouter } from "@/server/api/routers/holiday";
 import { employeeRouter } from "@/server/api/routers/employee";
 import { documentRouter } from "@/server/api/routers/document";
 import { departmentRouter } from "@/server/api/routers/department";
 import { designationRouter } from "@/server/api/routers/designation";
-import { adminRouter } from "./routers/admin";
 
 export const appRouter = createTRPCRouter({
   adminRouter,
@@ -16,6 +17,7 @@ export const appRouter = createTRPCRouter({
   documentRouter,
   departmentRouter,
   designationRouter,
+  holidayRouter
 });
 
 // export type definition of API

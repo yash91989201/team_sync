@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "f62d3d17-b044-4b65-8833-4f143937ff81",
+  "id": "cdcacbc3-323e-4b74-af8f-69c19244abd0",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "admin_profile": {
@@ -679,6 +679,43 @@
           "name": "employee_shift_emp_id",
           "columns": [
             "emp_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "holiday": {
+      "name": "holiday",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "holiday_id": {
+          "name": "holiday_id",
+          "columns": [
+            "id"
           ]
         }
       },

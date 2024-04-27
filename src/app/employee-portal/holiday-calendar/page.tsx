@@ -1,6 +1,5 @@
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 // UTILS
-import { authPage } from "@/server/helpers";
 import { createApiHelper } from "@/trpc/server";
 // UI
 import {
@@ -11,22 +10,22 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
-import AdminMainWrapper from "@/components/admin/admin-main-wrapper";
 import HolidayCalendar from "@/components/shared/holiday-calendar";
+import EmployeeMainWrapper from "@/components/employee/employee-main-wrapper";
 
-export default async function HolidaysPage() {
-  await authPage("ADMIN");
-
+export default async function HolidayCalendarPage() {
   const apiHelper = await createApiHelper();
   await apiHelper.holidayRouter.getAll.prefetch();
   const holidays = dehydrate(apiHelper.queryClient);
 
   return (
-    <AdminMainWrapper>
+    <EmployeeMainWrapper>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl text-primary">Holidays</CardTitle>
-          <CardDescription>holidays</CardDescription>
+          <CardTitle className="text-2xl text-primary">
+            Holiday Calendar
+          </CardTitle>
+          <CardDescription>available holidays</CardDescription>
         </CardHeader>
         <CardContent>
           <HydrationBoundary state={holidays}>
@@ -34,6 +33,6 @@ export default async function HolidaysPage() {
           </HydrationBoundary>
         </CardContent>
       </Card>
-    </AdminMainWrapper>
+    </EmployeeMainWrapper>
   );
 }

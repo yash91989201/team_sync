@@ -231,6 +231,14 @@ export const EMPLOYEE_ROUTES: NavLinkProps[] = [
     isChildLink: false,
   },
   {
+    Icon: CalendarDays,
+    label: "Holiday Calendar",
+    href: "/employee-portal/holiday-calendar",
+    matchExact: false,
+    isNested: false,
+    isChildLink: false,
+  },
+  {
     Icon: Calendar,
     label: "Leave",
     href: "/employee-portal/leave-apply",

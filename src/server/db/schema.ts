@@ -387,6 +387,14 @@ export const employeeSalaryComponentTable = mysqlTable("employee_salary_componen
   empSalaryComponent: unique().on(empSalaryComponentTable.name, empSalaryComponentTable.empId)
 }))
 
+export const holidayTable = mysqlTable("holiday", {
+  id: varchar("id", {
+    length: 24,
+  }).primaryKey(),
+  name: varchar("name", { length: 256 }).notNull(),
+  date: date("date", { mode: "date" }).notNull(),
+})
+
 export const sessionTable = mysqlTable("session", {
   id: varchar("id", {
     length: 48,

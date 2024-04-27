@@ -13,6 +13,7 @@ import {
   employeeProfileTable,
   employeeSalaryComponentTable,
   employeeShiftTable,
+  holidayTable,
   leaveBalanceTable,
   leaveRequestTable,
   leaveTypeTable,
@@ -43,6 +44,7 @@ export const EmployeeDocumentFileSchema = createSelectSchema(
 );
 export const SalaryComponentsSchema = createSelectSchema(salaryComponentTable)
 export const EmployeeSalaryComponentSchema = createSelectSchema(employeeSalaryComponentTable)
+export const HolidaySchema = createSelectSchema(holidayTable)
 // AUTH SCHEMAS
 export const AdminSignupSchema = z.object({
   name: z.string().min(6, { message: "Full name is required." }),
@@ -265,3 +267,16 @@ export const CreateSalaryComponentSchema = z.object({
     .min(4, { message: "Min. allowed length is 4" })
     .max(128, { message: "Max. allowed length is 128" }),
 });
+
+// HOLIDAY SCHEMA
+export const CreateHolidaySchema = z.object({
+  id: z.string(),
+  name: z.string({ required_error: "Holiday name is required" }).min(4, { message: "Min. length is 4" }).max(128, { message: "Max. length is 128" }),
+  date: z.date(),
+})
+
+export const UpdateHolidaySchema = CreateHolidaySchema
+
+export const DeleteHolidaySchema = z.object({
+  id: z.string(),
+})
