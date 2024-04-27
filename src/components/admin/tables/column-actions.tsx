@@ -8,6 +8,8 @@ import { buttonVariants } from "@ui/button";
 import type { LeaveRequestSchemaType } from "@/lib/types";
 // UI
 import { Button } from "@ui/button";
+// CUSTOM COMPONENTS
+import UpdateDepartmentForm from "@/components/admin/department/update-department-form";
 // ICONS
 import { Check, Loader2, Pencil, Trash, X } from "lucide-react";
 
@@ -129,6 +131,45 @@ export function LeaveRequestsTableActions({
         disabled={isRejectingLeave || isApprovingLeave}
       >
         {isRejectingLeave ? <Loader2 className="animate-spin" /> : <X />}
+      </Button>
+    </div>
+  );
+}
+
+export function DepartmentTableActions({
+  id,
+  name,
+}: {
+  id: string;
+  name: string;
+}) {
+  const { refetch: refetchDepartments } =
+    api.departmentRouter.getAll.useQuery();
+
+  const { mutateAsync: deleteDepartment, isPending: isDeleting } =
+    api.departmentRouter.deleteDepartment.useMutation();
+
+  const deleteDepartmentAction = async () => {
+    const actionResponse = await deleteDepartment({ id });
+    if (actionResponse.status === "SUCCESS") {
+      await refetchDepartments();
+      toast.success(actionResponse.message);
+    } else {
+      toast.error(actionResponse.message);
+    }
+  };
+
+  return (
+    <div className="space-x-1.5">
+      <UpdateDepartmentForm initialData={{ id, name }} />
+      <Button
+        variant="outline"
+        size="icon"
+        disabled={isDeleting}
+        onClick={deleteDepartmentAction}
+        className="rounded-xl border-red-500 text-red-500 hover:border-red-500 hover:bg-white hover:text-red-500 [&>svg]:size-4"
+      >
+        {isDeleting ? <Loader2 /> : <Trash />}
       </Button>
     </div>
   );

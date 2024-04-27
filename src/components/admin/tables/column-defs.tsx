@@ -13,10 +13,12 @@ import type {
 } from "@/lib/types";
 import type { ColumnDef } from "@tanstack/react-table";
 // UI
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@ui/avatar";
 // CUSTOM COMPONENTS
 import {
+  DepartmentTableActions,
   EmployeeTableActions,
   LeaveRequestsTableActions,
   LeaveTypeTableActions,
@@ -26,7 +28,6 @@ import DocumentsPreview from "@/components/shared/documents-preview";
 import { DOCUMENT_FILE_TYPES_DISPLAY } from "@/constants";
 // ICONS
 import { ArrowUpDown } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 
 export const DEPARTMENT_TABLE: ColumnDef<DepartmentTableProps>[] = [
   {
@@ -36,10 +37,12 @@ export const DEPARTMENT_TABLE: ColumnDef<DepartmentTableProps>[] = [
   {
     accessorKey: "employeeCount",
     header: "Employees",
-    cell: ({ row }) =>
-      row.original.employees.length === 0
-        ? "0"
-        : row.original.employees[0]?.employeeCount,
+  },
+  {
+    accessorKey: "actions",
+    cell: ({ row }) => (
+      <DepartmentTableActions id={row.original.id} name={row.original.name} />
+    ),
   },
 ];
 

@@ -38,6 +38,7 @@ import type {
   HolidaySchema,
   CreateHolidaySchema,
   UpdateHolidaySchema,
+  UpdateDepartmentSchema,
 } from "@/lib/schema";
 // TYPES
 import type { z } from "zod";
@@ -48,7 +49,7 @@ import type { LucideIcon } from "lucide-react";
 export type UserType = Omit<z.infer<typeof UserSchema>, "password">;
 export type EmployeeProfileType = z.infer<typeof EmployeeProfileSchema>;
 export type AdminProfileType = z.infer<typeof AdminProfileSchema>;
-export type DepartmentType = z.infer<typeof DepartmentSchema>;
+export type DepartmentSchemaType = z.infer<typeof DepartmentSchema>;
 export type DesignationType = z.infer<typeof DesignationSchema>;
 export type EmployeeShiftType = z.infer<typeof EmployeeShiftSchema>;
 export type EmployeeAttendanceType = z.infer<typeof EmployeeAttendanceSchema>;
@@ -104,6 +105,7 @@ export type CreateEmployeeDocumentFormSchemaType = z.infer<
   typeof CreateEmployeeDocumentFormSchema
 >;
 export type CreateSalaryComponentSchemaType = z.infer<typeof CreateSalaryComponentSchema>
+export type UpdateDepartmentSchemaType = z.infer<typeof UpdateDepartmentSchema>
 
 // ADMIN DATA TABLE TYPES
 export type EmployeesDocumentsTableProps = EmployeeDocumentSchemaType & {
@@ -112,12 +114,8 @@ export type EmployeesDocumentsTableProps = EmployeeDocumentSchemaType & {
   documentFiles: EmployeeDocumentFileSchemaType[];
 };
 
-export type DepartmentTableProps = DepartmentType & {
-  employees: {
-    empId: string;
-    deptId: string;
-    employeeCount: number;
-  }[];
+export type DepartmentTableProps = DepartmentSchemaType & {
+  employeeCount: number;
 };
 
 export type DesignationTableProps = DesignationType & {
@@ -134,7 +132,7 @@ export type LeaveRequestTableProps = LeaveRequestSchemaType & {
 // EMPLOYEE DATA TABLE TYPES
 export type EmployeesTableProps = UserType & {
   employeeProfile: EmployeeProfileType & {
-    department: DepartmentType | null;
+    department: DepartmentSchemaType | null;
     designation: DesignationType | null
   } | null
 }

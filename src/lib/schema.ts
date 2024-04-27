@@ -96,6 +96,10 @@ export const UpdateDepartmentSchema = z.object({
     .max(128, { message: "Max. allowed length is 128" }),
 })
 
+export const DeleteDepartmentSchema = z.object({
+  id: z.string(),
+})
+
 // DESIGNATION SCHEMAS
 export const CreateDesignationSchema = z.object({
   name: z
