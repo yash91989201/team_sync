@@ -39,6 +39,7 @@ import type {
   CreateHolidaySchema,
   UpdateHolidaySchema,
   UpdateDepartmentSchema,
+  UpdateDesignationSchema,
 } from "@/lib/schema";
 // TYPES
 import type { z } from "zod";
@@ -50,7 +51,7 @@ export type UserType = Omit<z.infer<typeof UserSchema>, "password">;
 export type EmployeeProfileType = z.infer<typeof EmployeeProfileSchema>;
 export type AdminProfileType = z.infer<typeof AdminProfileSchema>;
 export type DepartmentSchemaType = z.infer<typeof DepartmentSchema>;
-export type DesignationType = z.infer<typeof DesignationSchema>;
+export type DesignationSchemaType = z.infer<typeof DesignationSchema>;
 export type EmployeeShiftType = z.infer<typeof EmployeeShiftSchema>;
 export type EmployeeAttendanceType = z.infer<typeof EmployeeAttendanceSchema>;
 export type LeaveTypeSchemaType = z.infer<typeof LeaveTypeSchema>;
@@ -106,6 +107,7 @@ export type CreateEmployeeDocumentFormSchemaType = z.infer<
 >;
 export type CreateSalaryComponentSchemaType = z.infer<typeof CreateSalaryComponentSchema>
 export type UpdateDepartmentSchemaType = z.infer<typeof UpdateDepartmentSchema>
+export type UpdateDesignationchemaType = z.infer<typeof UpdateDesignationSchema>
 
 // ADMIN DATA TABLE TYPES
 export type EmployeesDocumentsTableProps = EmployeeDocumentSchemaType & {
@@ -118,7 +120,7 @@ export type DepartmentTableProps = DepartmentSchemaType & {
   employeeCount: number;
 };
 
-export type DesignationTableProps = DesignationType & {
+export type DesignationTableProps = DesignationSchemaType & {
   department: {
     name: string;
   };
@@ -133,7 +135,7 @@ export type LeaveRequestTableProps = LeaveRequestSchemaType & {
 export type EmployeesTableProps = UserType & {
   employeeProfile: EmployeeProfileType & {
     department: DepartmentSchemaType | null;
-    designation: DesignationType | null
+    designation: DesignationSchemaType | null
   } | null
 }
 

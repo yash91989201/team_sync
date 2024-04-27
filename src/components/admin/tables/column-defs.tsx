@@ -19,6 +19,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@ui/avatar";
 // CUSTOM COMPONENTS
 import {
   DepartmentTableActions,
+  DesignationTableActions,
   EmployeeTableActions,
   LeaveRequestsTableActions,
   LeaveTypeTableActions,
@@ -55,6 +56,16 @@ export const DESIGNATION_TABLE: ColumnDef<DesignationTableProps>[] = [
     accessorKey: "Department",
     header: "Department",
     cell: ({ row }) => row.original.department.name,
+  },
+  {
+    accessorKey: "actions",
+    cell: ({ row }) => (
+      <DesignationTableActions
+        id={row.original.id}
+        name={row.original.name}
+        deptId={row.original.deptId}
+      />
+    ),
   },
 ];
 

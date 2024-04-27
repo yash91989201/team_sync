@@ -10,6 +10,7 @@ import type { LeaveRequestSchemaType } from "@/lib/types";
 import { Button } from "@ui/button";
 // CUSTOM COMPONENTS
 import UpdateDepartmentForm from "@/components/admin/department/update-department-form";
+import UpdateDesignationForm from "@/components/admin/designation/update-designation-form";
 // ICONS
 import { Check, Loader2, Pencil, Trash, X } from "lucide-react";
 
@@ -136,10 +137,7 @@ export function LeaveRequestsTableActions({
   );
 }
 
-export function DepartmentTableActions({
-  id,
-  name,
-}: {
+export function DepartmentTableActions(initialData: {
   id: string;
   name: string;
 }) {
@@ -150,7 +148,7 @@ export function DepartmentTableActions({
     api.departmentRouter.deleteDepartment.useMutation();
 
   const deleteDepartmentAction = async () => {
-    const actionResponse = await deleteDepartment({ id });
+    const actionResponse = await deleteDepartment({ id: initialData.id });
     if (actionResponse.status === "SUCCESS") {
       await refetchDepartments();
       toast.success(actionResponse.message);
@@ -161,12 +159,52 @@ export function DepartmentTableActions({
 
   return (
     <div className="space-x-1.5">
-      <UpdateDepartmentForm initialData={{ id, name }} />
+      <UpdateDepartmentForm initialData={initialData} />
       <Button
         variant="outline"
         size="icon"
         disabled={isDeleting}
         onClick={deleteDepartmentAction}
+        className="rounded-xl border-red-500 text-red-500 hover:border-red-500 hover:bg-white hover:text-red-500 [&>svg]:size-4"
+      >
+        {isDeleting ? <Loader2 /> : <Trash />}
+      </Button>
+    </div>
+  );
+}
+
+export function DesignationTableActions(initialData: {
+  id: string;
+  name: string;
+  deptId: string;
+}) {
+  const { refetch: refetchDesignations } =
+    api.designationRouter.getAll.useQuery();
+
+  const { mutateAsync: deleteDesignation, isPending: isDeleting } =
+    api.designationRouter.deleteDesignation.useMutation();
+
+  const deleteDesignationAction = async () => {
+    const actionResponse = await deleteDesignation({
+      id: initialData.id,
+      deptId: initialData.deptId,
+    });
+    if (actionResponse.status === "SUCCESS") {
+      await refetchDesignations();
+      toast.success(actionResponse.message);
+    } else {
+      toast.error(actionResponse.message);
+    }
+  };
+
+  return (
+    <div className="space-x-1.5">
+      <UpdateDesignationForm initialData={initialData} />
+      <Button
+        variant="outline"
+        size="icon"
+        disabled={isDeleting}
+        onClick={deleteDesignationAction}
         className="rounded-xl border-red-500 text-red-500 hover:border-red-500 hover:bg-white hover:text-red-500 [&>svg]:size-4"
       >
         {isDeleting ? <Loader2 /> : <Trash />}

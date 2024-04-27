@@ -111,6 +111,20 @@ export const CreateDesignationSchema = z.object({
     .min(1, { message: "Select a department" }),
 });
 
+export const UpdateDesignationSchema = z.object({
+  id: z.string(),
+  deptId: z.string(),
+  name: z
+    .string({ required_error: "Designation is required." })
+    .min(6, { message: "Min. required length is 6" })
+    .max(64, { message: "Max. allowed length is 64" }),
+});
+
+export const DeleteDesignationSchema = z.object({
+  id: z.string(),
+  deptId: z.string(),
+})
+
 // DOCUMENT SCHEMAS
 export const CreateDocumentTypeSchema = DocumentTypeSchema.extend({
   type: z.string({ required_error: "Document type is required." }).min(4, { message: "Min. required length is 4" }),
