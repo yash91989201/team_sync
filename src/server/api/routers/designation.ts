@@ -35,7 +35,12 @@ export const designationRouter = createTRPCRouter({
         await ctx.db
           .update(designationTable)
           .set({ name: input.name })
-          .where(eq(designationTable.id, input.id))
+          .where(
+            and(
+              eq(designationTable.id, input.id),
+              eq(designationTable.deptId, input.deptId)
+            )
+          )
 
         return {
           status: "SUCCESS",

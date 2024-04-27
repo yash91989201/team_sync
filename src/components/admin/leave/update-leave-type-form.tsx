@@ -1,17 +1,13 @@
-"use client";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-// UTILS
+// UITLS
 import { api } from "@/trpc/react";
 // SCHEMAS
-import { UpdateDepartmentSchema } from "@/lib/schema";
+import { UpdateLeaveTypeSchema } from "@/lib/schema";
 // TYPES
-import type {
-  DepartmentSchemaType,
-  UpdateDepartmentSchemaType,
-} from "@/lib/types";
 import type { SubmitHandler } from "react-hook-form";
+import type { UpdateLeaveTypeSchemaType } from "@/lib/types";
 // CUSTOM HOOKS
 import useToggle from "@/hooks/use-toggle";
 // UI
@@ -35,33 +31,39 @@ import { Button } from "@ui/button";
 // ICONS
 import { Loader2, Pencil } from "lucide-react";
 
-export default function UpdateDepartmentForm({
+export default function UpdateLeaveTypeForm({
   initialData,
 }: {
-  initialData: DepartmentSchemaType;
+  initialData: {
+    id: string;
+    type: string;
+  };
 }) {
   const dialog = useToggle(false);
-  const updateDepartmentForm = useForm<UpdateDepartmentSchemaType>({
+
+  const updateLeaveTypeForm = useForm<UpdateLeaveTypeSchemaType>({
     defaultValues: initialData,
-    resolver: zodResolver(UpdateDepartmentSchema),
+    resolver: zodResolver(UpdateLeaveTypeSchema),
   });
+  const { handleSubmit, formState, control } = updateLeaveTypeForm;
 
-  const { control, handleSubmit, formState, reset } = updateDepartmentForm;
+  const { refetch: refetchLeaveTypes } =
+    api.leaveRouter.getLeaveTypes.useQuery();
 
-  const { refetch: refetchDepartments } =
-    api.departmentRouter.getAll.useQuery();
+  const { mutateAsync: updateLeaveType } =
+    api.leaveRouter.updateLeaveType.useMutation();
 
-  const { mutateAsync: updateDepartment } =
-    api.departmentRouter.updateDepartment.useMutation();
-
-  const updateDepartmentAction: SubmitHandler<
-    UpdateDepartmentSchemaType
+  const updateLeaveTypeAction: SubmitHandler<
+    UpdateLeaveTypeSchemaType
   > = async (formData) => {
-    await updateDepartment(formData);
-    reset(formData);
-    toast.success("Department updated successfully");
-    dialog.close();
-    await refetchDepartments();
+    const actionResponse = await updateLeaveType(formData);
+    if (actionResponse.status === "SUCCESS") {
+      toast.success(actionResponse.message);
+      await refetchLeaveTypes();
+      dialog.close();
+    } else {
+      toast.error(actionResponse.message);
+    }
   };
 
   return (
@@ -72,26 +74,26 @@ export default function UpdateDepartmentForm({
           size="icon"
           className="rounded-xl border-blue-500 text-blue-500 hover:border-blue-500 hover:bg-white hover:text-blue-500 [&>svg]:size-4"
         >
-          <Pencil className="size-4" />
+          <Pencil />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>Update department</DialogTitle>
+          <DialogTitle>Update leave type</DialogTitle>
         </DialogHeader>
-        <Form {...updateDepartmentForm}>
+        <Form {...updateLeaveTypeForm}>
           <form
-            onSubmit={handleSubmit(updateDepartmentAction)}
+            onSubmit={handleSubmit(updateLeaveTypeAction)}
             className="space-y-3"
           >
             <FormField
               control={control}
-              name="name"
+              name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Department Name</FormLabel>
+                  <FormLabel>Leave Type</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="Enter department name" />
+                    <Input {...field} placeholder="Enter leave type" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -101,7 +103,7 @@ export default function UpdateDepartmentForm({
               {formState.isSubmitting && (
                 <Loader2 className="mr-3 animate-spin" />
               )}
-              <span>Update Department</span>
+              <span>Update leave type</span>
             </Button>
           </form>
         </Form>

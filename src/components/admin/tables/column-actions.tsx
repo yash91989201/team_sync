@@ -6,11 +6,14 @@ import { api } from "@/trpc/react";
 import { buttonVariants } from "@ui/button";
 // TYPES
 import type { LeaveRequestSchemaType } from "@/lib/types";
+// CUSTOM HOOKS
 // UI
 import { Button } from "@ui/button";
 // CUSTOM COMPONENTS
 import UpdateDepartmentForm from "@/components/admin/department/update-department-form";
 import UpdateDesignationForm from "@/components/admin/designation/update-designation-form";
+import UpdateLeaveTypeForm from "@/components/admin/leave/update-leave-type-form";
+import DeleteLeaveTypeForm from "@/components/admin/leave/delete-leave-type-form";
 // ICONS
 import { Check, Loader2, Pencil, Trash, X } from "lucide-react";
 
@@ -60,28 +63,15 @@ export function EmployeeTableActions({ empId }: { empId: string }) {
   );
 }
 
-export function LeaveTypeTableActions({ id }: { id: string }) {
-  const { refetch: refetchLeaveTypes } =
-    api.leaveRouter.getLeaveTypes.useQuery();
-  const { mutateAsync: deleteLeaveType, isPending } =
-    api.leaveRouter.deleteLeaveType.useMutation();
-
-  const deleteLeaveTypeAction = async () => {
-    await deleteLeaveType({ id });
-    toast.success("Deleted leave type successfully");
-    await refetchLeaveTypes();
-  };
-
+export function LeaveTypeTableActions(initialData: {
+  id: string;
+  type: string;
+}) {
   return (
-    <Button
-      variant="outline"
-      size="icon"
-      className="rounded-xl border-red-500 text-red-500 hover:border-red-500 hover:bg-white hover:text-red-500 [&>svg]:size-4"
-      disabled={isPending}
-      onClick={deleteLeaveTypeAction}
-    >
-      {isPending ? <Loader2 /> : <Trash />}
-    </Button>
+    <div className="space-x-1">
+      <UpdateLeaveTypeForm initialData={initialData} />
+      <DeleteLeaveTypeForm id={initialData.id} type={initialData.type} />
+    </div>
   );
 }
 

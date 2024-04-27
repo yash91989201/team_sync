@@ -10,6 +10,7 @@ import {
   CreateLeaveTypeSchema,
   DeleteLeaveTypeSchema,
   RejectLeaveSchema,
+  UpdateLeaveTypeSchema,
 } from "@/lib/schema";
 // DB TABLES
 import {
@@ -141,16 +142,48 @@ export const leaveRouter = createTRPCRouter({
       },
     ),
 
+  updateLeaveType: protectedProcedure.input(UpdateLeaveTypeSchema).mutation(async ({ ctx, input }) => {
+    try {
+      await ctx.db.update(leaveTypeTable)
+        .set({
+          type: input.type
+        })
+        .where(eq(leaveTypeTable.id, input.id))
+
+      return {
+        status: "SUCCESS",
+        message: "Leave type updated successfully"
+      }
+    } catch (error) {
+
+      return {
+        status: "FAILED",
+        message: "Unable to update leave type, please try again"
+      }
+    }
+  }),
+
   deleteLeaveType: protectedProcedure.input(DeleteLeaveTypeSchema).mutation(async ({ ctx, input }) => {
-    const { id: leaveTypeId } = input
-    // todo : take in consideration when employee has already taken a leave.
 
-    await ctx.db.delete(employeeLeaveTypeTable).where(eq(employeeLeaveTypeTable.leaveTypeId, leaveTypeId))
+    try {
+      await ctx.db.delete(employeeLeaveTypeTable).where(eq(employeeLeaveTypeTable.leaveTypeId, input.id))
 
-    await ctx.db.delete(leaveBalanceTable).where(eq(leaveBalanceTable.leaveTypeId, leaveTypeId))
+      await ctx.db.delete(leaveBalanceTable).where(eq(leaveBalanceTable.leaveTypeId, input.id))
 
-    await ctx.db.delete(leaveRequestTable).where(eq(leaveRequestTable.leaveTypeId, leaveTypeId))
+      await ctx.db.delete(leaveRequestTable).where(eq(leaveRequestTable.leaveTypeId, input.id))
 
-    await ctx.db.delete(leaveTypeTable).where(eq(leaveTypeTable.id, leaveTypeId))
+      await ctx.db.delete(leaveTypeTable).where(eq(leaveTypeTable.id, input.id))
+
+      return {
+        status: "SUCCESS",
+        message: "Leave type deleted successfully"
+      }
+    } catch (error) {
+
+      return {
+        status: "FAILED",
+        message: "Unable to delete leave type, please try again"
+      }
+    }
   }),
 });

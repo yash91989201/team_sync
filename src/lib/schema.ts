@@ -251,6 +251,14 @@ export const CreateLeaveTypeSchema = z.object({
   paidLeave: z.boolean().default(false)
 });
 
+export const UpdateLeaveTypeSchema = z.object({
+  id: z.string(),
+  type: z
+    .string()
+    .min(4, { message: "Min. 4 letters is required." })
+    .max(128, { message: "Max. 128 characters is allowed." }),
+})
+
 export const DeleteLeaveTypeSchema = z.object({
   id: z.string()
 })

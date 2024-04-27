@@ -40,6 +40,7 @@ import type {
   UpdateHolidaySchema,
   UpdateDepartmentSchema,
   UpdateDesignationSchema,
+  UpdateLeaveTypeSchema,
 } from "@/lib/schema";
 // TYPES
 import type { z } from "zod";
@@ -98,6 +99,7 @@ export type UpdateEmployeeSchemaType = z.infer<
   typeof UpdateEmployeeSchema
 >;
 export type CreateLeaveTypeSchemaType = z.infer<typeof CreateLeaveTypeSchema>;
+export type UpdateLeaveTypeSchemaType = z.infer<typeof UpdateLeaveTypeSchema>
 export type LeaveApplySchemaType = z.infer<typeof LeaveApplySchema>;
 export type CreateDocumentTypeSchemaType = z.infer<
   typeof CreateDocumentTypeSchema

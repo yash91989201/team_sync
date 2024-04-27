@@ -131,7 +131,9 @@ export const LEAVE_TYPE_TABLE: ColumnDef<LeaveTypeSchemaType>[] = [
   },
   {
     accessorKey: "actions",
-    cell: ({ row }) => <LeaveTypeTableActions id={row.original.id} />,
+    cell: ({ row }) => (
+      <LeaveTypeTableActions id={row.original.id} type={row.original.type} />
+    ),
   },
 ];
 
