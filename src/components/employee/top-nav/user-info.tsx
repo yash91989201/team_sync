@@ -11,11 +11,17 @@ export default async function UserInfo() {
     employee.imageUrl ??
     `https://api.dicebear.com/8.x/avataaars/svg?seed=${employee.name}&backgroundColor=c0aede,d1d4f9,ffd5dc,ffdfbf&accessories=prescription01,prescription02,round,sunglasses&clothing=blazerAndSweater,collarAndSweater,graphicShirt,hoodie,overall,shirtCrewNeck,shirtScoopNeck,shirtVNeck,blazerAndShirt&eyebrows=default,defaultNatural,flatNatural,raisedExcited,raisedExcitedNatural,unibrowNatural,upDown,upDownNatural&eyes=default,happy,surprised&facialHair[]&mouth=default,smile&top=bigHair,bun,curly,curvy,dreads,dreads01,dreads02,frida,frizzle,fro,froBand,hat,longButNotTooLong,miaWallace,shaggy,shaggyMullet,shavedSides,shortCurly,shortFlat,shortRound,shortWaved,sides,straight01,straight02,straightAndStrand,theCaesar,theCaesarAndSidePart,turban,winterHat02,winterHat03,winterHat04,winterHat1`;
 
+  const nameInitials = employee.name
+    .split(" ")
+    .slice(0, 2)
+    .map((word) => word.charAt(0).toUpperCase())
+    .join("");
+
   return (
     <div className="flex items-center gap-3">
       <Avatar className="h-14 w-14">
         <AvatarImage src={avatarUrl} alt={employee.name} />
-        <AvatarFallback>CN</AvatarFallback>
+        <AvatarFallback>{nameInitials}</AvatarFallback>
       </Avatar>
       <p className="flex flex-col items-start gap-0.5">
         <span className="text-lg font-medium">{employee.name}</span>
