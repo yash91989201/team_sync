@@ -1,6 +1,6 @@
 "use client";
 import { toast } from "sonner";
-import { format } from "date-fns";
+import { format, isSunday } from "date-fns";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 // UTILS
@@ -160,7 +160,9 @@ export default function LeaveApplyForm({ leaveTypes }: LeaveApplyFormProps) {
                           fixedWeeks={true}
                           defaultMonth={field.value?.from}
                           selected={field.value}
-                          disabled={(date) => date <= currentDate}
+                          disabled={(date) =>
+                            date <= currentDate || isSunday(date)
+                          }
                           onSelect={(value) => {
                             field.onChange(value);
                             if (
