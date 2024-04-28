@@ -124,8 +124,8 @@ export const ADMIN_ROUTES: NavLinkProps[] = [
     childrens: [
       {
         Icon: HandCoins,
-        label: "Salaries",
-        href: "/admin/payroll/salaries",
+        label: "Salary Info",
+        href: "/admin/payroll/salary-info",
         matchExact: false,
         isNested: false,
         isChildLink: true,
