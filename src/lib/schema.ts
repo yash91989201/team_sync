@@ -321,6 +321,11 @@ export const CreateHolidaySchema = z.object({
   date: z.date(),
 })
 
+export const GetHolidayByMonthInput = z.object({
+  start: z.date(),
+  end: z.date()
+})
+
 export const UpdateHolidaySchema = CreateHolidaySchema
 
 export const DeleteHolidaySchema = z.object({
