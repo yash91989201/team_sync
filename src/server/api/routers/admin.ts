@@ -39,6 +39,7 @@ export const adminRouter = createTRPCRouter({
       }
     })
   }),
+
   // get employee data for update
   getEmployeeData:
     protectedProcedure
@@ -97,6 +98,18 @@ export const adminRouter = createTRPCRouter({
         }
 
       }),
+
+  getEmployeesSalaries: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.query.userTable.findMany({
+      where: eq(userTable.role, "EMPLOYEE"),
+      columns: {
+        password: false
+      },
+      with: {
+        employeeProfile: true
+      }
+    })
+  }),
 
   createEmployee: protectedProcedure
     .input(CreateEmployeeInputSchema)

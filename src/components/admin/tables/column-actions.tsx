@@ -261,3 +261,22 @@ export function EmployeesDocumentsTableActions({
     </div>
   );
 }
+
+export function SalariesTableActions({ empId }: { empId: string }) {
+  return (
+    <Link
+      href={`/admin/employees/${empId}/update-employee`}
+      className={cn(
+        buttonVariants({
+          size: "icon",
+          variant: "outline",
+          className:
+            "rounded-xl  text-blue-500  hover:border-blue-500 hover:bg-white hover:text-blue-500",
+        }),
+        "border-blue-500 ",
+      )}
+    >
+      <Pencil className="size-4" />
+    </Link>
+  );
+}

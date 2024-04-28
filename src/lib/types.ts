@@ -117,6 +117,9 @@ export type UpdateEmployeeDocumentFormProps = EmployeeDocumentSchemaType & {
 export type CreateSalaryComponentSchemaType = z.infer<typeof CreateSalaryComponentSchema>
 export type UpdateDepartmentSchemaType = z.infer<typeof UpdateDepartmentSchema>
 export type UpdateDesignationchemaType = z.infer<typeof UpdateDesignationSchema>
+export type GetEmployeesSalariesOutputType = UserType & {
+  employeeProfile: EmployeeProfileType | null
+}
 
 // ADMIN DATA TABLE TYPES
 export type EmployeesDocumentsTableProps = EmployeeDocumentSchemaType & {
@@ -139,6 +142,8 @@ export type LeaveRequestTableProps = LeaveRequestSchemaType & {
   employee: UserType;
   leaveType: LeaveTypeSchemaType
 }
+
+export type SalariesTableProps = GetEmployeesSalariesOutputType
 
 // EMPLOYEE DATA TABLE TYPES
 export type EmployeesTableProps = UserType & {

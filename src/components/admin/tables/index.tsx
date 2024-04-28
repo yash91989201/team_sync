@@ -12,6 +12,7 @@ import {
   EMPLOYEES_TABLE,
   LEAVE_REQUESTS_TABLE,
   LEAVE_TYPE_TABLE,
+  SALARIES_TABLE,
 } from "./column-defs";
 
 export function DepartmentTable() {
@@ -54,4 +55,10 @@ export function EmployeesDocumentsTable() {
   const { data = [] } = api.documentRouter.getEmployeesDocuments.useQuery();
 
   return <DataTable columns={EMPLOYEES_DOCUMENTS_TABLE} data={data} />;
+}
+
+export function SalariesTable() {
+  const { data = [] } = api.adminRouter.getEmployeesSalaries.useQuery();
+
+  return <DataTable columns={SALARIES_TABLE} data={data} />;
 }

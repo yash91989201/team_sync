@@ -10,6 +10,7 @@ import type {
   EmployeesTableProps,
   LeaveRequestTableProps,
   LeaveTypeSchemaType,
+  SalariesTableProps,
 } from "@/lib/types";
 import type { ColumnDef } from "@tanstack/react-table";
 // UI
@@ -24,6 +25,7 @@ import {
   EmployeesDocumentsTableActions,
   LeaveRequestsTableActions,
   LeaveTypeTableActions,
+  SalariesTableActions,
 } from "./column-actions";
 import DocumentsPreview from "@/components/shared/documents-preview";
 import DeleteDocumentTypeForm from "@/components/admin/document-types/delete-document-type-form";
@@ -317,5 +319,23 @@ export const LEAVE_REQUESTS_TABLE: ColumnDef<LeaveRequestTableProps>[] = [
         leaveRequestId={row.original.id}
       />
     ),
+  },
+];
+
+export const SALARIES_TABLE: ColumnDef<SalariesTableProps>[] = [
+  {
+    accessorKey: "employeeName",
+    header: "Name",
+    cell: ({ row }) => row.original.name,
+  },
+  {
+    accessorKey: "employeeSalary",
+    header: "Salary",
+    cell: ({ row }) => row.original.employeeProfile?.salary,
+  },
+  {
+    accessorKey: "actions",
+    header: "Update Salary",
+    cell: ({ row }) => <SalariesTableActions empId={row.original.id} />,
   },
 ];
