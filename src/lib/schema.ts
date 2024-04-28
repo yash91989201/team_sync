@@ -130,6 +130,11 @@ export const CreateDocumentTypeSchema = DocumentTypeSchema.extend({
   type: z.string({ required_error: "Document type is required." }).min(4, { message: "Min. required length is 4" }),
 });
 
+export const DeleteEmployeeDocumentSchema = z.object({
+  id: z.string(),
+  filesId: z.array(z.string())
+})
+
 export const CreateEmployeeDocumentFormSchema = z.object({
   id: z.string(),
   empId: z.string({ required_error: "Employee is required" }),

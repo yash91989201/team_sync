@@ -43,7 +43,14 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
     try {
         const formData = await request.formData();
-        const filesId = formData.getAll("filesId") as string[]
+        const filesId = formData.getAll("fileId") as string[]
+
+        if (filesId.length === 0) {
+            return Response.json({
+                status: "FAILED",
+                message: "No document files available for this document.",
+            });
+        }
 
         await Promise.all(filesId.map(async (fileId) => {
             // eslint-disable-next-line
@@ -58,6 +65,7 @@ export async function DELETE(request: Request) {
 
         });
     } catch (error) {
+        console.log(error)
         return Response.json({
             status: "FAILED",
             message: "Unable to delete employee document files, please try again.",

@@ -332,7 +332,7 @@ export async function uploadProfileImage(
   };
 }
 
-export async function uploadEmployeeDocuments(files: File[]): Promise<UploadEmployeeDocumentStatusType> {
+export async function uploadEmployeeDocumentFiles(files: File[]): Promise<UploadEmployeeDocumentsStatusType> {
 
   const formData = new FormData()
   files.forEach((file) => formData.append("file", file))
@@ -342,8 +342,20 @@ export async function uploadEmployeeDocuments(files: File[]): Promise<UploadEmpl
     body: formData,
   })
 
-  const data = (await res.json()) as UploadEmployeeDocumentStatusType
+  const data = (await res.json()) as UploadEmployeeDocumentsStatusType
+  return data;
+}
 
+export async function deleteEmployeeDocumentFiles(filesId: string[]): Promise<DeleteDocumentsFilesStatusType> {
+  const formData = new FormData();
+  filesId.forEach(fileId => formData.append("fileId", fileId))
+
+  const res = await fetch("/api/employee-documents", {
+    method: "DELETE",
+    body: formData,
+  })
+
+  const data = (await res.json()) as DeleteDocumentsFilesStatusType
   return data;
 }
 

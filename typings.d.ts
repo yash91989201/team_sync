@@ -84,12 +84,12 @@ type UploadProfileImageStatusType =
   | UploadProfileImageSuccessType
   | FormFailType<UploadProfileImageErrorsType>;
 
-type UploadEmployeeDocumentErrorsType = {
+type UploadEmployeeDocumentsErrorsType = {
   id: string;
   image: string;
 };
 
-type UploadEmployeeDocumentSuccessType = {
+type UploadEmployeeDocumentsSuccessType = {
   status: "SUCCESS";
   message: string;
   data: {
@@ -100,7 +100,9 @@ type UploadEmployeeDocumentSuccessType = {
   },
 };
 
-type UploadEmployeeDocumentStatusType =
-  | FormInitialType<UploadEmployeeDocumentErrorsType>
-  | UploadEmployeeDocumentSuccessType
-  | FormFailType<UploadEmployeeDocumentErrorsType>;
+type UploadEmployeeDocumentsStatusType =
+  | FormInitialType<UploadEmployeeDocumentsErrorsType>
+  | UploadEmployeeDocumentsSuccessType
+  | FormFailType<UploadEmployeeDocumentsErrorsType>;
+
+type DeleteDocumentsFilesStatusType = { status: "SUCCESS", message: string } | { status: "FAILED", message: string; }

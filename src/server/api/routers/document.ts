@@ -3,7 +3,8 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // DB TABLES
 import { documentTypeTable, employeeDocumentFileTable, employeeDocumentTable } from "@/server/db/schema";
 // SCHEMAS
-import { CreateDocumentTypeSchema, CreateEmployeeDocumentInputSchema } from "@/lib/schema";
+import { CreateDocumentTypeSchema, CreateEmployeeDocumentInputSchema, DeleteEmployeeDocumentSchema } from "@/lib/schema";
+import { eq, inArray } from "drizzle-orm";
 
 export const documentRouter = createTRPCRouter({
   getTypes: protectedProcedure.query(async ({ ctx }) => {
@@ -58,6 +59,31 @@ export const documentRouter = createTRPCRouter({
       return {
         status: "FAILED",
         message: "Unable to add employee documents try again."
+      }
+    }
+  }),
+
+  deleteEmployeeDocument: protectedProcedure.input(DeleteEmployeeDocumentSchema).mutation(async ({ ctx, input }) => {
+    try {
+      await ctx.db
+        .delete(employeeDocumentFileTable)
+        .where(
+          inArray(employeeDocumentFileTable.id, input.filesId)
+        )
+
+      await ctx.db
+        .delete(employeeDocumentTable)
+        .where(eq(employeeDocumentTable.id, input.id))
+
+      return {
+        status: "SUCCESS",
+        message: "Deleted employee documents"
+      }
+    } catch (error) {
+      console.log(error)
+      return {
+        status: "FAILED",
+        message: "Unable to delete employee documents"
       }
     }
   })

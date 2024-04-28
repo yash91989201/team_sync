@@ -21,6 +21,7 @@ import {
   DepartmentTableActions,
   DesignationTableActions,
   EmployeeTableActions,
+  EmployeesDocumentsTableActions,
   LeaveRequestsTableActions,
   LeaveTypeTableActions,
 } from "./column-actions";
@@ -224,6 +225,17 @@ export const EMPLOYEES_DOCUMENTS_TABLE: ColumnDef<EmployeesDocumentsTableProps>[
     {
       accessorKey: "verified",
       header: "Verified",
+    },
+    {
+      accessorKey: "actions",
+      cell: ({ row }) => (
+        <EmployeesDocumentsTableActions
+          id={row.original.id}
+          filesId={row.original.documentFiles.map(
+            (documentFile) => documentFile.id,
+          )}
+        />
+      ),
     },
   ];
 

@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 // UTILS
 import { api } from "@/trpc/react";
-import { cn, uploadEmployeeDocuments } from "@/lib/utils";
+import { cn, uploadEmployeeDocumentFiles } from "@/lib/utils";
 // SCHEMAS
 import { CreateEmployeeDocumentFormSchema } from "@/lib/schema";
 // TYPES
@@ -104,7 +104,7 @@ export default function CreateEmployeeDocumentForm() {
   > = async (formData) => {
     const { files } = formData;
     // first upload documents
-    const fileUploadRes = await uploadEmployeeDocuments(files);
+    const fileUploadRes = await uploadEmployeeDocumentFiles(files);
 
     if (fileUploadRes.status !== "SUCCESS") {
       toast.error("Document upload failed, please try again.");

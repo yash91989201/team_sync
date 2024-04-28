@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { toast } from "sonner";
 // UITLS
-import { cn } from "@/lib/utils";
+import { cn, deleteEmployeeDocumentFiles } from "@/lib/utils";
 import { api } from "@/trpc/react";
 import { buttonVariants } from "@ui/button";
 // TYPES
@@ -196,6 +196,65 @@ export function DesignationTableActions(initialData: {
         disabled={isDeleting}
         onClick={deleteDesignationAction}
         className="rounded-xl border-red-500 text-red-500 hover:border-red-500 hover:bg-white hover:text-red-500 [&>svg]:size-4"
+      >
+        {isDeleting ? <Loader2 /> : <Trash />}
+      </Button>
+    </div>
+  );
+}
+
+export function EmployeesDocumentsTableActions({
+  id,
+  filesId,
+}: {
+  id: string;
+  filesId: string[];
+}) {
+  const { refetch: refetchEmployeesDocuments } =
+    api.documentRouter.getEmployeesDocuments.useQuery();
+
+  const { mutateAsync: deleteEmployeeDocument, isPending: isDeleting } =
+    api.documentRouter.deleteEmployeeDocument.useMutation();
+
+  const deleteEmployeeDocumentAction = async () => {
+    const deleteFilesResponse = await deleteEmployeeDocumentFiles(filesId);
+
+    if (deleteFilesResponse.status === "FAILED") {
+      toast.error(deleteFilesResponse.message);
+      return;
+    }
+
+    const actionResponse = await deleteEmployeeDocument({ id, filesId });
+    if (actionResponse.status === "SUCCESS") {
+      toast.success(actionResponse.message);
+      await refetchEmployeesDocuments();
+    } else {
+      toast.error(actionResponse.message);
+    }
+  };
+
+  return (
+    <div className="space-x-1.5">
+      <Link
+        href={`/admin/document-center/employee-documents/${id}/update-documents`}
+        className={cn(
+          buttonVariants({
+            size: "icon",
+            variant: "outline",
+            className:
+              "rounded-xl  text-blue-500  hover:border-blue-500 hover:bg-white hover:text-blue-500",
+          }),
+          "border-blue-500 ",
+        )}
+      >
+        <Pencil className="size-4" />
+      </Link>
+      <Button
+        variant="outline"
+        size="icon"
+        className="rounded-xl border-red-500 text-red-500 hover:border-red-500 hover:bg-white hover:text-red-500 [&>svg]:size-4"
+        disabled={isDeleting}
+        onClick={deleteEmployeeDocumentAction}
       >
         {isDeleting ? <Loader2 /> : <Trash />}
       </Button>
