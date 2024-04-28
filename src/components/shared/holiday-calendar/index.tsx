@@ -50,9 +50,11 @@ export default function HolidayCalendar() {
 
   const firstDayOfCurrentMonth = parse(currentMonth, "MMMM-yyyy", new Date());
 
-  const currentMonthHolidays = holidays.filter((holiday) =>
-    isSameMonth(holiday.date, firstDayOfCurrentMonth),
-  );
+  const currentMonthHolidays = holidays
+    .filter((holiday) => isSameMonth(holiday.date, firstDayOfCurrentMonth))
+    .sort(
+      (holiday1, holiday2) => holiday1.date.getTime() - holiday2.date.getTime(),
+    );
 
   const getCurrentDayHoliday = (date: Date) => {
     return currentMonthHolidays.find((holiday) =>
