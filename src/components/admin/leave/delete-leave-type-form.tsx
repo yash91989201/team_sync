@@ -34,6 +34,11 @@ export default function DeleteLeaveTypeForm({
   const { mutateAsync: deleteLeaveType, isPending } =
     api.leaveRouter.deleteLeaveType.useMutation();
 
+  const toggleDialog = () => {
+    dialog.toggle();
+    setLeaveType("");
+  };
+
   const deleteLeaveTypeAction = async () => {
     if (leaveType !== type) {
       return;
@@ -50,7 +55,7 @@ export default function DeleteLeaveTypeForm({
   };
 
   return (
-    <Dialog open={dialog.isOpen} onOpenChange={dialog.toggle}>
+    <Dialog open={dialog.isOpen} onOpenChange={toggleDialog}>
       <DialogTrigger asChild>
         <Button
           variant="outline"
