@@ -1,5 +1,6 @@
 import { eq, inArray } from "drizzle-orm";
 // UTILS
+import { pbClient } from "@/server/pb/config";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // DB TABLES
 import { documentTypeTable, employeeDocumentFileTable, employeeDocumentTable } from "@/server/db/schema";
@@ -10,6 +11,7 @@ import {
   DeleteEmployeeDocumentSchema,
   CreateEmployeeDocumentInputSchema,
   UpdateEmployeeDocumentSchema,
+  DeleteDocumentTypeSchema,
 } from "@/lib/schema";
 
 export const documentRouter = createTRPCRouter({
@@ -99,6 +101,45 @@ export const documentRouter = createTRPCRouter({
       return {
         status: "SUCCESS",
         message: "Unable to update employee document data"
+      }
+    }
+  }),
+
+  deleteDocumentType: protectedProcedure.input(DeleteDocumentTypeSchema).mutation(async ({ ctx, input }) => {
+    try {
+      const employeesDocuments = await ctx.db.query.employeeDocumentTable.findMany({
+        where: eq(employeeDocumentTable.documentTypeId, input.id),
+        with: {
+          documentFiles: true
+        }
+      })
+
+      const employeesDocumentsId = employeesDocuments.map(employeeDocument => employeeDocument.id)
+      const employeesDocumentFiles = employeesDocuments.flatMap(employeeDocuments => employeeDocuments.documentFiles)
+      const employeesDocumentFilesId = employeesDocumentFiles.map(employeeDocumentFile => employeeDocumentFile.id)
+
+      await ctx.db.delete(employeeDocumentFileTable).where(inArray(employeeDocumentFileTable.id, employeesDocumentFilesId))
+
+      await ctx.db.delete(employeeDocumentTable).where(inArray(employeeDocumentTable.id, employeesDocumentsId))
+
+      await ctx.db.delete(documentTypeTable).where(eq(documentTypeTable.id, input.id))
+
+      await Promise.all(employeesDocumentFilesId.map(async (fileId) => {
+        // eslint-disable-next-line
+        await pbClient
+          .collection("employee_document_file")
+          .delete(fileId)
+      }))
+
+      return {
+        status: "SUCCESS",
+        message: "Document type deleted successfully"
+      }
+
+    } catch (error) {
+      return {
+        status: "FAILED",
+        message: "Unable to delete document type"
       }
     }
   }),

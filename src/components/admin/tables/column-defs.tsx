@@ -26,6 +26,7 @@ import {
   LeaveTypeTableActions,
 } from "./column-actions";
 import DocumentsPreview from "@/components/shared/documents-preview";
+import DeleteDocumentTypeForm from "@/components/admin/document-types/delete-document-type-form";
 // CONSTANTS
 import { DOCUMENT_FILE_TYPES_DISPLAY } from "@/constants";
 // ICONS
@@ -151,6 +152,12 @@ export const DOCUMENT_TYPE_TABLE: ColumnDef<DocumentTypeSchemaType>[] = [
   {
     accessorKey: "requiredFiles",
     header: "Required files",
+  },
+  {
+    accessorKey: "actions",
+    cell: ({ row }) => (
+      <DeleteDocumentTypeForm id={row.original.id} type={row.original.type} />
+    ),
   },
 ];
 
