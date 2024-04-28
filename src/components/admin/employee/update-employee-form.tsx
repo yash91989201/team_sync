@@ -149,6 +149,7 @@ export default function UpdateEmployeeForm({
             {/*professional details*/}
             {section === "professional_detail" ? (
               <div
+                key={index}
                 className="flex items-start gap-3"
                 aria-label="2 Employee professional details section"
               >
@@ -356,6 +357,7 @@ export default function UpdateEmployeeForm({
             {/*work details*/}
             {section === "shift_detail" ? (
               <div
+                key={index}
                 className="flex items-start gap-3"
                 aria-label="3 Employee work shift details section"
               >
@@ -453,6 +455,7 @@ export default function UpdateEmployeeForm({
             {/*salary component options*/}
             {section === "salary_detail" ? (
               <div
+                key={index}
                 className="flex items-start gap-3"
                 aria-label="4 Employee additional options section"
               >
@@ -504,6 +507,7 @@ export default function UpdateEmployeeForm({
             {/*leave details*/}
             {section === "leave_detail" ? (
               <div
+                key={index}
                 className="flex items-start gap-3"
                 aria-label="5 Employee additional options section"
               >
@@ -555,6 +559,7 @@ export default function UpdateEmployeeForm({
             {/*additional options*/}
             {section === "additional_detail" ? (
               <div
+                key={index}
                 className="flex items-start gap-3"
                 aria-label="5 Employee additional options section"
               >
