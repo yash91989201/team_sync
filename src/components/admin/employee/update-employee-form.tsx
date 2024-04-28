@@ -61,13 +61,15 @@ export default function UpdateEmployeeForm({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const sections = searchParams.get("sections");
+  const sections = searchParams
+    .get("sections")
+    ?.split(",")
+    .filter((section) => EMPLOYEE_UPDATE_SECTIONS.includes(section));
 
   const updateSections =
-    sections
-      ?.split(",")
-      .filter((section) => EMPLOYEE_UPDATE_SECTIONS.includes(section)) ??
-    EMPLOYEE_UPDATE_SECTIONS;
+    sections?.length === 0 || sections === undefined
+      ? EMPLOYEE_UPDATE_SECTIONS
+      : sections;
 
   const updateEmployeeForm = useForm<UpdateEmployeeSchemaType>({
     defaultValues: employeeData,
