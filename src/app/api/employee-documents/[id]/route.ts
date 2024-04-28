@@ -16,7 +16,8 @@ export async function GET(
 
     return new Response(documentFile, {
         headers: {
-            "Content-Type": fileData.file_type
+            "Content-Type": fileData.file_type,
+            "Content-Length": fileData.file_size.toString()
         }
     });
 }
@@ -41,6 +42,30 @@ export async function PATCH(
         return Response.json({
             status: "FAILED",
             message: "Unable to update file",
+        });
+    }
+}
+
+export async function DELETE(
+    request: Request,
+    { params }: { params: { id: string } },
+) {
+    try {
+        const fileId = params.id;
+
+        // eslint-disable-next-line
+        await pbClient
+            .collection("employee_document_file")
+            .delete(fileId)
+
+        return Response.json({
+            status: "SUCCESS",
+            message: "Employee document file deleted successfully",
+        });
+    } catch (error) {
+        return Response.json({
+            status: "FAILED",
+            message: "Unable to delete employee document file",
         });
     }
 }
