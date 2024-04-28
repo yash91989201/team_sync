@@ -1,10 +1,16 @@
+import { eq, inArray } from "drizzle-orm";
 // UTILS
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // DB TABLES
 import { documentTypeTable, employeeDocumentFileTable, employeeDocumentTable } from "@/server/db/schema";
 // SCHEMAS
-import { CreateDocumentTypeSchema, CreateEmployeeDocumentInputSchema, DeleteEmployeeDocumentSchema } from "@/lib/schema";
-import { eq, inArray } from "drizzle-orm";
+import {
+  CreateDocumentTypeSchema,
+  GetEmployeeDocumentsInput,
+  DeleteEmployeeDocumentSchema,
+  CreateEmployeeDocumentInputSchema,
+  UpdateEmployeeDocumentSchema,
+} from "@/lib/schema";
 
 export const documentRouter = createTRPCRouter({
   getTypes: protectedProcedure.query(async ({ ctx }) => {
@@ -16,6 +22,21 @@ export const documentRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(documentTypeTable).values(input);
     }),
+
+  getEmployeeDocuments: protectedProcedure.input(GetEmployeeDocumentsInput).query(({ ctx, input }) => {
+    return ctx.db.query.employeeDocumentTable.findFirst({
+      where: eq(employeeDocumentTable.id, input.id),
+      with: {
+        documentType: true,
+        documentFiles: true,
+        employee: {
+          columns: {
+            password: false,
+          }
+        }
+      }
+    })
+  }),
 
   getEmployeesDocuments: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.employeeDocumentTable.findMany({
@@ -59,6 +80,25 @@ export const documentRouter = createTRPCRouter({
       return {
         status: "FAILED",
         message: "Unable to add employee documents try again."
+      }
+    }
+  }),
+
+  updateEmployeeDocument: protectedProcedure.input(UpdateEmployeeDocumentSchema).mutation(async ({ ctx, input }) => {
+    try {
+      await ctx.db.update(employeeDocumentTable).set({
+        uniqueDocumentId: input.uniqueDocumentId,
+        verified: input.verified
+      }).where(eq(employeeDocumentTable.id, input.id))
+
+      return {
+        status: "SUCCESS",
+        message: "Employee document data updated successfully"
+      }
+    } catch (error) {
+      return {
+        status: "SUCCESS",
+        message: "Unable to update employee document data"
       }
     }
   }),

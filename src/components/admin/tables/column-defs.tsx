@@ -225,6 +225,7 @@ export const EMPLOYEES_DOCUMENTS_TABLE: ColumnDef<EmployeesDocumentsTableProps>[
     {
       accessorKey: "verified",
       header: "Verified",
+      cell: ({ row }) => (row.original.verified ? "yes" : "no"),
     },
     {
       accessorKey: "actions",

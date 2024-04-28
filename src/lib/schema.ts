@@ -135,6 +135,10 @@ export const DeleteEmployeeDocumentSchema = z.object({
   filesId: z.array(z.string())
 })
 
+export const GetEmployeeDocumentsInput = z.object({
+  id: z.string()
+})
+
 export const CreateEmployeeDocumentFormSchema = z.object({
   id: z.string(),
   empId: z.string({ required_error: "Employee is required" }),
@@ -157,6 +161,12 @@ export const CreateEmployeeDocumentInputSchema = z.object({
     fileUrl: z.string().url(),
     empDocumentId: z.string(),
   }))
+})
+
+export const UpdateEmployeeDocumentSchema = z.object({
+  id: z.string(),
+  uniqueDocumentId: z.string().optional(),
+  verified: z.boolean().default(false),
 })
 
 // EMPLOYEE SCHEMAS

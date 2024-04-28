@@ -346,6 +346,22 @@ export async function uploadEmployeeDocumentFiles(files: File[]): Promise<Upload
   return data;
 }
 
+export async function updateEmployeeDocumentFile({ fileId, file }: { fileId: string; file: File | undefined }): Promise<UpdateDocumentFileStatusType> {
+
+  const formData = new FormData()
+  if (file === undefined) return { status: "FAILED", message: "Please provide a file to update" }
+
+  formData.append("file", file)
+
+  const res = await fetch(`/api/employee-documents/${fileId}`, {
+    method: "PATCH",
+    body: formData,
+  })
+
+  const data = (await res.json()) as UpdateDocumentFileStatusType
+  return data;
+}
+
 export async function deleteEmployeeDocumentFiles(filesId: string[]): Promise<DeleteDocumentsFilesStatusType> {
   const formData = new FormData();
   filesId.forEach(fileId => formData.append("fileId", fileId))

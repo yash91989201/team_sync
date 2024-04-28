@@ -49,7 +49,7 @@ import { Input } from "@ui/input";
 import { Button } from "@ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
 // CUSTOM COMPONENTS
-import { EmployeeDocFileInput } from "@/components/admin/employee-documents/employee-doc-file-input";
+import { DocumentInput } from "@/components/admin/employee-documents/document-input";
 // ICONS
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 // CONSTANTS
@@ -272,7 +272,7 @@ export default function CreateEmployeeDocumentForm() {
                         {selectedDocumentType.type} images/files
                       </FormLabel>
                       <FormControl>
-                        <EmployeeDocFileInput
+                        <DocumentInput
                           value={field.value}
                           onChange={field.onChange}
                           dropzoneOptions={{

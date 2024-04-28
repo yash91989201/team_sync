@@ -17,7 +17,6 @@ export async function GET(
     return new Response(documentFile, {
         headers: {
             "Content-Type": fileData.file_type,
-            "Content-Length": fileData.file_size.toString()
         }
     });
 }

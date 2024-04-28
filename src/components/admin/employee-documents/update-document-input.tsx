@@ -1,10 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import type { DocumentTypeSchemaType } from "@/lib/types";
 import { formatFileSize } from "@/lib/utils";
 import { FileIcon, Trash, UploadCloudIcon } from "lucide-react";
 import * as React from "react";
 import { useDropzone, type DropzoneOptions } from "react-dropzone";
+import { Document, Page } from "react-pdf";
 import { twMerge } from "tailwind-merge";
 
 const variants = {
@@ -19,6 +21,8 @@ const variants = {
 type InputProps = {
   className?: string;
   value?: File[];
+  fileUrl: string;
+  fileType: DocumentTypeSchemaType["fileType"];
   onChange?: (files: File[]) => void | Promise<void>;
   onFilesAdded?: (addedFiles: File[]) => void | Promise<void>;
   disabled?: boolean;
@@ -40,9 +44,18 @@ const ERROR_MESSAGES = {
   },
 };
 
-const EmployeeDocFileInput = React.forwardRef<HTMLInputElement, InputProps>(
+const UpdateDocumentInput = React.forwardRef<HTMLInputElement, InputProps>(
   (
-    { dropzoneOptions, value, className, disabled, onFilesAdded, onChange },
+    {
+      dropzoneOptions,
+      value,
+      fileUrl,
+      fileType,
+      className,
+      disabled,
+      onFilesAdded,
+      onChange,
+    },
     ref,
   ) => {
     const [customError, setCustomError] = React.useState<string>();
@@ -124,6 +137,17 @@ const EmployeeDocFileInput = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div>
         <div className="flex flex-col gap-2">
+          {fileType === "application/pdf" ? (
+            <div className="relative h-16 w-16">
+              <Document file={fileUrl.slice(21)}>
+                <Page pageNumber={1} />
+              </Document>
+            </div>
+          ) : (
+            <picture className="relative h-16 w-16">
+              <img src={fileUrl.slice(21)} alt="Update document file" />
+            </picture>
+          )}
           <div>
             {/* Main File Input */}
             <div
@@ -179,6 +203,6 @@ const EmployeeDocFileInput = React.forwardRef<HTMLInputElement, InputProps>(
     );
   },
 );
-EmployeeDocFileInput.displayName = "EmployeeDocFileInput";
+UpdateDocumentInput.displayName = "UpdateDocumentInput";
 
-export { EmployeeDocFileInput };
+export { UpdateDocumentInput };

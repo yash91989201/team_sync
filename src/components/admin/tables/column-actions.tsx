@@ -236,7 +236,7 @@ export function EmployeesDocumentsTableActions({
   return (
     <div className="space-x-1.5">
       <Link
-        href={`/admin/document-center/employee-documents/${id}/update-documents`}
+        href={`/admin/document-center/employee-documents/${id}/update-document`}
         className={cn(
           buttonVariants({
             size: "icon",

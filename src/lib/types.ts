@@ -41,6 +41,7 @@ import type {
   UpdateDepartmentSchema,
   UpdateDesignationSchema,
   UpdateLeaveTypeSchema,
+  UpdateEmployeeDocumentSchema,
 } from "@/lib/schema";
 // TYPES
 import type { z } from "zod";
@@ -107,6 +108,12 @@ export type CreateDocumentTypeSchemaType = z.infer<
 export type CreateEmployeeDocumentFormSchemaType = z.infer<
   typeof CreateEmployeeDocumentFormSchema
 >;
+export type UpdateEmployeeDocumentSchemaType = z.infer<typeof UpdateEmployeeDocumentSchema>
+export type UpdateEmployeeDocumentFormProps = EmployeeDocumentSchemaType & {
+  employee: UserType;
+  documentFiles: EmployeeDocumentFileSchemaType[];
+  documentType: DocumentTypeSchemaType;
+};
 export type CreateSalaryComponentSchemaType = z.infer<typeof CreateSalaryComponentSchema>
 export type UpdateDepartmentSchemaType = z.infer<typeof UpdateDepartmentSchema>
 export type UpdateDesignationchemaType = z.infer<typeof UpdateDesignationSchema>
