@@ -85,7 +85,7 @@ export const LEAVE_TYPE_TABLE: ColumnDef<LeaveTypeSchemaType>[] = [
           className="p-0 text-base font-semibold text-gray-700 hover:bg-transparent"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Days allowed
+          Leave days
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -98,6 +98,22 @@ export const LEAVE_TYPE_TABLE: ColumnDef<LeaveTypeSchemaType>[] = [
       row.original.renewPeriodCount > 1
         ? `${row.original.renewPeriodCount} ${row.original.renewPeriod}s`
         : row.original.renewPeriod,
+  },
+  {
+    accessorKey: "paidLeave",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="p-0 text-base font-semibold text-gray-700 hover:bg-transparent"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Paid leave
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => (row.original.paidLeave ? "yes" : "no"),
   },
   {
     accessorKey: "carryOver",
@@ -116,20 +132,9 @@ export const LEAVE_TYPE_TABLE: ColumnDef<LeaveTypeSchemaType>[] = [
     cell: ({ row }) => (row.original.carryOver ? "yes" : "no"),
   },
   {
-    accessorKey: "paidLeave",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          className="p-0 text-base font-semibold text-gray-700 hover:bg-transparent"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Paid leave
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (row.original.paidLeave ? "yes" : "no"),
+    accessorKey: "leaveEncashment",
+    header: "Leave Encashment",
+    cell: ({ row }) => (row.original.leaveEncashment ? "yes" : "no"),
   },
   {
     accessorKey: "actions",
@@ -267,6 +272,11 @@ export const LEAVE_REQUESTS_TABLE: ColumnDef<LeaveRequestTableProps>[] = [
         leaveDays: row.original.leaveDays,
         renewPeriod: row.original.leaveType.renewPeriod,
       }),
+  },
+  {
+    accessorKey: "leaveType",
+    header: "Leave type",
+    cell: ({ row }) => row.original.leaveType.type,
   },
   {
     accessorKey: "status",

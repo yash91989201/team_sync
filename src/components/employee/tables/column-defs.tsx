@@ -96,6 +96,11 @@ export const LEAVE_APPLICATION_TABLE: ColumnDef<LeaveApplicationTableProps>[] =
         }),
     },
     {
+      accessorKey: "leaveType",
+      header: "Leave type",
+      cell: ({ row }) => row.original.leaveType.type,
+    },
+    {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {

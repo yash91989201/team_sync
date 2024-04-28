@@ -47,10 +47,12 @@ export default function CreateLeaveTypeForm() {
       renewPeriodCount: 1,
       carryOver: false,
       paidLeave: false,
+      leaveEncashment: false,
     },
   });
 
-  const { control, handleSubmit, reset } = createLeaveTypeForm;
+  const { control, handleSubmit, reset, getValues, setValue } =
+    createLeaveTypeForm;
 
   const { refetch: refetchLeaveTypes } =
     api.leaveRouter.getLeaveTypes.useQuery();
@@ -63,13 +65,7 @@ export default function CreateLeaveTypeForm() {
   > = async (formData) => {
     await createLeaveType(formData);
     await refetchLeaveTypes();
-    reset({
-      type: "",
-      carryOver: false,
-      daysAllowed: 1,
-      renewPeriodCount: 1,
-      renewPeriod: "month",
-    });
+    reset();
   };
 
   return (
@@ -94,41 +90,77 @@ export default function CreateLeaveTypeForm() {
               )}
             />
 
-            <FormField
-              control={control}
-              name="paidLeave"
-              render={({ field }) => (
-                <FormItem className="flex items-center gap-3 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel className="text-sm font-normal">
-                    Is paid leave ?
-                  </FormLabel>
-                </FormItem>
-              )}
-            />
+            <div className="space-y-2">
+              <FormLabel>Leave type properties</FormLabel>
+              <div className="space-y-2">
+                <FormField
+                  control={control}
+                  name="paidLeave"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center gap-3 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal">
+                        Is paid leave ?
+                      </FormLabel>
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={control}
-              name="carryOver"
-              render={({ field }) => (
-                <FormItem className="flex items-center gap-3 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel className="text-sm font-normal">
-                    Allow carry over
-                  </FormLabel>
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={control}
+                  name="carryOver"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center gap-3 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked);
+                            const allowsLeaveEncashment =
+                              getValues("leaveEncashment");
+                            if (checked && allowsLeaveEncashment) {
+                              setValue("leaveEncashment", false);
+                            }
+                          }}
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal">
+                        Allow carry over
+                      </FormLabel>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={control}
+                  name="leaveEncashment"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center gap-3 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked);
+                            const allowsCarryOver = getValues("carryOver");
+                            if (checked && allowsCarryOver) {
+                              setValue("carryOver", false);
+                            }
+                          }}
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal">
+                        Encash unused leave
+                      </FormLabel>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
 
             <FormField
               control={control}
@@ -177,10 +209,7 @@ export default function CreateLeaveTypeForm() {
                 name="renewPeriod"
                 render={({ field }) => (
                   <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger className="w-32">
                           <SelectValue placeholder="Renew leave by this period" />

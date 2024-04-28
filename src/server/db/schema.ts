@@ -192,6 +192,7 @@ export const leaveTypeTable = mysqlTable("leave_type", {
   renewPeriodCount: int("renew_period_count").notNull(),
   carryOver: boolean("carry_over").notNull(),
   paidLeave: boolean("paid_leave").notNull(),
+  leaveEncashment: boolean("leave_encashment").notNull()
 });
 
 export const leaveTypeTableRelations = relations(

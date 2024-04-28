@@ -53,17 +53,35 @@ export default function LeaveTypesField() {
           <TableHeader>
             <TableRow>
               <TableHead>Leave types</TableHead>
+              <TableHead>Renew every</TableHead>
               <TableHead>Paid leave</TableHead>
               <TableHead>Carry over</TableHead>
-              <TableHead className="w-44 text-right">Days</TableHead>
+              <TableHead>Leave encashment</TableHead>
+              <TableHead>Days</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {fields.map(
-              ({ type, carryOver, paidLeave, daysAllowed }, index) => (
+              (
+                {
+                  type,
+                  carryOver,
+                  paidLeave,
+                  daysAllowed,
+                  leaveEncashment,
+                  renewPeriod,
+                  renewPeriodCount,
+                },
+                index,
+              ) => (
                 <TableRow key={index} className="hover:bg-white">
                   <TableCell>
                     <FormLabel>{type}</FormLabel>
+                  </TableCell>
+                  <TableCell>
+                    {renewPeriodCount > 1
+                      ? `${renewPeriodCount} ${renewPeriod}s`
+                      : renewPeriod}
                   </TableCell>
                   <TableCell>
                     <FormLabel>{paidLeave ? "yes" : "no"}</FormLabel>
@@ -71,7 +89,10 @@ export default function LeaveTypesField() {
                   <TableCell>
                     <FormLabel>{carryOver ? "yes" : "no"}</FormLabel>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell>
+                    <FormLabel>{leaveEncashment ? "yes" : "no"}</FormLabel>
+                  </TableCell>
+                  <TableCell>
                     <FormLabel>{daysAllowed}</FormLabel>
                   </TableCell>
                 </TableRow>
