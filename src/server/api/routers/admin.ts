@@ -1,5 +1,5 @@
 import { generateId } from "lucia";
-import { and, eq, getTableColumns, sql } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, sql } from "drizzle-orm";
 // UTILS
 import { pbClient } from "@/server/pb/config";
 import { getShiftTimeDate } from "@/lib/utils";
@@ -70,7 +70,8 @@ export const adminRouter = createTRPCRouter({
         }))!
 
         const salaryComponents = await ctx.db.query.employeeSalaryComponentTable.findMany({
-          where: eq(employeeSalaryComponentTable.empId, empId)
+          where: eq(employeeSalaryComponentTable.empId, empId),
+          orderBy: [desc(employeeSalaryComponentTable.amount)]
         })
 
         const leaveTypes = await ctx.db

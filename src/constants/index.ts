@@ -14,3 +14,11 @@ export const DOCUMENT_FILE_TYPES_DISPLAY = {
   "image/svg": "SVG",
   "application/pdf": "PDF"
 } as const
+
+export const EMPLOYEE_UPDATE_SECTIONS = [
+  "professional_detail",
+  "shift_detail",
+  "salary_detail",
+  "leave_detail",
+  "additional_detail",
+] 

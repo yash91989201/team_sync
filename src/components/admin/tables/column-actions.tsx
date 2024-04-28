@@ -265,7 +265,7 @@ export function EmployeesDocumentsTableActions({
 export function SalariesTableActions({ empId }: { empId: string }) {
   return (
     <Link
-      href={`/admin/employees/${empId}/update-employee`}
+      href={`/admin/employees/${empId}/update-employee?sections=salary_detail`}
       className={cn(
         buttonVariants({
           size: "icon",

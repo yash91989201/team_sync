@@ -49,8 +49,6 @@ export default function SalaryComponentsField() {
   const addSalaryComponent = (
     salaryComponent: CreateEmployeeFormSchemaType["salaryComponents"][0],
   ) => {
-    console.debug(fields);
-    console.debug(salaryComponent);
     append(salaryComponent);
   };
 
