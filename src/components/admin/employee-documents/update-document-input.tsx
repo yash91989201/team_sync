@@ -1,9 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import type { DocumentTypeSchemaType } from "@/lib/types";
 import { formatFileSize } from "@/lib/utils";
-import { FileIcon, Trash, UploadCloudIcon } from "lucide-react";
+import { UploadCloudIcon } from "lucide-react";
 import * as React from "react";
 import { useDropzone, type DropzoneOptions } from "react-dropzone";
 import { Document, Page } from "react-pdf";
@@ -20,11 +19,10 @@ const variants = {
 
 type InputProps = {
   className?: string;
-  value?: File[];
   fileUrl: string;
   fileType: DocumentTypeSchemaType["fileType"];
-  onChange?: (files: File[]) => void | Promise<void>;
-  onFilesAdded?: (addedFiles: File[]) => void | Promise<void>;
+  fileIndex: number;
+  onChange?: (file?: File) => void | Promise<void>;
   disabled?: boolean;
   dropzoneOptions?: Omit<DropzoneOptions, "disabled">;
 };
@@ -48,53 +46,46 @@ const UpdateDocumentInput = React.forwardRef<HTMLInputElement, InputProps>(
   (
     {
       dropzoneOptions,
-      value,
       fileUrl,
       fileType,
+      fileIndex,
       className,
       disabled,
-      onFilesAdded,
       onChange,
     },
     ref,
   ) => {
-    const [customError, setCustomError] = React.useState<string>();
-    if (dropzoneOptions?.maxFiles && value?.length) {
-      disabled = disabled ?? value.length >= dropzoneOptions.maxFiles;
-    }
+    const [value, setValue] = React.useState<File | undefined>(undefined);
+
+    const imageUrl = React.useMemo(() => {
+      if (value) {
+        return URL.createObjectURL(value);
+      }
+      return null;
+    }, [value]);
+    console.log(imageUrl);
+
     // dropzone configuration
     const {
       getRootProps,
       getInputProps,
       fileRejections,
       isFocused,
+      acceptedFiles,
       isDragAccept,
       isDragReject,
     } = useDropzone({
       disabled,
+      multiple: false,
       onDrop: (acceptedFiles) => {
-        const files = acceptedFiles;
-        setCustomError(undefined);
-        if (
-          dropzoneOptions?.maxFiles &&
-          (value?.length ?? 0) + files.length > dropzoneOptions.maxFiles
-        ) {
-          setCustomError(ERROR_MESSAGES.tooManyFiles(dropzoneOptions.maxFiles));
-          return;
-        }
-        if (files) {
-          void onFilesAdded?.(files);
-          void onChange?.([...(value ?? []), ...files]);
+        const file = acceptedFiles[0];
+        if (file) {
+          setValue(file);
+          void onChange?.(file);
         }
       },
       ...dropzoneOptions,
     });
-
-    const removeFile = (file: File) => {
-      const updateFileList = [...(value ?? [])];
-      updateFileList.splice(updateFileList.indexOf(file), 1);
-      void onChange?.(updateFileList);
-    };
 
     // styling
     const dropZoneClassName = React.useMemo(
@@ -135,69 +126,68 @@ const UpdateDocumentInput = React.forwardRef<HTMLInputElement, InputProps>(
     }, [fileRejections, dropzoneOptions]);
 
     return (
-      <div>
-        <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-3">
+        <p className="rounded-xl bg-primary p-3 text-lg text-white">
+          File {fileIndex}
+        </p>
+        <div className="flex h-64 w-full p-3">
           {fileType === "application/pdf" ? (
-            <div className="relative h-16 w-16">
+            <div className="relative flex h-16 w-16 flex-1 flex-col gap-1.5">
+              <p>Current file</p>
               <Document file={fileUrl.slice(21)}>
                 <Page pageNumber={1} />
               </Document>
             </div>
           ) : (
-            <picture className="relative h-16 w-16">
+            <picture className="relative aspect-square h-full">
+              <p>Current file</p>
               <img src={fileUrl.slice(21)} alt="Update document file" />
             </picture>
           )}
-          <div>
-            {/* Main File Input */}
+          <div className="5 flex flex-col gap-1">
+            <p>Updated file</p>
+
             <div
               {...getRootProps({
                 className: dropZoneClassName,
               })}
             >
+              {/* Main File Input */}
               <input ref={ref} {...getInputProps()} />
-              <div className="flex flex-col items-center justify-center text-xs text-gray-400">
-                <UploadCloudIcon className="mb-1 h-7 w-7" />
-                <div className="text-gray-400">
-                  drag & drop or click to upload
-                </div>
-              </div>
-            </div>
 
-            {/* Error Text */}
-            <div className="mt-1 text-xs text-red-500">
-              {customError ?? errorMessage}
+              {imageUrl ? (
+                // Image Preview
+                <picture>
+                  <img
+                    className="h-full w-full rounded-md object-cover"
+                    src={imageUrl}
+                    alt={acceptedFiles[0]?.name}
+                  />
+                </picture>
+              ) : (
+                // Upload Icon
+                <div className="flex flex-col items-center justify-center text-xs text-gray-400">
+                  <UploadCloudIcon className="mb-2 h-7 w-7" />
+                  <div className="text-gray-400">drag & drop to upload</div>
+                </div>
+              )}
+
+              {/* Remove Image Icon */}
+              {imageUrl && !disabled && (
+                <div
+                  className="group absolute right-0 top-0 -translate-y-1/4 translate-x-1/4 transform"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    void onChange?.(undefined);
+                  }}
+                ></div>
+              )}
+            </div>
+            <div>
+              {/* Error Text */}
+              <div className="mt-1 text-xs text-red-500">{errorMessage}</div>
             </div>
           </div>
-
-          {/* Selected Files */}
-          {value?.map((file, i) => (
-            <div
-              key={i}
-              className="flex h-16 flex-col justify-center rounded border border-gray-300 px-4 py-2"
-            >
-              <div className="flex items-center gap-2 text-gray-500 dark:text-white">
-                <FileIcon size="30" className="shrink-0" />
-                <div className="min-w-0 flex-1 text-sm">
-                  <div className="overflow-hidden overflow-ellipsis whitespace-nowrap">
-                    {file.name}
-                  </div>
-                  <div className="text-xs text-gray-400 dark:text-gray-400">
-                    {formatFileSize(file.size)}
-                  </div>
-                </div>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="icon"
-                  className="rounded-full bg-red-50 hover:bg-red-100"
-                  onClick={() => removeFile(file)}
-                >
-                  <Trash className="size-4 text-red-500" />
-                </Button>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     );

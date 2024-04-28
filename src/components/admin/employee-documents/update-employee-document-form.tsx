@@ -70,24 +70,27 @@ export default function UpdateEmployeeDocumentForm({
     }
   };
 
+  // TODO: enhance ui update employee document form
+
   return (
     <div>
       <div>
-        {documentFiles.map((documentFile) => (
+        {documentFiles.map((documentFile, index) => (
           <UpdateDocumentInput
             key={documentFile.id}
             fileUrl={documentFile.fileUrl}
             fileType={documentType.fileType}
+            fileIndex={index + 1}
             dropzoneOptions={{
               maxSize: MAX_FILE_SIZE.PROFILE_IMG,
               accept: {
                 [`${documentType.fileType}`]: [],
               },
             }}
-            onFilesAdded={async (filesAdded) => {
+            onChange={async (file) => {
               const actionResponse = await updateEmployeeDocumentFile({
                 fileId: documentFile.id,
-                file: filesAdded[0],
+                file,
               });
 
               if (actionResponse.status === "SUCCESS") {
@@ -103,7 +106,10 @@ export default function UpdateEmployeeDocumentForm({
       </div>
 
       <Form {...updateEmployeeDocumentForm}>
-        <form onSubmit={handleSubmit(updateEmployeeDocumentAction)}>
+        <form
+          onSubmit={handleSubmit(updateEmployeeDocumentAction)}
+          className="space-y-3"
+        >
           <FormField
             control={control}
             name="uniqueDocumentId"
