@@ -6,15 +6,19 @@ export async function GET(
   _request: Request,
   { params }: { params: { id: string } },
 ) {
-  const imageId = params.id;
-  const image = await pbClient.collection("user_profile").getOne(imageId);
-  const res = await fetch(
-    `${env.POCKETBASE_URL}/api/files/user_profile/${imageId}/${image.image}`,
-  );
+  try {
+    const imageId = params.id;
+    const image = await pbClient.collection("user_profile").getOne(imageId);
+    const res = await fetch(
+      `${env.POCKETBASE_URL}/api/files/user_profile/${imageId}/${image.image}`,
+    );
 
-  const profileImage = await res.blob();
+    const profileImage = await res.blob();
 
-  return new Response(profileImage);
+    return new Response(profileImage);
+  } catch (error) {
+    return Response.json({ message: "Unable to find image" }, { status: 404 })
+  }
 }
 
 export async function PATCH(

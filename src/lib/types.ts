@@ -30,6 +30,18 @@ import type {
   CreateDocumentTypeSchema,
   GetEmployeeByQueryInput,
   CreateEmployeeDocumentFormSchema,
+  SalaryComponentsSchema,
+  EmployeeSalaryComponentSchema,
+  CreateSalaryComponentSchema,
+  UpdateEmployeeSchema,
+  EmployeeLeaveTypeSchema,
+  HolidaySchema,
+  CreateHolidaySchema,
+  UpdateHolidaySchema,
+  UpdateDepartmentSchema,
+  UpdateDesignationSchema,
+  UpdateLeaveTypeSchema,
+  UpdateEmployeeDocumentSchema,
 } from "@/lib/schema";
 // TYPES
 import type { z } from "zod";
@@ -37,14 +49,15 @@ import type { Session } from "lucia";
 import type { LucideIcon } from "lucide-react";
 
 // DB TABLE TYPES
-export type UserType = z.infer<typeof UserSchema>;
+export type UserType = Omit<z.infer<typeof UserSchema>, "password">;
 export type EmployeeProfileType = z.infer<typeof EmployeeProfileSchema>;
 export type AdminProfileType = z.infer<typeof AdminProfileSchema>;
-export type DepartmentType = z.infer<typeof DepartmentSchema>;
-export type DesignationType = z.infer<typeof DesignationSchema>;
+export type DepartmentSchemaType = z.infer<typeof DepartmentSchema>;
+export type DesignationSchemaType = z.infer<typeof DesignationSchema>;
 export type EmployeeShiftType = z.infer<typeof EmployeeShiftSchema>;
 export type EmployeeAttendanceType = z.infer<typeof EmployeeAttendanceSchema>;
 export type LeaveTypeSchemaType = z.infer<typeof LeaveTypeSchema>;
+export type EmployeeLeaveTypeSchemaType = z.infer<typeof EmployeeLeaveTypeSchema>
 export type LeaveRequestSchemaType = z.infer<typeof LeaveRequestSchema>;
 export type LeaveBalanceSchemaType = z.infer<typeof LeaveBalanceSchema>;
 export type DocumentTypeSchemaType = z.infer<typeof DocumentTypeSchema>;
@@ -52,11 +65,16 @@ export type EmployeeDocumentSchemaType = z.infer<typeof EmployeeDocumentSchema>;
 export type EmployeeDocumentFileSchemaType = z.infer<
   typeof EmployeeDocumentFileSchema
 >;
+export type SalaryComponentType = z.infer<typeof SalaryComponentsSchema>
+export type EmployeeSalaryComponentType = z.infer<typeof EmployeeSalaryComponentSchema>
+export type HolidaySchemaType = z.infer<typeof HolidaySchema>
+
 // AUTH TYPES
 export type AdminSignupSchemaType = z.infer<typeof AdminSignupSchema>;
 export type LoginSchemaType = z.infer<typeof LoginSchema>;
 export type NewVerificationSchemaType = z.infer<typeof NewVerificationSchema>;
 export type ResetPasswordSchemaType = z.infer<typeof ResetPasswordSchema>;
+
 // FORM TYPES
 export type CreateDepartmentSchemaType = z.infer<typeof CreateDepartmentSchema>;
 export type CreateDesignationSchemaType = z.infer<
@@ -75,7 +93,14 @@ export type CreateEmployeeInputSchemaType = z.infer<
 export type CreateProfileImageSchemaType = z.infer<
   typeof CreateProfileImageSchema
 >;
+export type EmployeeDataForUpdateType = z.infer<typeof UpdateEmployeeSchema> & {
+  name: string;
+}
+export type UpdateEmployeeSchemaType = z.infer<
+  typeof UpdateEmployeeSchema
+>;
 export type CreateLeaveTypeSchemaType = z.infer<typeof CreateLeaveTypeSchema>;
+export type UpdateLeaveTypeSchemaType = z.infer<typeof UpdateLeaveTypeSchema>
 export type LeaveApplySchemaType = z.infer<typeof LeaveApplySchema>;
 export type CreateDocumentTypeSchemaType = z.infer<
   typeof CreateDocumentTypeSchema
@@ -83,10 +108,68 @@ export type CreateDocumentTypeSchemaType = z.infer<
 export type CreateEmployeeDocumentFormSchemaType = z.infer<
   typeof CreateEmployeeDocumentFormSchema
 >;
+export type UpdateEmployeeDocumentSchemaType = z.infer<typeof UpdateEmployeeDocumentSchema>
+export type UpdateEmployeeDocumentFormProps = EmployeeDocumentSchemaType & {
+  employee: UserType;
+  documentFiles: EmployeeDocumentFileSchemaType[];
+  documentType: DocumentTypeSchemaType;
+};
+export type CreateSalaryComponentSchemaType = z.infer<typeof CreateSalaryComponentSchema>
+export type UpdateDepartmentSchemaType = z.infer<typeof UpdateDepartmentSchema>
+export type UpdateDesignationchemaType = z.infer<typeof UpdateDesignationSchema>
+export type GetEmployeesSalariesOutputType = UserType & {
+  employeeProfile: EmployeeProfileType | null
+}
+
+// ADMIN DATA TABLE TYPES
+export type EmployeesDocumentsTableProps = EmployeeDocumentSchemaType & {
+  employee: UserType;
+  documentType: DocumentTypeSchemaType;
+  documentFiles: EmployeeDocumentFileSchemaType[];
+};
+
+export type DepartmentTableProps = DepartmentSchemaType & {
+  employeeCount: number;
+};
+
+export type DesignationTableProps = DesignationSchemaType & {
+  department: {
+    name: string;
+  };
+};
+
+export type LeaveRequestTableProps = LeaveRequestSchemaType & {
+  employee: UserType;
+  leaveType: LeaveTypeSchemaType
+}
+
+export type SalariesTableProps = GetEmployeesSalariesOutputType
+
+// EMPLOYEE DATA TABLE TYPES
+export type EmployeesTableProps = UserType & {
+  employeeProfile: EmployeeProfileType & {
+    department: DepartmentSchemaType | null;
+    designation: DesignationSchemaType | null
+  } | null
+}
+
+export type LeaveBalancesTableProps = LeaveBalanceSchemaType & {
+  leaveType: LeaveTypeSchemaType;
+};
+
+export type LeaveApplicationTableProps = LeaveRequestSchemaType & {
+  reviewer: UserType;
+  leaveType: LeaveTypeSchemaType;
+};
+
+export type CreateHolidaySchemaType = z.infer<typeof CreateHolidaySchema>
+export type UpdateHolidaySchemaType = z.infer<typeof UpdateHolidaySchema>
+
+
 // OTHER TYPES
 export type UserSessionType =
   | {
-    user: Omit<UserType, "password">;
+    user: UserType;
     session: Session;
   }
   | {
@@ -102,4 +185,24 @@ export type NavLinkProps = {
   isNested: boolean;
   childrens?: NavLinkProps[];
   isChildLink: boolean;
+};
+
+// get employee data for update response
+type GetEmployeeDataFailed = {
+  status: "FAILED";
+  message: string;
+  error?: string;
+}
+
+type GetEmployeeDataSuccess = {
+  status: "SUCCESS";
+  message: string;
+  data: EmployeeDataForUpdateType
+}
+
+export type GetEmployeeDataResponse = GetEmployeeDataFailed | GetEmployeeDataSuccess
+
+export type LeaveApplicationType = LeaveRequestSchemaType & {
+  leaveType: LeaveTypeSchemaType;
+  reviewer: UserType;
 };

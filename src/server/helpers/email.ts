@@ -54,13 +54,12 @@ export async function sendPasswordResetEmail({
       passwordResetLink,
     }),
   );
-  const res = await transporter.sendMail({
+  await transporter.sendMail({
     from: `${env.EMAIL_SENDER}`,
     to: email,
     subject: "Reset your password",
     html: sendPasswordResetEmailHTML,
   });
-  console.log(res);
 }
 
 export async function sendTwoFactorTokenEmail({

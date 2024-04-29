@@ -11,6 +11,8 @@ import {
   isSameMonth,
   isSameYear,
   isBefore,
+  format,
+  parse,
 } from "date-fns";
 import { clsx } from "clsx";
 import { toast } from "sonner";
@@ -100,22 +102,18 @@ export function calculateShiftHours({
   return "0";
 }
 
-export function getShiftTimeWithPeriod(time: string) {
-  const [hour = 0, minute = 0] = time.split(":").map(Number);
+export function getShiftTime(time: string) {
+  const dateTime = parse(time, "HH:mm:ss", new Date())
 
-  if (hour < 12) return `${hour}:${minute} AM`;
-  if (hour === 12) return `${hour}:${minute} PM`;
-  return `${hour - 12}:${minute} PM`;
+  return format(dateTime, "HH:mm a")
+}
+
+export function getShiftTimeDate(time: string): Date {
+  return parse(time, "HH:mm:ss", new Date())
 }
 
 export function getCurrentTimeWithPeriod() {
-  const now = new Date();
-  const hours = now.getHours();
-  const minutes = now.getMinutes();
-  const ampm = hours >= 12 ? "PM" : "AM";
-  const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
-  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-  return `${formattedHours}:${formattedMinutes} ${ampm}`;
+  return format(new Date(), "HH:mm a")
 }
 
 export function getRenewPeriodRange({
@@ -261,6 +259,41 @@ export function getDateRangeByRenewPeriod({
   return distinctDateRange;
 }
 
+export function getBalancePeriod(props: {
+  renewPeriod: "month" | "year";
+  renewPeriodCount: number;
+  referenceDate?: Date;
+}): string {
+  const { startDate, endDate } = getRenewPeriodRange(props)
+  console.debug(startDate, endDate)
+  if (props.renewPeriod === "month") {
+    const balanceStart = format(startDate, "do")
+    const balanceEnd = format(endDate, "do MMM")
+    return `${balanceStart} - ${balanceEnd}`
+  }
+  else {
+    const balanceStart = format(startDate, "MMM")
+    const balanceEnd = format(endDate, "MMM yyyy")
+    return `${balanceStart} - ${balanceEnd}`
+  }
+}
+
+export function getLeaveDateString({ leaveDays, renewPeriod, fromDate, toDate }: {
+  leaveDays: number;
+  renewPeriod: "month" | "year"
+  fromDate: Date;
+  toDate: Date;
+}): string {
+
+  if (leaveDays === 1) {
+    return format(fromDate, "do MMM")
+  } else if (renewPeriod === "month") {
+    return `${format(fromDate, "do MMM")} - ${format(toDate, "do MMM")}`
+  } else {
+    return `${format(fromDate, "d/MM/yy")} - ${format(toDate, "d/MM/yy")}`
+  }
+}
+
 export async function uploadProfileImage(
   image: File,
 ): Promise<{ imageUrl: string | null }> {
@@ -287,7 +320,7 @@ export async function uploadProfileImage(
   };
 }
 
-export async function uploadEmployeeDocuments(files: File[]): Promise<UploadEmployeeDocumentStatusType> {
+export async function uploadEmployeeDocumentFiles(files: File[]): Promise<UploadEmployeeDocumentsStatusType> {
 
   const formData = new FormData()
   files.forEach((file) => formData.append("file", file))
@@ -297,8 +330,36 @@ export async function uploadEmployeeDocuments(files: File[]): Promise<UploadEmpl
     body: formData,
   })
 
-  const data = (await res.json()) as UploadEmployeeDocumentStatusType
+  const data = (await res.json()) as UploadEmployeeDocumentsStatusType
+  return data;
+}
 
+export async function updateEmployeeDocumentFile({ fileId, file }: { fileId: string; file: File | undefined }): Promise<UpdateDocumentFileStatusType> {
+
+  const formData = new FormData()
+  if (file === undefined) return { status: "FAILED", message: "Please provide a file to update" }
+
+  formData.append("file", file)
+
+  const res = await fetch(`/api/employee-documents/${fileId}`, {
+    method: "PATCH",
+    body: formData,
+  })
+
+  const data = (await res.json()) as UpdateDocumentFileStatusType
+  return data;
+}
+
+export async function deleteEmployeeDocumentFiles(filesId: string[]): Promise<DeleteDocumentsFilesStatusType> {
+  const formData = new FormData();
+  filesId.forEach(fileId => formData.append("fileId", fileId))
+
+  const res = await fetch("/api/employee-documents", {
+    method: "DELETE",
+    body: formData,
+  })
+
+  const data = (await res.json()) as DeleteDocumentsFilesStatusType
   return data;
 }
 

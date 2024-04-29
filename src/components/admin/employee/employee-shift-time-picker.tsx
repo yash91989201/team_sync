@@ -3,9 +3,9 @@ import * as React from "react";
 // TYPES
 import type { Period } from "@/lib/time-picker-utils";
 // UI
-import { Label } from "@/components/ui/label";
-import { TimePickerInput } from "@/components/ui/time-picker-input";
-import { TimePeriodSelect } from "@/components/ui/time-period-select";
+import { Label } from "@ui/label";
+import { TimePickerInput } from "@ui/time-picker-input";
+import { TimePeriodSelect } from "@ui/time-period-select";
 
 interface EmployeeShiftTimePickerProps {
   date: Date | undefined;
@@ -24,7 +24,7 @@ export default function EmployeeShiftTimePicker({
   const periodRef = React.useRef<HTMLButtonElement>(null);
 
   return (
-    <div className="flex items-end gap-2">
+    <div className="flex gap-2 items-center">
       <div className="grid gap-1 text-center">
         <Label htmlFor="hours" className="text-xs">
           Hours
@@ -52,7 +52,7 @@ export default function EmployeeShiftTimePicker({
           onRightFocus={() => secondRef.current?.focus()}
         />
       </div>
-      <div className="grid gap-1 text-center">
+      <div className="grid gap-1">
         <Label htmlFor="period" className="text-xs">
           Period
         </Label>

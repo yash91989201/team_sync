@@ -1,6 +1,6 @@
 import { generateId } from "lucia";
 import { isSameDay } from "date-fns";
-import { and, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 // UTILS
 import { getDateRangeByRenewPeriod } from "@/lib/utils";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
@@ -8,10 +8,13 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import {
   ApproveLeaveSchema,
   CreateLeaveTypeSchema,
+  DeleteLeaveTypeSchema,
   RejectLeaveSchema,
+  UpdateLeaveTypeSchema,
 } from "@/lib/schema";
 // DB TABLES
 import {
+  employeeLeaveTypeTable,
   leaveBalanceTable,
   leaveRequestTable,
   leaveTypeTable,
@@ -27,17 +30,26 @@ export const leaveRouter = createTRPCRouter({
         ...input,
       });
     }),
+
   getAllLeaveRequests: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.leaveRequestTable.findMany({
       with: {
-        employee: true,
+        employee: {
+          columns: {
+            password: false
+          }
+        },
         leaveType: true,
       },
     });
   }),
+
   getLeaveTypes: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.leaveTypeTable.findMany();
+    return ctx.db.query.leaveTypeTable.findMany({
+      orderBy: [asc(leaveTypeTable.daysAllowed)]
+    });
   }),
+
   getLeaveBalances: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.leaveBalanceTable.findMany({
       with: {
@@ -45,11 +57,13 @@ export const leaveRouter = createTRPCRouter({
       },
     });
   }),
+
   getLeaveReviewers: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.userTable.findMany({
       where: eq(userTable.role, "ADMIN"),
     });
   }),
+
   approveLeave: protectedProcedure
     .input(ApproveLeaveSchema)
     .mutation(async ({ ctx, input }) => {
@@ -58,6 +72,7 @@ export const leaveRouter = createTRPCRouter({
         .set({ status: "approved" })
         .where(eq(leaveRequestTable.id, input.leaveRequestId));
     }),
+
   rejectLeave: protectedProcedure
     .input(RejectLeaveSchema)
     .mutation(
@@ -126,4 +141,49 @@ export const leaveRouter = createTRPCRouter({
         };
       },
     ),
+
+  updateLeaveType: protectedProcedure.input(UpdateLeaveTypeSchema).mutation(async ({ ctx, input }) => {
+    try {
+      await ctx.db.update(leaveTypeTable)
+        .set({
+          type: input.type
+        })
+        .where(eq(leaveTypeTable.id, input.id))
+
+      return {
+        status: "SUCCESS",
+        message: "Leave type updated successfully"
+      }
+    } catch (error) {
+
+      return {
+        status: "FAILED",
+        message: "Unable to update leave type, please try again"
+      }
+    }
+  }),
+
+  deleteLeaveType: protectedProcedure.input(DeleteLeaveTypeSchema).mutation(async ({ ctx, input }) => {
+
+    try {
+      await ctx.db.delete(employeeLeaveTypeTable).where(eq(employeeLeaveTypeTable.leaveTypeId, input.id))
+
+      await ctx.db.delete(leaveBalanceTable).where(eq(leaveBalanceTable.leaveTypeId, input.id))
+
+      await ctx.db.delete(leaveRequestTable).where(eq(leaveRequestTable.leaveTypeId, input.id))
+
+      await ctx.db.delete(leaveTypeTable).where(eq(leaveTypeTable.id, input.id))
+
+      return {
+        status: "SUCCESS",
+        message: "Leave type deleted successfully"
+      }
+    } catch (error) {
+
+      return {
+        status: "FAILED",
+        message: "Unable to delete leave type, please try again"
+      }
+    }
+  }),
 });

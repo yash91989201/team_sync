@@ -13,16 +13,24 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
+} from "@ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+} from "@ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@ui/input";
+import { Button } from "@ui/button";
 // TYPES
 import type { SubmitHandler } from "react-hook-form";
 import type { CreateDesignationSchemaType } from "@/lib/types";
@@ -32,9 +40,15 @@ import { Loader2 } from "lucide-react";
 export default function CreateDesignationForm() {
   const createDesignationForm = useForm<CreateDesignationSchemaType>({
     resolver: zodResolver(CreateDesignationSchema),
+    defaultValues: {
+      name: "",
+    },
   });
 
-  const { control, handleSubmit, formState } = createDesignationForm;
+  const { control, handleSubmit, formState, reset } = createDesignationForm;
+
+  const { refetch: refetchDesignations } =
+    api.designationRouter.getAll.useQuery();
 
   const { data: departments = [], isLoading } =
     api.departmentRouter.getAll.useQuery();
@@ -46,56 +60,72 @@ export default function CreateDesignationForm() {
     CreateDesignationSchemaType
   > = async (formData) => {
     await createDesignation(formData);
+    await refetchDesignations();
+    reset({
+      deptId: "",
+    });
   };
 
   return (
     <Form {...createDesignationForm}>
       <form onSubmit={handleSubmit(createDesignationAction)}>
-        <FormField
-          control={control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Designation</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="Enter designation" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="deptId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Select Department</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a department" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {isLoading ? (
-                    <p>Loading departments...</p>
-                  ) : (
-                    departments.map(({ id, name }) => (
-                      <SelectItem key={id} value={id}>
-                        {name}
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button disabled={formState.isSubmitting}>
-          Create
-          {formState.isSubmitting && <Loader2 className="ml-3 animate-spin" />}
-        </Button>
+        <Card className="w-96">
+          <CardHeader>
+            <CardTitle>Create a designation</CardTitle>
+            <CardDescription>employees have a designation</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <FormField
+              control={control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Designation</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Enter designation" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={control}
+              name="deptId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Select Department</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a department" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {isLoading ? (
+                        <p>Loading departments...</p>
+                      ) : (
+                        departments.map(({ id, name }) => (
+                          <SelectItem key={id} value={id}>
+                            {name}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+          <CardFooter>
+            <Button disabled={formState.isSubmitting}>
+              {formState.isSubmitting && (
+                <Loader2 className="mr-3 animate-spin" />
+              )}
+              <span>Create designation</span>
+            </Button>
+          </CardFooter>
+        </Card>
       </form>
     </Form>
   );

@@ -1,9 +1,9 @@
 "use client";
 // UTILS
 import { api } from "@/trpc/react";
-import { getShiftTimeWithPeriod } from "@/lib/utils";
+import { getShiftTime } from "@/lib/utils";
 // UI
-import { Button } from "@/components/ui/button";
+import { Button } from "@ui/button";
 import {
   Card,
   CardContent,
@@ -11,8 +11,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@ui/card";
+import { Skeleton } from "@ui/skeleton";
 // ICONS
 import { Loader2 } from "lucide-react";
 
@@ -77,10 +77,10 @@ export default function AttendancePunchCard() {
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-1 text-sm font-semibold">
-          <p>Sign In: {getShiftTimeWithPeriod(attendanceData.punchIn)}</p>
+          <p>Sign In: {getShiftTime(attendanceData.punchIn)}</p>
           &minus;
           {attendanceData.punchOut !== null ? (
-            <p>Sign Out: {getShiftTimeWithPeriod(attendanceData.punchOut)}</p>
+            <p>Sign Out: {getShiftTime(attendanceData.punchOut)}</p>
           ) : (
             <p>N/A</p>
           )}

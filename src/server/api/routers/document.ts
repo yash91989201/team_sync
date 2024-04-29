@@ -1,19 +1,59 @@
+import { eq, inArray } from "drizzle-orm";
 // UTILS
+import { pbClient } from "@/server/pb/config";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // DB TABLES
 import { documentTypeTable, employeeDocumentFileTable, employeeDocumentTable } from "@/server/db/schema";
 // SCHEMAS
-import { CreateDocumentTypeSchema, CreateEmployeeDocumentInputSchema } from "@/lib/schema";
+import {
+  CreateDocumentTypeSchema,
+  GetEmployeeDocumentsInput,
+  DeleteEmployeeDocumentSchema,
+  CreateEmployeeDocumentInputSchema,
+  UpdateEmployeeDocumentSchema,
+  DeleteDocumentTypeSchema,
+} from "@/lib/schema";
 
 export const documentRouter = createTRPCRouter({
   getTypes: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.query.documentTypeTable.findMany();
   }),
+
   createDocumentType: protectedProcedure
     .input(CreateDocumentTypeSchema)
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(documentTypeTable).values(input);
     }),
+
+  getEmployeeDocuments: protectedProcedure.input(GetEmployeeDocumentsInput).query(({ ctx, input }) => {
+    return ctx.db.query.employeeDocumentTable.findFirst({
+      where: eq(employeeDocumentTable.id, input.id),
+      with: {
+        documentType: true,
+        documentFiles: true,
+        employee: {
+          columns: {
+            password: false,
+          }
+        }
+      }
+    })
+  }),
+
+  getEmployeesDocuments: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.query.employeeDocumentTable.findMany({
+      with: {
+        documentType: true,
+        documentFiles: true,
+        employee: {
+          columns: {
+            password: false,
+          }
+        }
+      }
+    })
+  }),
+
   createEmployeeDocument: protectedProcedure.input(CreateEmployeeDocumentInputSchema).mutation(async ({ ctx, input }) => {
     try {
       const {
@@ -42,6 +82,89 @@ export const documentRouter = createTRPCRouter({
       return {
         status: "FAILED",
         message: "Unable to add employee documents try again."
+      }
+    }
+  }),
+
+  updateEmployeeDocument: protectedProcedure.input(UpdateEmployeeDocumentSchema).mutation(async ({ ctx, input }) => {
+    try {
+      await ctx.db.update(employeeDocumentTable).set({
+        uniqueDocumentId: input.uniqueDocumentId,
+        verified: input.verified
+      }).where(eq(employeeDocumentTable.id, input.id))
+
+      return {
+        status: "SUCCESS",
+        message: "Employee document data updated successfully"
+      }
+    } catch (error) {
+      return {
+        status: "SUCCESS",
+        message: "Unable to update employee document data"
+      }
+    }
+  }),
+
+  deleteDocumentType: protectedProcedure.input(DeleteDocumentTypeSchema).mutation(async ({ ctx, input }) => {
+    try {
+      const employeesDocuments = await ctx.db.query.employeeDocumentTable.findMany({
+        where: eq(employeeDocumentTable.documentTypeId, input.id),
+        with: {
+          documentFiles: true
+        }
+      })
+
+      const employeesDocumentsId = employeesDocuments.map(employeeDocument => employeeDocument.id)
+      const employeesDocumentFiles = employeesDocuments.flatMap(employeeDocuments => employeeDocuments.documentFiles)
+      const employeesDocumentFilesId = employeesDocumentFiles.map(employeeDocumentFile => employeeDocumentFile.id)
+
+      await ctx.db.delete(employeeDocumentFileTable).where(inArray(employeeDocumentFileTable.id, employeesDocumentFilesId))
+
+      await ctx.db.delete(employeeDocumentTable).where(inArray(employeeDocumentTable.id, employeesDocumentsId))
+
+      await ctx.db.delete(documentTypeTable).where(eq(documentTypeTable.id, input.id))
+
+      await Promise.all(employeesDocumentFilesId.map(async (fileId) => {
+        // eslint-disable-next-line
+        await pbClient
+          .collection("employee_document_file")
+          .delete(fileId)
+      }))
+
+      return {
+        status: "SUCCESS",
+        message: "Document type deleted successfully"
+      }
+
+    } catch (error) {
+      return {
+        status: "FAILED",
+        message: "Unable to delete document type"
+      }
+    }
+  }),
+
+  deleteEmployeeDocument: protectedProcedure.input(DeleteEmployeeDocumentSchema).mutation(async ({ ctx, input }) => {
+    try {
+      await ctx.db
+        .delete(employeeDocumentFileTable)
+        .where(
+          inArray(employeeDocumentFileTable.id, input.filesId)
+        )
+
+      await ctx.db
+        .delete(employeeDocumentTable)
+        .where(eq(employeeDocumentTable.id, input.id))
+
+      return {
+        status: "SUCCESS",
+        message: "Deleted employee documents"
+      }
+    } catch (error) {
+      console.log(error)
+      return {
+        status: "FAILED",
+        message: "Unable to delete employee documents"
       }
     }
   })

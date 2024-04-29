@@ -6,7 +6,6 @@ import { pbClient } from "@/server/pb/config";
 export async function POST(request: Request) {
     try {
         const formData = await request.formData();
-
         const files = formData.getAll("file") as File[]
 
         const filesData: { id: string, fileUrl: string }[] = await Promise.all(files.map(async (file) => {
@@ -34,10 +33,42 @@ export async function POST(request: Request) {
             }
         });
     } catch (error) {
-        console.log(error);
         return Response.json({
             status: "FAILED",
             message: "Unable to upload profile image",
+        });
+    }
+}
+
+export async function DELETE(request: Request) {
+    try {
+        const formData = await request.formData();
+        const filesId = formData.getAll("fileId") as string[]
+
+        if (filesId.length === 0) {
+            return Response.json({
+                status: "FAILED",
+                message: "No document files available for this document.",
+            });
+        }
+
+        await Promise.all(filesId.map(async (fileId) => {
+            // eslint-disable-next-line
+            await pbClient
+                .collection("employee_document_file")
+                .delete(fileId)
+        }))
+
+        return Response.json({
+            status: "SUCCESS",
+            message: "Employee document files deleted successfully",
+
+        });
+    } catch (error) {
+        console.log(error)
+        return Response.json({
+            status: "FAILED",
+            message: "Unable to delete employee document files, please try again.",
         });
     }
 }

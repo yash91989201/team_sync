@@ -23,6 +23,7 @@ export const lucia = new Lucia(luciaDbAdapter, {
       isTeamLead: attributes.isTeamLead,
       emailVerified: attributes.emailVerified,
       twoFactorEnabled: attributes.twoFactorEnabled,
+      imageUrl: attributes.imageUrl,
     };
   },
 });
@@ -66,6 +67,9 @@ export const validateRequest = cache(
 declare module "lucia" {
   interface Register {
     Lucia: typeof lucia;
-    DatabaseUserAttributes: Omit<UserType, "password">;
+    DatabaseUserAttributes: DatabaseUserAttributes;
   }
 }
+
+// eslint-disable-next-line
+interface DatabaseUserAttributes extends UserType { }

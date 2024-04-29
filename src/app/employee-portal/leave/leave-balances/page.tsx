@@ -1,26 +1,41 @@
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 // UTILS
-import { api } from "@/trpc/server";
+import { createApiHelper } from "@/trpc/server";
 import { authPage } from "@/server/helpers";
 // UI
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@ui/card";
+// CUSTOM COMPONENTS
+import { LeaveBalancesTable } from "@/components/employee/tables";
+import EmployeeMainWrapper from "@/components/employee/employee-main-wrapper";
 
-export default async function LeaveApplyPage() {
+export default async function LeaveBalancesPage() {
   await authPage("EMPLOYEE");
-  const employeeLeaveBalances = await api.leaveRouter.getLeaveBalances();
+
+  const apiHelper = await createApiHelper();
+  await apiHelper.leaveRouter.getLeaveBalances.prefetch();
+  const leaveBalances = dehydrate(apiHelper.queryClient);
+
   return (
-    <div>
-      {employeeLeaveBalances.map(({ id, balance, leaveType }) => (
-        <Card key={id}>
-          <CardHeader>
-            <CardTitle>{leaveType.type}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>
-              {balance}/{leaveType.daysAllowed}
-            </p>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+    <EmployeeMainWrapper>
+      <Card className="h-fit flex-1">
+        <CardHeader>
+          <CardTitle className="text-2xl text-primary">
+            Leave Balances
+          </CardTitle>
+          <CardDescription>available leave balances</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <HydrationBoundary state={leaveBalances}>
+            <LeaveBalancesTable />
+          </HydrationBoundary>
+        </CardContent>
+      </Card>
+    </EmployeeMainWrapper>
   );
 }

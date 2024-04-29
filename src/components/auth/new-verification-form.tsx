@@ -11,10 +11,10 @@ import { NewVerificationSchema } from "@/lib/schema";
 import type { SubmitHandler } from "react-hook-form";
 import type { NewVerificationSchemaType, UserType } from "@/lib/types";
 // UI
-import { Form } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
+import { Form } from "@ui/form";
+import { Button } from "@ui/button";
 // CUSTOM COMPONENTS
-import AuthCardWrapper from "@/components/shared/auth-card-wrapper";
+import AuthCardWrapper from "@sharedComponents/auth-card-wrapper";
 // ICONS
 import { Loader2 } from "lucide-react";
 // CONSTANTS

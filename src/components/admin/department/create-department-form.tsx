@@ -5,6 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "@/trpc/react";
 // SCHEMAS
 import { CreateDepartmentSchema } from "@/lib/schema";
+// TYPES
+import type { SubmitHandler } from "react-hook-form";
+import type { CreateDepartmentSchemaType } from "@/lib/types";
 // UI
 import {
   Form,
@@ -13,21 +16,32 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-// TYPES
-import type { SubmitHandler } from "react-hook-form";
-import type { CreateDepartmentSchemaType } from "@/lib/types";
+} from "@ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@ui/input";
+import { Button } from "@ui/button";
 // ICONS
 import { Loader2 } from "lucide-react";
 
 export default function CreateDepartmentForm() {
   const createDepartmentForm = useForm<CreateDepartmentSchemaType>({
     resolver: zodResolver(CreateDepartmentSchema),
+    defaultValues: {
+      name: "",
+    },
   });
 
-  const { control, handleSubmit, formState } = createDepartmentForm;
+  const { control, handleSubmit, formState, reset } = createDepartmentForm;
+
+  const { refetch: refetchDepartments } =
+    api.departmentRouter.getAll.useQuery();
 
   const { mutateAsync: createDepartment } =
     api.departmentRouter.createNew.useMutation();
@@ -36,28 +50,46 @@ export default function CreateDepartmentForm() {
     CreateDepartmentSchemaType
   > = async (data) => {
     await createDepartment(data);
+    await refetchDepartments();
+    reset({
+      name: "",
+    });
   };
 
   return (
     <Form {...createDepartmentForm}>
       <form onSubmit={handleSubmit(createDepartmentAction)}>
-        <FormField
-          control={control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Department Name</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="Enter department name" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button disabled={formState.isSubmitting}>
-          Create
-          {formState.isSubmitting && <Loader2 className="ml-3 animate-spin" />}
-        </Button>
+        <Card className="w-96">
+          <CardHeader>
+            <CardTitle>Create new department</CardTitle>
+            <CardDescription>
+              you can add employees to a department
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <FormField
+              control={control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Department Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Enter department name" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+          <CardFooter>
+            <Button disabled={formState.isSubmitting}>
+              {formState.isSubmitting && (
+                <Loader2 className="mr-3 animate-spin" />
+              )}
+              <span>Create Department</span>
+            </Button>
+          </CardFooter>
+        </Card>
       </form>
     </Form>
   );

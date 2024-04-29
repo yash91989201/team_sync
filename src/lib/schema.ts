@@ -9,11 +9,15 @@ import {
   employeeAttendanceTable,
   employeeDocumentFileTable,
   employeeDocumentTable,
+  employeeLeaveTypeTable,
   employeeProfileTable,
+  employeeSalaryComponentTable,
   employeeShiftTable,
+  holidayTable,
   leaveBalanceTable,
   leaveRequestTable,
   leaveTypeTable,
+  salaryComponentTable,
   userTable,
 } from "@/server/db/schema";
 // CONSTANTS
@@ -30,6 +34,7 @@ export const EmployeeAttendanceSchema = createSelectSchema(
   employeeAttendanceTable,
 );
 export const LeaveTypeSchema = createSelectSchema(leaveTypeTable);
+export const EmployeeLeaveTypeSchema = createSelectSchema(employeeLeaveTypeTable)
 export const LeaveRequestSchema = createSelectSchema(leaveRequestTable);
 export const LeaveBalanceSchema = createSelectSchema(leaveBalanceTable);
 export const DocumentTypeSchema = createSelectSchema(documentTypeTable);
@@ -37,6 +42,9 @@ export const EmployeeDocumentSchema = createSelectSchema(employeeDocumentTable);
 export const EmployeeDocumentFileSchema = createSelectSchema(
   employeeDocumentFileTable,
 );
+export const SalaryComponentsSchema = createSelectSchema(salaryComponentTable)
+export const EmployeeSalaryComponentSchema = createSelectSchema(employeeSalaryComponentTable)
+export const HolidaySchema = createSelectSchema(holidayTable)
 // AUTH SCHEMAS
 export const AdminSignupSchema = z.object({
   name: z.string().min(6, { message: "Full name is required." }),
@@ -76,43 +84,75 @@ export const CreateProfileImageSchema = z.object({
 export const CreateDepartmentSchema = z.object({
   name: z
     .string()
-    .min(2, { message: "Min. allowed length is 2." })
-    .max(128, { message: "Max. allowed length is 128." }),
+    .min(4, { message: "Min. allowed length is 4" })
+    .max(128, { message: "Max. allowed length is 128" }),
 });
+
+export const UpdateDepartmentSchema = z.object({
+  id: z.string(),
+  name: z
+    .string()
+    .min(4, { message: "Min. allowed length is 4" })
+    .max(128, { message: "Max. allowed length is 128" }),
+})
+
+export const DeleteDepartmentSchema = z.object({
+  id: z.string(),
+})
 
 // DESIGNATION SCHEMAS
 export const CreateDesignationSchema = z.object({
+  name: z
+    .string({ required_error: "Designation is required." })
+    .min(6, { message: "Min. required length is 6" })
+    .max(64, { message: "Max. allowed length is 64" }),
+  deptId: z
+    .string({ required_error: "Department is required." })
+    .min(1, { message: "Select a department" }),
+});
+
+export const UpdateDesignationSchema = z.object({
+  id: z.string(),
   deptId: z.string(),
   name: z
-    .string()
-    .min(6, { message: "Min. allowed length is 6." })
-    .max(64, { message: "Max. allowed length is 64." }),
+    .string({ required_error: "Designation is required." })
+    .min(6, { message: "Min. required length is 6" })
+    .max(64, { message: "Max. allowed length is 64" }),
 });
+
+export const DeleteDesignationSchema = z.object({
+  id: z.string(),
+  deptId: z.string(),
+})
 
 // DOCUMENT SCHEMAS
 export const CreateDocumentTypeSchema = DocumentTypeSchema.extend({
-  type: z.string().min(4, { message: "Min. required length is 4" }),
+  type: z.string({ required_error: "Document type is required." }).min(4, { message: "Min. required length is 4" }),
 });
+
+export const DeleteDocumentTypeSchema = z.object({
+  id: z.string()
+})
+
+export const DeleteEmployeeDocumentSchema = z.object({
+  id: z.string(),
+  filesId: z.array(z.string())
+})
+
+export const GetEmployeeDocumentsInput = z.object({
+  id: z.string()
+})
 
 export const CreateEmployeeDocumentFormSchema = z.object({
   id: z.string(),
-  empId: z.string(),
+  empId: z.string({ required_error: "Employee is required" }),
   documentTypeId: z.string(),
   documentType: DocumentTypeSchema,
   uniqueDocumentId: z.string().optional(),
   verified: z.boolean(),
-  // document list
-  documents: z.array(z.object({
-    id: z.string(),
-    file: z
-      .instanceof(File, { message: "File is required." })
-      .refine(
-        (file) => file.size <= MAX_FILE_SIZE.PROFILE_IMG,
-        "Max image size is 5MB.",
-      )
-  }))
-}).refine((schema) => schema.documents.length === schema.documentType.requiredFiles,
-  (schema) => ({ message: `Exactly ${schema.documentType.requiredFiles} files are required.`, path: ["documents"] }))
+  // files
+  files: z.array(z.instanceof(File))
+})
 
 export const CreateEmployeeDocumentInputSchema = z.object({
   id: z.string(),
@@ -127,19 +167,26 @@ export const CreateEmployeeDocumentInputSchema = z.object({
   }))
 })
 
+export const UpdateEmployeeDocumentSchema = z.object({
+  id: z.string(),
+  uniqueDocumentId: z.string().optional(),
+  verified: z.boolean().default(false),
+})
+
 // EMPLOYEE SCHEMAS
 export const GetEmployeeByQueryInput = z.object({ query: z.string() });
+export const GetEmployeeByIdInput = z.object({ empId: z.string() })
 
 export const CreateEmployeeSchema = z.object({
-  code: z.string(),
-  name: z.string(),
+  code: z.string({ required_error: "Employee code is required" }).min(4, { message: "Min. 4 characters is required" }),
+  name: z.string({ required_error: "Employee name is required" }).min(6, { message: "Full name is required" }),
   email: z.string().email(),
   password: z.string(),
   role: z.literal("EMPLOYEE"),
   isTeamLead: z.boolean(),
-  joiningDate: z.date({ required_error: "Joining date is required." }),
-  dept: z.string(),
-  designation: z.string(),
+  joiningDate: z.date({ required_error: "Joining date is required" }),
+  deptId: z.string({ required_error: "Department is required" }),
+  designationId: z.string({ required_error: "Designation is required" }),
   dob: z.date(),
   location: z.string(),
   salary: z.number(),
@@ -149,6 +196,14 @@ export const CreateEmployeeSchema = z.object({
   breakMinutes: z
     .number()
     .min(15, { message: "Min. break hours should be 15 min." }),
+  salaryComponents: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    amount: z.number()
+  })).min(1, {
+    message: "Min. 1 salary component is required"
+  }),
+  leaveTypes: z.array(LeaveTypeSchema).min(1, { message: "Min. 1 leave type is required." })
 });
 
 export const CreateEmployeeInputSchema = CreateEmployeeSchema.extend({
@@ -168,10 +223,44 @@ export const CreateEmployeeFormSchema = CreateEmployeeSchema.extend({
     ),
 });
 
+export const UpdateEmployeeSchema = z.object({
+  empId: z.string(),
+  code: z.string({ required_error: "Employee code is required" }).min(4, { message: "Min. 4 characters is required" }),
+  isTeamLead: z.boolean(),
+  joiningDate: z.date({ required_error: "Joining date is required" }),
+  deptId: z.string({ required_error: "Department is required" }),
+  designationId: z.string({ required_error: "Designation is required" }),
+  location: z.string(),
+  salary: z.number(),
+  empBand: z.enum(["U1", "U2", "U3"]),
+  shiftStart: z.date(),
+  shiftEnd: z.date(),
+  breakMinutes: z
+    .number()
+    .min(15, { message: "Min. break hours should be 15 min." }),
+  salaryComponents: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    amount: z.number()
+  })).min(1, {
+    message: "Min. 1 salary component is required"
+  }),
+  leaveTypes: z.array(LeaveTypeSchema).min(1, { message: "Min. 1 leave type is required." })
+});
+
+export const DeleteEmployeeSchema = z.object({
+  empId: z.string()
+})
+
 // EMPLOYEE ATTENDANCE SCHEMAS
 export const AttendancePunchOutSchema = z.object({
   attendanceId: z.string(),
 });
+
+export const GetAttendanceByMonthInput = z.object({
+  start: z.date(),
+  end: z.date()
+})
 
 // EMPLOYEE LEAVE SCHEMAS
 export const CreateLeaveTypeSchema = z.object({
@@ -182,8 +271,22 @@ export const CreateLeaveTypeSchema = z.object({
   daysAllowed: z.number(),
   renewPeriod: z.enum(["month", "year"]),
   renewPeriodCount: z.number(),
-  carryOver: z.boolean(),
+  carryOver: z.boolean().default(false),
+  paidLeave: z.boolean().default(false),
+  leaveEncashment: z.boolean().default(false)
 });
+
+export const UpdateLeaveTypeSchema = z.object({
+  id: z.string(),
+  type: z
+    .string()
+    .min(4, { message: "Min. 4 letters is required." })
+    .max(128, { message: "Max. 128 characters is allowed." }),
+})
+
+export const DeleteLeaveTypeSchema = z.object({
+  id: z.string()
+})
 
 export const LeaveApplySchema = z.object({
   leaveTypeId: z.string().min(1, { message: "Select a leave type." }),
@@ -199,6 +302,10 @@ export const LeaveApplySchema = z.object({
     .optional(),
 });
 
+export const GetLeaveApplicationsInput = z.object({
+  status: z.enum(["approved", "pending", "rejected"]).optional()
+})
+
 export const ApproveLeaveSchema = z.object({
   leaveRequestId: z.string(),
 });
@@ -207,3 +314,29 @@ export const RejectLeaveSchema = z.object({
   leaveRequestId: z.string(),
   empId: z.string(),
 });
+
+// DEPARTMENT SCHEMAS
+export const CreateSalaryComponentSchema = z.object({
+  name: z
+    .string()
+    .min(4, { message: "Min. allowed length is 4" })
+    .max(128, { message: "Max. allowed length is 128" }),
+});
+
+// HOLIDAY SCHEMA
+export const CreateHolidaySchema = z.object({
+  id: z.string(),
+  name: z.string({ required_error: "Holiday name is required" }).min(4, { message: "Min. length is 4" }).max(128, { message: "Max. length is 128" }),
+  date: z.date(),
+})
+
+export const GetHolidayByMonthInput = z.object({
+  start: z.date(),
+  end: z.date()
+})
+
+export const UpdateHolidaySchema = CreateHolidaySchema
+
+export const DeleteHolidaySchema = z.object({
+  id: z.string(),
+})

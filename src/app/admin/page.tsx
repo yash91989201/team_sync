@@ -3,5 +3,6 @@ import { authPage } from "@/server/helpers";
 
 export default async function AdminPage() {
   await authPage("ADMIN");
-  return <div>admin page</div>;
+
+  return <div className="p-6">admin page</div>;
 }

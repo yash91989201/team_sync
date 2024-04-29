@@ -11,6 +11,8 @@ import {
   time,
   int,
   date,
+  unique,
+  primaryKey,
 } from "drizzle-orm/mysql-core";
 
 export const createTable = mysqlTableCreator((name) => name);
@@ -47,7 +49,7 @@ export const userTableRelations = relations(userTable, ({ one, many }) => ({
 
 export const adminProfileTable = mysqlTable("admin_profile", {
   // FOREIGN KEY AS PRIMAY KEY - SINCE USER - ADMIN PROFILE IS ONE-ONE RELATIONSHIP
-  admin_id: varchar("admin_id", { length: 24 })
+  adminId: varchar("admin_id", { length: 24 })
     .primaryKey()
     .references(() => userTable.id),
 });
@@ -56,7 +58,7 @@ export const adminProfileTableRelations = relations(
   adminProfileTable,
   ({ one }) => ({
     admin: one(userTable, {
-      fields: [adminProfileTable.admin_id],
+      fields: [adminProfileTable.adminId],
       references: [userTable.id],
     }),
   }),
@@ -67,14 +69,15 @@ export const employeeProfileTable = mysqlTable("employee_profile", {
   empId: varchar("emp_id", { length: 24 })
     .primaryKey()
     .references(() => userTable.id),
-  joiningDate: timestamp("joining_date", { mode: "date" }).notNull(),
+  joiningDate: date("joining_date", { mode: "date" }).notNull(),
   empBand: mysqlEnum("emp_band", ["U1", "U2", "U3"]).notNull(),
-  dept: varchar("dept", { length: 128 }).notNull(),
-  designation: varchar("designation", { length: 128 }).notNull(),
   salary: int("salary").notNull(),
   location: varchar("location", { length: 256 }).notNull(),
   dob: date("dob", { mode: "date" }).notNull(),
   isProfileUpdated: boolean("is_profile_updated").default(false).notNull(),
+  // FOREIGN KEY
+  deptId: varchar("dept_id", { length: 24 }).notNull().references(() => departmentTable.id),
+  designationId: varchar("designation_id", { length: 24 }).notNull().references(() => designationTable.id)
 });
 
 export const employeeProfileTableRelations = relations(
@@ -84,6 +87,14 @@ export const employeeProfileTableRelations = relations(
       fields: [employeeProfileTable.empId],
       references: [userTable.id],
     }),
+    department: one(departmentTable, {
+      fields: [employeeProfileTable.deptId],
+      references: [departmentTable.id]
+    }),
+    designation: one(designationTable, {
+      fields: [employeeProfileTable.designationId],
+      references: [designationTable.id]
+    })
   }),
 );
 
@@ -98,6 +109,7 @@ export const departmentTableRelations = relations(
   departmentTable,
   ({ many }) => ({
     designation: many(designationTable),
+    employees: many(employeeProfileTable),
   }),
 );
 
@@ -105,22 +117,26 @@ export const designationTable = mysqlTable("designation", {
   id: varchar("id", {
     length: 24,
   }).primaryKey(),
-  name: varchar("name", { length: 128 }).unique().notNull(),
+  name: varchar("name", { length: 128 }).notNull(),
   // FOREIGN KEY RELATIONS
   deptId: varchar("dept_id", {
     length: 24,
   })
     .notNull()
     .references(() => departmentTable.id),
-});
+}, (designationTable) => ({
+  // UNIQUE DESIGNATIONS ACCORDING TO DEPARTMENT
+  deisgnationByDept: unique().on(designationTable.name, designationTable.deptId)
+}));
 
 export const designationTableRelations = relations(
   designationTable,
-  ({ one }) => ({
+  ({ one, many }) => ({
     department: one(departmentTable, {
       fields: [designationTable.deptId],
       references: [departmentTable.id],
     }),
+    employees: many(employeeProfileTable),
   }),
 );
 
@@ -146,7 +162,7 @@ export const employeeShiftTableRelations = relations(
 
 export const employeeAttendanceTable = mysqlTable("employee_attendance", {
   id: varchar("id", { length: 24 }).primaryKey(),
-  date: date("date", { mode: "string" }).notNull(),
+  date: date("date", { mode: "date" }).notNull(),
   punchIn: time("punchIn").notNull(),
   punchOut: time("punchOut"),
   shiftHours: mysqlEnum("shift_hours", ["0", "0.5", "0.75", "1"]),
@@ -174,7 +190,9 @@ export const leaveTypeTable = mysqlTable("leave_type", {
   daysAllowed: int("days_allowed").notNull(),
   renewPeriod: mysqlEnum("renew_period", ["month", "year"]).notNull(),
   renewPeriodCount: int("renew_period_count").notNull(),
-  carryOver: boolean("carry_over").default(false).notNull(),
+  carryOver: boolean("carry_over").notNull(),
+  paidLeave: boolean("paid_leave").notNull(),
+  leaveEncashment: boolean("leave_encashment").notNull()
 });
 
 export const leaveTypeTableRelations = relations(
@@ -184,6 +202,17 @@ export const leaveTypeTableRelations = relations(
     leaveBalance: many(leaveBalanceTable),
   }),
 );
+
+export const employeeLeaveTypeTable = mysqlTable("employee_leave_type", {
+  empId: varchar("emp_id", {
+    length: 24,
+  }).notNull().references(() => userTable.id),
+  leaveTypeId: varchar("leave_type_id", {
+    length: 24,
+  }).notNull().references(() => leaveTypeTable.id),
+}, (employeeLeaveTypeTable) => ({
+  employeeLeaveId: primaryKey({ name: "employeeLeaveId", columns: [employeeLeaveTypeTable.empId, employeeLeaveTypeTable.leaveTypeId] })
+}))
 
 export const leaveRequestTable = mysqlTable("leave_request", {
   id: varchar("id", {
@@ -308,7 +337,7 @@ export const employeDocumentTableRelations = relations(
       fields: [employeeDocumentTable.documentTypeId],
       references: [documentTypeTable.id],
     }),
-    documentFile: many(employeeDocumentFileTable),
+    documentFiles: many(employeeDocumentFileTable),
   }),
 );
 
@@ -328,12 +357,44 @@ export const employeeDocumentFileTable = mysqlTable("employee_document_file", {
 export const employeeDocumentFileTableRelations = relations(
   employeeDocumentFileTable,
   ({ one }) => ({
-    document: one(employeeDocumentTable, {
+    employeeDocument: one(employeeDocumentTable, {
       fields: [employeeDocumentFileTable.empDocumentId],
       references: [employeeDocumentTable.id],
     }),
   }),
 );
+
+export const salaryComponentTable = mysqlTable("salary_component", {
+  id: varchar("id", {
+    length: 24,
+  }).primaryKey(),
+  name: varchar("name", { length: 256 }).unique().notNull(),
+})
+
+export const employeeSalaryComponentTable = mysqlTable("employee_salary_component", {
+  id: varchar("id", {
+    length: 24,
+  }).primaryKey(),
+  name: varchar("name", { length: 256 }).notNull(),
+  amount: int("amount").notNull(),
+  // FOREIGN KEY RELATIONS
+  empId: varchar("emp_id", {
+    length: 24,
+  })
+    .notNull()
+    .references(() => userTable.id),
+}, (empSalaryComponentTable) => ({
+  // UNIQUE DESIGNATIONS ACCORDING TO DEPARTMENT
+  empSalaryComponent: unique().on(empSalaryComponentTable.name, empSalaryComponentTable.empId)
+}))
+
+export const holidayTable = mysqlTable("holiday", {
+  id: varchar("id", {
+    length: 24,
+  }).primaryKey(),
+  name: varchar("name", { length: 256 }).notNull(),
+  date: date("date", { mode: "date" }).notNull(),
+})
 
 export const sessionTable = mysqlTable("session", {
   id: varchar("id", {
