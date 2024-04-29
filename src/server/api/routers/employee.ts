@@ -1,10 +1,9 @@
 import { generateId } from "lucia";
 import { format, isWithinInterval } from "date-fns";
-import { and, eq, getTableColumns, like, or } from "drizzle-orm";
+import { and, between, eq, getTableColumns, like, or } from "drizzle-orm";
 // UTILS
 import {
   calculateShiftHours,
-  getCurrentDate,
   getDateRangeByRenewPeriod
 } from "@/lib/utils";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
@@ -22,7 +21,9 @@ import {
 // SCHEMAS
 import {
   AttendancePunchOutSchema,
+  GetAttendanceByMonthInput,
   GetEmployeeByQueryInput,
+  GetLeaveApplicationsInput,
   LeaveApplySchema
 } from "@/lib/schema";
 
@@ -100,7 +101,7 @@ export const employeeRouter = createTRPCRouter({
 
   getAttendanceStatus: protectedProcedure.query(async ({ ctx }) => {
     const { id } = ctx.session.user;
-    const currentDate = getCurrentDate();
+    const currentDate = new Date()
 
     const employeeAttendance =
       await ctx.db.query.employeeAttendanceTable.findFirst({
@@ -117,9 +118,21 @@ export const employeeRouter = createTRPCRouter({
     };
   }),
 
-  getLeaveApplications: protectedProcedure.query(({ ctx }) => {
+  getAttendanceByMonth: protectedProcedure.input(GetAttendanceByMonthInput).query(({ ctx, input }) => {
+    return ctx.db.query.employeeAttendanceTable.findMany({
+      where: and(
+        eq(employeeAttendanceTable.empId, ctx.session.user.id),
+        between(employeeAttendanceTable.date, input.start, input.end)
+      ),
+    })
+  }),
+
+  getLeaveApplications: protectedProcedure.input(GetLeaveApplicationsInput).query(({ ctx, input }) => {
     return ctx.db.query.leaveRequestTable.findMany({
-      where: eq(leaveRequestTable.empId, ctx.session.user.id),
+      where: and(
+        eq(leaveRequestTable.empId, ctx.session.user.id),
+        input.status !== undefined ? eq(leaveRequestTable.status, input.status) : undefined
+      ),
       with: {
         reviewer: {
           columns: {
@@ -140,7 +153,7 @@ export const employeeRouter = createTRPCRouter({
       .values({
         id: generateId(15),
         empId: id,
-        date: getCurrentDate(),
+        date: new Date(),
         punchIn,
       });
 
@@ -154,7 +167,7 @@ export const employeeRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id } = ctx.session.user;
       const { attendanceId } = input;
-      const currentDate = getCurrentDate();
+      const currentDate = new Date();
       const punchOut = new Date().toLocaleTimeString("en-IN", {
         hour12: false,
       });

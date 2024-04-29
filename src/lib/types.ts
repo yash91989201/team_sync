@@ -201,3 +201,8 @@ type GetEmployeeDataSuccess = {
 }
 
 export type GetEmployeeDataResponse = GetEmployeeDataFailed | GetEmployeeDataSuccess
+
+export type LeaveApplicationType = LeaveRequestSchemaType & {
+  leaveType: LeaveTypeSchemaType;
+  reviewer: UserType;
+};

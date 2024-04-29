@@ -1,0 +1,1 @@
+ALTER TABLE `employee_profile` MODIFY COLUMN `joining_date` date NOT NULL;

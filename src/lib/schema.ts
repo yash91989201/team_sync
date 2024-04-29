@@ -257,6 +257,11 @@ export const AttendancePunchOutSchema = z.object({
   attendanceId: z.string(),
 });
 
+export const GetAttendanceByMonthInput = z.object({
+  start: z.date(),
+  end: z.date()
+})
+
 // EMPLOYEE LEAVE SCHEMAS
 export const CreateLeaveTypeSchema = z.object({
   type: z
@@ -296,6 +301,10 @@ export const LeaveApplySchema = z.object({
     .max(1024, { message: "Max. 1024 characters allowed." })
     .optional(),
 });
+
+export const GetLeaveApplicationsInput = z.object({
+  status: z.enum(["approved", "pending", "rejected"]).optional()
+})
 
 export const ApproveLeaveSchema = z.object({
   leaveRequestId: z.string(),

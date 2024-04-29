@@ -20,11 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
 // TYPES
-import type {
-  UserType,
-  LeaveTypeSchemaType,
-  LeaveRequestSchemaType,
-} from "@/lib/types";
+import type { LeaveApplicationType } from "@/lib/types";
 // UI
 import { Button } from "@/components/ui/button";
 // ICONS
@@ -40,11 +36,6 @@ const colStartClasses = [
   "col-start-7",
 ];
 
-type LeaveApplicationDataType = LeaveRequestSchemaType & {
-  leaveType: LeaveTypeSchemaType;
-  reviewer: UserType;
-};
-
 export default function LeaveCalendar() {
   const today = startOfToday();
   const [currentMonth, setCurrentMonth] = useState(format(today, "MMMM-yyyy"));
@@ -52,7 +43,7 @@ export default function LeaveCalendar() {
   const firstDayOfCurrentMonth = parse(currentMonth, "MMMM-yyyy", new Date());
 
   const { data: leaveApplications = [] } =
-    api.employeeRouter.getLeaveApplications.useQuery();
+    api.employeeRouter.getLeaveApplications.useQuery({});
 
   const currentMonthLeaves = leaveApplications.filter((leave) =>
     isSameMonth(leave.fromDate, firstDayOfCurrentMonth),
@@ -151,7 +142,7 @@ export default function LeaveCalendar() {
 const LeaveDayText = ({
   leaveData,
 }: {
-  leaveData: LeaveApplicationDataType | undefined;
+  leaveData: LeaveApplicationType | undefined;
 }) => {
   if (leaveData === undefined) return null;
 
