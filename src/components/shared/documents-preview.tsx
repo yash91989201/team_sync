@@ -52,7 +52,7 @@ export default function DocumentsPreview({
               </div>
               <DialogFooter>
                 <Link
-                  download
+                  download={`${employee.name}'s ${documentType.type}`}
                   target="_blank"
                   href={file.fileUrl.slice(21)}
                   className={buttonVariants({ className: "gap-1" })}
@@ -97,7 +97,7 @@ export default function DocumentsPreview({
             </div>
             <DialogFooter>
               <Link
-                download
+                download={`${employee.name}'s ${documentType.type}`}
                 target="_blank"
                 href={file.fileUrl.slice(21)}
                 className={buttonVariants({ className: "gap-1" })}
