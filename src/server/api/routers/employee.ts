@@ -102,12 +102,14 @@ export const employeeRouter = createTRPCRouter({
   getAttendanceStatus: protectedProcedure.query(async ({ ctx }) => {
     const { id } = ctx.session.user;
     const currentDate = new Date()
+    currentDate.setHours(0, 0, 0, 0)
+    const currentDateWithoutTime = new Date(currentDate)
 
     const employeeAttendance =
       await ctx.db.query.employeeAttendanceTable.findFirst({
         where: and(
           eq(employeeAttendanceTable.empId, id),
-          eq(employeeAttendanceTable.date, currentDate),
+          eq(employeeAttendanceTable.date, currentDateWithoutTime),
         ),
       });
 

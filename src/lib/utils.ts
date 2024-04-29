@@ -12,6 +12,7 @@ import {
   isSameYear,
   isBefore,
   format,
+  parse,
 } from "date-fns";
 import { clsx } from "clsx";
 import { toast } from "sonner";
@@ -101,31 +102,18 @@ export function calculateShiftHours({
   return "0";
 }
 
-export function getShiftTimeWithPeriod(time: string) {
-  const [hour = 0, minute = 0] = time.split(":").map(Number);
+export function getShiftTime(time: string) {
+  const dateTime = parse(time, "HH:mm:ss", new Date())
 
-  if (hour < 12) return `${hour}:${minute} AM`;
-  if (hour === 12) return `${hour}:${minute} PM`;
-  return `${hour - 12}:${minute} PM`;
+  return format(dateTime, "HH:mm a")
 }
 
 export function getShiftTimeDate(time: string): Date {
-  const [shiftHour = 0, shiftMinute = 0, shiftSecond = 0] = time
-    .split(":")
-    .map(Number);
-
-  const shiftTime = new Date().setHours(shiftHour, shiftMinute, shiftSecond)
-  return new Date(shiftTime)
+  return parse(time, "HH:mm:ss", new Date())
 }
 
 export function getCurrentTimeWithPeriod() {
-  const now = new Date();
-  const hours = now.getHours();
-  const minutes = now.getMinutes();
-  const ampm = hours >= 12 ? "PM" : "AM";
-  const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
-  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-  return `${formattedHours}:${formattedMinutes} ${ampm}`;
+  return format(new Date(), "HH:mm a")
 }
 
 export function getRenewPeriodRange({
