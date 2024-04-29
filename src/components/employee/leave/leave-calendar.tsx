@@ -43,7 +43,7 @@ export default function LeaveCalendar() {
   const firstDayOfCurrentMonth = parse(currentMonth, "MMMM-yyyy", new Date());
 
   const { data: leaveApplications = [] } =
-    api.employeeRouter.getLeaveApplications.useQuery({});
+    api.employeeRouter.getLeaveApplications.useQuery();
 
   const currentMonthLeaves = leaveApplications.filter((leave) =>
     isSameMonth(leave.fromDate, firstDayOfCurrentMonth),

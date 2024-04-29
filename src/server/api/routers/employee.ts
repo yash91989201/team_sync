@@ -129,11 +129,27 @@ export const employeeRouter = createTRPCRouter({
     })
   }),
 
-  getLeaveApplications: protectedProcedure.input(GetLeaveApplicationsInput).query(({ ctx, input }) => {
+  getLeaveApplications: protectedProcedure.query(({ ctx, input }) => {
     return ctx.db.query.leaveRequestTable.findMany({
       where: and(
         eq(leaveRequestTable.empId, ctx.session.user.id),
-        input.status !== undefined ? eq(leaveRequestTable.status, input.status) : undefined
+      ),
+      with: {
+        reviewer: {
+          columns: {
+            password: false,
+          }
+        },
+        leaveType: true,
+      }
+    })
+  }),
+
+  getApprovedLeaveApplications: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.query.leaveRequestTable.findMany({
+      where: and(
+        eq(leaveRequestTable.empId, ctx.session.user.id),
+        eq(leaveRequestTable.status, "approved")
       ),
       with: {
         reviewer: {

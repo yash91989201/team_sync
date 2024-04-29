@@ -61,9 +61,7 @@ export default function AttendanceCalendar() {
     });
 
   const { data: approvedLeaveApplications = [] } =
-    api.employeeRouter.getLeaveApplications.useQuery({
-      status: "approved",
-    });
+    api.employeeRouter.getApprovedLeaveApplications.useQuery();
 
   const { data: holidays = [] } = api.holidayRouter.getByMonth.useQuery({
     start: firstDayOfCurrentMonth,
