@@ -302,10 +302,6 @@ export const LeaveApplySchema = z.object({
     .optional(),
 });
 
-export const GetLeaveApplicationsInput = z.object({
-  status: z.enum(["approved", "pending", "rejected"])
-})
-
 export const ApproveLeaveSchema = z.object({
   leaveRequestId: z.string(),
 });

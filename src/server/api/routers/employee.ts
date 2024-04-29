@@ -23,7 +23,6 @@ import {
   AttendancePunchOutSchema,
   GetAttendanceByMonthInput,
   GetEmployeeByQueryInput,
-  GetLeaveApplicationsInput,
   LeaveApplySchema
 } from "@/lib/schema";
 
@@ -129,7 +128,7 @@ export const employeeRouter = createTRPCRouter({
     })
   }),
 
-  getLeaveApplications: protectedProcedure.query(({ ctx, input }) => {
+  getLeaveApplications: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.leaveRequestTable.findMany({
       where: and(
         eq(leaveRequestTable.empId, ctx.session.user.id),
