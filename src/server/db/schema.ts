@@ -69,7 +69,7 @@ export const employeeProfileTable = mysqlTable("employee_profile", {
   empId: varchar("emp_id", { length: 24 })
     .primaryKey()
     .references(() => userTable.id),
-  joiningDate: timestamp("joining_date", { mode: "date" }).notNull(),
+  joiningDate: date("joining_date", { mode: "date" }).notNull(),
   empBand: mysqlEnum("emp_band", ["U1", "U2", "U3"]).notNull(),
   salary: int("salary").notNull(),
   location: varchar("location", { length: 256 }).notNull(),
@@ -162,7 +162,7 @@ export const employeeShiftTableRelations = relations(
 
 export const employeeAttendanceTable = mysqlTable("employee_attendance", {
   id: varchar("id", { length: 24 }).primaryKey(),
-  date: date("date", { mode: "string" }).notNull(),
+  date: date("date", { mode: "date" }).notNull(),
   punchIn: time("punchIn").notNull(),
   punchOut: time("punchOut"),
   shiftHours: mysqlEnum("shift_hours", ["0", "0.5", "0.75", "1"]),
