@@ -30,7 +30,7 @@ export function LeaveApplicationTableActions({
     }
   };
 
-  if (status !== "pending") return null;
+  if (status !== "pending") return "N/A";
 
   return (
     <Button

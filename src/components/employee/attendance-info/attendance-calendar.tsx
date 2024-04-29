@@ -108,7 +108,12 @@ export default function AttendanceCalendar() {
     setCurrentMonth(format(today, "MMMM-yyyy"));
   };
 
-  const formatShiftTime = (time: string | null) => {
+  const formatShiftStartTime = (time: string | null) => {
+    if (time === null) return "TBD";
+    return format(parse(time, "k:m:s", new Date()), "h:mm a");
+  };
+
+  const formatShiftEndTime = (time: string | null) => {
     if (time === null) return "TBD";
     return format(parse(time, "h:m:s", new Date()), "h:mm a");
   };
@@ -138,7 +143,10 @@ export default function AttendanceCalendar() {
     leaveDay !== undefined && text.push(`${leaveDay.leaveType.type}`);
     attendance !== undefined &&
       text.push(
-        `Shift timing: ${formatShiftTime(attendance.punchIn)} - ${formatShiftTime(attendance.punchOut)} ${shiftHourText(attendance.shiftHours)}`,
+        `Shift timing: 
+        ${formatShiftStartTime(attendance.punchIn)} - 
+        ${formatShiftEndTime(attendance.punchOut)} 
+        ${shiftHourText(attendance.shiftHours)}`,
       );
 
     if (
