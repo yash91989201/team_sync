@@ -223,7 +223,7 @@ export const leaveRequestTable = mysqlTable("leave_request", {
   leaveDays: int("leave_days").notNull(),
   reason: text("reason"),
   appliedOn: date("applied_on", { mode: "date" }).notNull(),
-  status: mysqlEnum("status", ["pending", "approved", "rejected"]).notNull(),
+  status: mysqlEnum("status", ["pending", "approved", "rejected", "withdrawn"]).notNull(),
   // FOREIGN KEY RELATIONS
   empId: varchar("emp_id", { length: 24 })
     .notNull()

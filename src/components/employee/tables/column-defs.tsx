@@ -12,6 +12,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 // CUSTOM COMPONENTS
 import DocumentsPreview from "@sharedComponents/documents-preview";
+import { LeaveApplicationTableActions } from "./column-actions";
 
 export const EMPLOYEE_DOCUMENTS_TABLE: ColumnDef<EmployeesDocumentsTableProps>[] =
   [
@@ -111,6 +112,7 @@ export const LEAVE_APPLICATION_TABLE: ColumnDef<LeaveApplicationTableProps>[] =
               status === "pending" && "bg-amber-500",
               status === "approved" && "bg-green-500",
               status === "rejected" && "bg-red-500",
+              status === "withdrawn" && "bg-gray-500",
               "rounded-xl text-white",
             )}
           >
@@ -123,5 +125,15 @@ export const LEAVE_APPLICATION_TABLE: ColumnDef<LeaveApplicationTableProps>[] =
       accessorKey: "reviewer",
       header: "Reviewer",
       cell: ({ row }) => row.original.reviewer.name,
+    },
+    {
+      accessorKey: "withdraw",
+      header: "Withdraw",
+      cell: ({ row }) => (
+        <LeaveApplicationTableActions
+          id={row.original.id}
+          status={row.original.status}
+        />
+      ),
     },
   ];

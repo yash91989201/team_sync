@@ -302,6 +302,10 @@ export const LeaveApplySchema = z.object({
     .optional(),
 });
 
+export const LeaveWithdrawInputSchema = z.object({
+  leaveRequestId: z.string(),
+});
+
 export const ApproveLeaveSchema = z.object({
   leaveRequestId: z.string(),
 });

@@ -291,6 +291,7 @@ export const LEAVE_REQUESTS_TABLE: ColumnDef<LeaveRequestTableProps>[] = [
             status === "pending" && "bg-amber-500",
             status === "approved" && "bg-green-500",
             status === "rejected" && "bg-red-500",
+            status === "withdrawn" && "bg-gray-500",
             "rounded-xl text-white",
           )}
         >

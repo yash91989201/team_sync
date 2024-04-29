@@ -154,6 +154,7 @@ const LeaveDayText = ({
           leaveData.status === "pending" && "bg-amber-200/75 text-amber-600",
           leaveData.status === "approved" && "bg-green-200/75 text-green-600",
           leaveData.status === "rejected" && "bg-red-200/75 text-red-600",
+          leaveData.status === "withdrawn" && "bg-gray-200/75 text-gray-600",
           "w-fit rounded-xl p-1.5 py-0.5",
         )}
       >

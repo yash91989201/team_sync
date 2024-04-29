@@ -1,0 +1,1 @@
+ALTER TABLE `leave_request` MODIFY COLUMN `status` enum('pending','approved','rejected','withdrawn') NOT NULL;
