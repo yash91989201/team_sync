@@ -1,7 +1,7 @@
 "use client";
 // UTILS
 import { api } from "@/trpc/react";
-import { getShiftTime } from "@/lib/utils";
+import { getShiftTimeString } from "@/lib/utils";
 // UI
 import { Button } from "@ui/button";
 import {
@@ -15,6 +15,7 @@ import {
 import { Skeleton } from "@ui/skeleton";
 // ICONS
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function AttendancePunchCard() {
   const {
@@ -24,18 +25,31 @@ export default function AttendancePunchCard() {
   } = api.employeeRouter.getAttendanceStatus.useQuery();
 
   const { mutateAsync: punchIn, isPending: isPunchingIn } =
-    api.employeeRouter.punchIn.useMutation({
-      onSuccess: async () => {
-        await refetchAttendanceStatus();
-      },
-    });
+    api.employeeRouter.punchIn.useMutation();
 
   const { mutateAsync: punchOut, isPending: isPunchingOut } =
-    api.employeeRouter.punchOut.useMutation({
-      onSuccess: async () => {
-        await refetchAttendanceStatus();
-      },
-    });
+    api.employeeRouter.punchOut.useMutation();
+
+  const punchInAction = async () => {
+    const actionResponse = await punchIn();
+    if (actionResponse.status === "SUCCESS") {
+      toast.success(actionResponse.message);
+      await refetchAttendanceStatus();
+    } else {
+      toast.error(actionResponse.message);
+    }
+  };
+
+  const punchOutAction = async () => {
+    if (attendanceData === undefined) return;
+    const actionResponse = await punchOut({ attendanceId: attendanceData.id });
+    if (actionResponse.status === "SUCCESS") {
+      toast.success(actionResponse.message);
+      await refetchAttendanceStatus();
+    } else {
+      toast.error(actionResponse.message);
+    }
+  };
 
   if (isLoading) return <AttendanceCardLoadingSkeleton />;
 
@@ -58,7 +72,7 @@ export default function AttendancePunchCard() {
           <p className="text-sm">Not Signed In yet.</p>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button onClick={() => punchIn()} disabled={isPunchingIn}>
+          <Button onClick={punchInAction} disabled={isPunchingIn}>
             <span>Sign In</span>
             {isPunchingOut && (
               <Loader2 className="animate-spin [&>svg]:size-4" />
@@ -77,10 +91,10 @@ export default function AttendancePunchCard() {
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-1 text-sm font-semibold">
-          <p>Sign In: {getShiftTime(attendanceData.punchIn)}</p>
+          <p>Sign In: {getShiftTimeString(attendanceData.punchIn)}</p>
           &minus;
           {attendanceData.punchOut !== null ? (
-            <p>Sign Out: {getShiftTime(attendanceData.punchOut)}</p>
+            <p>Sign Out: {getShiftTimeString(attendanceData.punchOut)}</p>
           ) : (
             <p>N/A</p>
           )}
@@ -93,13 +107,12 @@ export default function AttendancePunchCard() {
           </p>
         ) : (
           <Button
-            onClick={() => punchOut({ attendanceId: attendanceData.id })}
+            className="gap-1"
             disabled={isPunchingOut}
+            onClick={punchOutAction}
           >
+            {isPunchingOut && <Loader2 className="size-4 animate-spin" />}
             <span>Sign Out</span>
-            {isPunchingOut && (
-              <Loader2 className="animate-spin [&>svg]:size-4" />
-            )}
           </Button>
         )}
       </CardFooter>

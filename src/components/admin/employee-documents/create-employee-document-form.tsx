@@ -7,7 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 // UTILS
 import { api } from "@/trpc/react";
-import { cn, uploadEmployeeDocumentFiles } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { uploadEmployeeDocumentFiles } from "@/lib/pb-utils";
 // SCHEMAS
 import { CreateEmployeeDocumentFormSchema } from "@/lib/schema";
 // TYPES

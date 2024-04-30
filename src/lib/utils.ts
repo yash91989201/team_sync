@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import {
   endOfYear,
   endOfMonth,
@@ -13,36 +14,20 @@ import {
   isBefore,
   format,
   parse,
+  differenceInHours,
 } from "date-fns";
 import { clsx } from "clsx";
 import { toast } from "sonner";
-import { generateId } from "lucia";
 import { twMerge } from "tailwind-merge";
-import { fromZonedTime } from "date-fns-tz";
+// UTILS
+import { parseTime, toUTC } from "./date-time-utils";
 // TYPES
 import type { ClassValue } from "clsx";
+import type { FunctionComponent } from "react";
 import type { EmployeeAttendanceType, } from "@/lib/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
-}
-
-/*
- fixes the date being 1day back 
- when using startOfYear or startOfMonth 
- method from date-fns
-*/
-export function toUTC(date: Date) {
-  return fromZonedTime(date, "UTC");
-}
-
-export function formatDate(date: Date): string {
-  const formattedDate = new Intl.DateTimeFormat("en-IN", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(date);
-  return formattedDate;
 }
 
 export function fieldActionToast(action?: {
@@ -71,11 +56,6 @@ export function getGreeting() {
   }
 }
 
-export function getCurrentDate() {
-  const now = new Date();
-  return now.toISOString().slice(0, 10);
-}
-
 export function calculateShiftHours({
   punchIn,
   punchOut,
@@ -83,36 +63,26 @@ export function calculateShiftHours({
   punchIn: string;
   punchOut: string;
 }): Exclude<EmployeeAttendanceType["shiftHours"], null> {
-  const [punchInHours = 0, punchInMinutes = 0, punchInSeconds = 0] = punchIn
-    .split(":")
-    .map(Number);
-  const [punchOutHours = 0, punchOutMinutes = 0, punchOutSeconds = 0] = punchOut
-    .split(":")
-    .map(Number);
 
-  const punchInInSeconds =
-    punchInHours * 3600 + punchInMinutes * 60 + punchInSeconds;
-  const punchOutInSeconds =
-    punchOutHours * 3600 + punchOutMinutes * 60 + punchOutSeconds;
-
-  const hoursDifference = Math.abs(punchOutInSeconds - punchInInSeconds) / 3600;
+  const punchInTime = parseTime(punchIn)
+  const punchOutTime = parseTime(punchOut)
+  const hoursDifference = differenceInHours(punchOutTime, punchInTime)
 
   if (hoursDifference <= 6) return "0.5";
   if (hoursDifference > 6) return "1";
   return "0";
 }
 
-export function getShiftTime(time: string) {
+export function getShiftTimeString(time: string) {
   const dateTime = parse(time, "HH:mm:ss", new Date())
-
-  return format(dateTime, "HH:mm a")
+  return format(dateTime, "hh:mm a")
 }
 
 export function getShiftTimeDate(time: string): Date {
   return parse(time, "HH:mm:ss", new Date())
 }
 
-export function getCurrentTimeWithPeriod() {
+export function getCurrentTimeDate() {
   return format(new Date(), "HH:mm a")
 }
 
@@ -294,75 +264,6 @@ export function getLeaveDateString({ leaveDays, renewPeriod, fromDate, toDate }:
   }
 }
 
-export async function uploadProfileImage(
-  image: File,
-): Promise<{ imageUrl: string | null }> {
-  const formData = new FormData();
-  formData.append("id", generateId(15));
-  formData.append("image", image);
-  formData.append("file_type", image.type);
-  formData.append("file_size", image.size.toString());
-
-  const res = await fetch("/api/profile-image", {
-    method: "POST",
-    body: formData,
-  });
-  const resp = (await res.json()) as UploadProfileImageStatusType;
-
-  if (resp.status === "SUCCESS") {
-    return {
-      imageUrl: resp.imageUrl,
-    };
-  }
-
-  return {
-    imageUrl: null,
-  };
-}
-
-export async function uploadEmployeeDocumentFiles(files: File[]): Promise<UploadEmployeeDocumentsStatusType> {
-
-  const formData = new FormData()
-  files.forEach((file) => formData.append("file", file))
-
-  const res = await fetch("/api/employee-documents", {
-    method: "POST",
-    body: formData,
-  })
-
-  const data = (await res.json()) as UploadEmployeeDocumentsStatusType
-  return data;
-}
-
-export async function updateEmployeeDocumentFile({ fileId, file }: { fileId: string; file: File | undefined }): Promise<UpdateDocumentFileStatusType> {
-
-  const formData = new FormData()
-  if (file === undefined) return { status: "FAILED", message: "Please provide a file to update" }
-
-  formData.append("file", file)
-
-  const res = await fetch(`/api/employee-documents/${fileId}`, {
-    method: "PATCH",
-    body: formData,
-  })
-
-  const data = (await res.json()) as UpdateDocumentFileStatusType
-  return data;
-}
-
-export async function deleteEmployeeDocumentFiles(filesId: string[]): Promise<DeleteDocumentsFilesStatusType> {
-  const formData = new FormData();
-  filesId.forEach(fileId => formData.append("fileId", fileId))
-
-  const res = await fetch("/api/employee-documents", {
-    method: "DELETE",
-    body: formData,
-  })
-
-  const data = (await res.json()) as DeleteDocumentsFilesStatusType
-  return data;
-}
-
 export function formatFileSize(bytes?: number) {
   if (!bytes) {
     return "0 Bytes";
@@ -378,4 +279,8 @@ export function formatFileSize(bytes?: number) {
   const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+}
+
+export function renderOnClient<T>(Component: FunctionComponent<T>) {
+  return dynamic(() => Promise.resolve(Component), { ssr: false });
 }

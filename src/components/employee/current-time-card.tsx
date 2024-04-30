@@ -1,14 +1,16 @@
 "use client";
-import { getCurrentTimeWithPeriod } from "@/lib/utils";
-import { Clock5 } from "lucide-react";
 import React, { useState, useEffect } from "react";
+// UTILS
+import { getCurrentTimeDate, renderOnClient } from "@/lib/utils";
+// ICONS
+import { Clock5 } from "lucide-react";
 
-export default function CurrentTimeCard() {
-  const [time, setTime] = useState(getCurrentTimeWithPeriod());
+function CurrentTimeCard() {
+  const [time, setTime] = useState(getCurrentTimeDate());
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setTime(getCurrentTimeWithPeriod());
+      setTime(getCurrentTimeDate());
     }, 1000);
 
     return () => clearInterval(intervalId);
@@ -24,3 +26,5 @@ export default function CurrentTimeCard() {
     </div>
   );
 }
+
+export default renderOnClient(CurrentTimeCard);

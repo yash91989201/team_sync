@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { toast } from "sonner";
 // UITLS
-import { cn, deleteEmployeeDocumentFiles } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { deleteEmployeeDocumentFiles } from "@/lib/pb-utils";
 import { api } from "@/trpc/react";
 import { buttonVariants } from "@ui/button";
 // TYPES

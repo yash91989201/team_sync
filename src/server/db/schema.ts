@@ -162,7 +162,7 @@ export const employeeShiftTableRelations = relations(
 
 export const employeeAttendanceTable = mysqlTable("employee_attendance", {
   id: varchar("id", { length: 24 }).primaryKey(),
-  date: date("date", { mode: "date" }).notNull(),
+  date: date("date", { mode: "string" }).notNull(),
   punchIn: time("punchIn").notNull(),
   punchOut: time("punchOut"),
   shiftHours: mysqlEnum("shift_hours", ["0", "0.5", "0.75", "1"]),

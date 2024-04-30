@@ -6,6 +6,7 @@ import {
   calculateShiftHours,
   getDateRangeByRenewPeriod
 } from "@/lib/utils";
+import { formatDate, formatTime } from "@/lib/date-time-utils";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // DB TABLES
 import {
@@ -101,15 +102,12 @@ export const employeeRouter = createTRPCRouter({
 
   getAttendanceStatus: protectedProcedure.query(async ({ ctx }) => {
     const { id } = ctx.session.user;
-    const currentDate = new Date()
-    currentDate.setHours(0, 0, 0, 0)
-    const currentDateWithoutTime = new Date(currentDate)
 
     const employeeAttendance =
       await ctx.db.query.employeeAttendanceTable.findFirst({
         where: and(
           eq(employeeAttendanceTable.empId, id),
-          eq(employeeAttendanceTable.date, currentDateWithoutTime),
+          eq(employeeAttendanceTable.date, formatDate()),
         ),
       });
 
@@ -124,7 +122,7 @@ export const employeeRouter = createTRPCRouter({
     return ctx.db.query.employeeAttendanceTable.findMany({
       where: and(
         eq(employeeAttendanceTable.empId, ctx.session.user.id),
-        between(employeeAttendanceTable.date, input.start, input.end)
+        between(employeeAttendanceTable.date, formatDate(input.start), formatDate(input.end))
       ),
     })
   }),
@@ -162,60 +160,81 @@ export const employeeRouter = createTRPCRouter({
     })
   }),
 
-  punchIn: protectedProcedure.mutation(async ({ ctx }) => {
+  punchIn: protectedProcedure.mutation(async ({ ctx }): Promise<{ status: "SUCCESS", message: string } | { status: "FAILED", message: string; }> => {
     const { id } = ctx.session.user;
-    const punchIn = new Date().toLocaleTimeString("en-IN", { hour12: false });
 
-    const [attendancePunchInQuery] = await ctx.db
+    const [punchInQuery] = await ctx.db
       .insert(employeeAttendanceTable)
       .values({
         id: generateId(15),
         empId: id,
-        date: new Date(),
-        punchIn,
+        date: formatDate(),
+        punchIn: formatTime(),
       });
 
+    if (punchInQuery.affectedRows === 1) {
+      return {
+        status: "SUCCESS",
+        message: "You have successfully punched in"
+      }
+    }
+
     return {
-      punchInSuccess: attendancePunchInQuery.affectedRows === 1,
-    };
+      status: "FAILED",
+      message: "Unable to punch in, try again!"
+    }
   }),
 
   punchOut: protectedProcedure
     .input(AttendancePunchOutSchema)
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ ctx, input }): Promise<{ status: "SUCCESS", message: string } | { status: "FAILED", message: string; }> => {
+
       const { id } = ctx.session.user;
       const { attendanceId } = input;
       const currentDate = new Date();
-      const punchOut = new Date().toLocaleTimeString("en-IN", {
-        hour12: false,
-      });
+      currentDate.setHours(0, 0, 0, 0)
+
+
+      const punchOut = formatTime()
 
       const attendanceData =
         await ctx.db.query.employeeAttendanceTable.findFirst({
           where: and(
             eq(employeeAttendanceTable.empId, id),
-            eq(employeeAttendanceTable.date, currentDate),
+            eq(employeeAttendanceTable.date, formatDate()),
           ),
         });
 
-      if (!attendanceData) return { punchOutSuccess: false };
+      if (!attendanceData) {
+        return {
+          status: "FAILED",
+          message: "Unable to punch out, try again!"
+        }
+      }
+      const { punchIn } = attendanceData
+      const shiftHours = calculateShiftHours({ punchIn, punchOut, });
 
-      const shiftHours = calculateShiftHours({
-        punchIn: attendanceData?.punchIn,
-        punchOut,
-      });
-
-      const [attendancePunchOutQuery] = await ctx.db
+      const [punchOutQuery] = await ctx.db
         .update(employeeAttendanceTable)
         .set({
-          punchOut,
+          punchOut: formatTime(),
           shiftHours,
         })
         .where(eq(employeeAttendanceTable.id, attendanceId));
 
-      return {
-        punchOutSuccess: attendancePunchOutQuery.affectedRows === 1,
-      };
+      if (punchOutQuery.affectedRows === 1) {
+        return {
+          status: "SUCCESS",
+          message: "Punched out successfully."
+        }
+      } else {
+        return {
+          status: "FAILED",
+          message: "Unable to punch in, try again!"
+        }
+      }
+
+
     }),
 
   leaveApply: protectedProcedure

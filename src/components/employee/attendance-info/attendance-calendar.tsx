@@ -21,8 +21,8 @@ import {
 } from "date-fns";
 import { useState } from "react";
 // UTILS
-import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
+import { cn, getShiftTimeString } from "@/lib/utils";
 // TYPES
 import type {
   HolidaySchemaType,
@@ -108,16 +108,6 @@ export default function AttendanceCalendar() {
     setCurrentMonth(format(today, "MMMM-yyyy"));
   };
 
-  const formatShiftStartTime = (time: string | null) => {
-    if (time === null) return "TBD";
-    return format(parse(time, "k:m:s", new Date()), "h:mm a");
-  };
-
-  const formatShiftEndTime = (time: string | null) => {
-    if (time === null) return "TBD";
-    return format(parse(time, "h:m:s", new Date()), "h:mm a");
-  };
-
   const shiftHourText = (shiftHours: "0" | "0.5" | "0.75" | "1" | null) => {
     switch (shiftHours) {
       case "0":
@@ -144,8 +134,8 @@ export default function AttendanceCalendar() {
     attendance !== undefined &&
       text.push(
         `Shift timing: 
-        ${formatShiftStartTime(attendance.punchIn)} - 
-        ${formatShiftEndTime(attendance.punchOut)} 
+        ${getShiftTimeString(attendance.punchIn)} - 
+        ${attendance.punchOut === null ? "TBD" : getShiftTimeString(attendance.punchOut)} 
         ${shiftHourText(attendance.shiftHours)}`,
       );
 

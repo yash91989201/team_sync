@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 // UTILS
 import { api } from "@/trpc/react";
-import { updateEmployeeDocumentFile } from "@/lib/utils";
+import { updateEmployeeDocumentFile } from "@/lib/pb-utils";
 // SCHEMAS
 import { UpdateEmployeeDocumentSchema } from "@/lib/schema";
 // TYPES
