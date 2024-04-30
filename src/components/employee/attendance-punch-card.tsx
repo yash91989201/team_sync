@@ -16,13 +16,16 @@ import { Skeleton } from "@ui/skeleton";
 // ICONS
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { formatDate, formatTime } from "@/lib/date-time-utils";
 
 export default function AttendancePunchCard() {
   const {
     data,
     isLoading,
     refetch: refetchAttendanceStatus,
-  } = api.employeeRouter.getAttendanceStatus.useQuery();
+  } = api.employeeRouter.getAttendanceStatus.useQuery({
+    date: formatDate(),
+  });
 
   const { mutateAsync: punchIn, isPending: isPunchingIn } =
     api.employeeRouter.punchIn.useMutation();
@@ -31,7 +34,10 @@ export default function AttendancePunchCard() {
     api.employeeRouter.punchOut.useMutation();
 
   const punchInAction = async () => {
-    const actionResponse = await punchIn();
+    const actionResponse = await punchIn({
+      date: formatDate(),
+      time: formatTime(),
+    });
     if (actionResponse.status === "SUCCESS") {
       toast.success(actionResponse.message);
       await refetchAttendanceStatus();
@@ -42,7 +48,11 @@ export default function AttendancePunchCard() {
 
   const punchOutAction = async () => {
     if (attendanceData === undefined) return;
-    const actionResponse = await punchOut({ attendanceId: attendanceData.id });
+    const actionResponse = await punchOut({
+      attendanceId: attendanceData.id,
+      date: formatDate(),
+      time: formatTime(),
+    });
     if (actionResponse.status === "SUCCESS") {
       toast.success(actionResponse.message);
       await refetchAttendanceStatus();

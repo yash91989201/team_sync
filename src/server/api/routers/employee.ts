@@ -21,11 +21,13 @@ import {
 } from "@/server/db/schema";
 // SCHEMAS
 import {
-  AttendancePunchOutSchema,
   GetAttendanceByMonthInput,
+  GetAttendanceStatusInputSchema,
   GetEmployeeByQueryInput,
   LeaveApplySchema,
-  LeaveWithdrawInputSchema
+  LeaveWithdrawInputSchema,
+  PunchInInputSchema,
+  PunchOutInputSchema
 } from "@/lib/schema";
 
 export const employeeRouter = createTRPCRouter({
@@ -100,24 +102,6 @@ export const employeeRouter = createTRPCRouter({
     })
   }),
 
-  getAttendanceStatus: protectedProcedure.query(async ({ ctx }) => {
-    const { id } = ctx.session.user;
-
-    const employeeAttendance =
-      await ctx.db.query.employeeAttendanceTable.findFirst({
-        where: and(
-          eq(employeeAttendanceTable.empId, id),
-          eq(employeeAttendanceTable.date, formatDate()),
-        ),
-      });
-
-    return {
-      isAttendanceMarked: !!employeeAttendance,
-      isShiftComplete: employeeAttendance?.punchOut !== null,
-      attendanceData: employeeAttendance,
-    };
-  }),
-
   getAttendanceByMonth: protectedProcedure.input(GetAttendanceByMonthInput).query(({ ctx, input }) => {
     return ctx.db.query.employeeAttendanceTable.findMany({
       where: and(
@@ -160,7 +144,25 @@ export const employeeRouter = createTRPCRouter({
     })
   }),
 
-  punchIn: protectedProcedure.mutation(async ({ ctx }): Promise<{ status: "SUCCESS", message: string } | { status: "FAILED", message: string; }> => {
+  getAttendanceStatus: protectedProcedure.input(GetAttendanceStatusInputSchema).query(async ({ ctx }) => {
+    const { id } = ctx.session.user;
+
+    const employeeAttendance =
+      await ctx.db.query.employeeAttendanceTable.findFirst({
+        where: and(
+          eq(employeeAttendanceTable.empId, id),
+          eq(employeeAttendanceTable.date, formatDate()),
+        ),
+      });
+
+    return {
+      isAttendanceMarked: !!employeeAttendance,
+      isShiftComplete: employeeAttendance?.punchOut !== null,
+      attendanceData: employeeAttendance,
+    };
+  }),
+
+  punchIn: protectedProcedure.input(PunchInInputSchema).mutation(async ({ ctx }): Promise<{ status: "SUCCESS", message: string } | { status: "FAILED", message: string; }> => {
     const { id } = ctx.session.user;
 
     const [punchInQuery] = await ctx.db
@@ -186,22 +188,17 @@ export const employeeRouter = createTRPCRouter({
   }),
 
   punchOut: protectedProcedure
-    .input(AttendancePunchOutSchema)
+    .input(PunchOutInputSchema)
     .mutation(async ({ ctx, input }): Promise<{ status: "SUCCESS", message: string } | { status: "FAILED", message: string; }> => {
 
       const { id } = ctx.session.user;
-      const { attendanceId } = input;
-      const currentDate = new Date();
-      currentDate.setHours(0, 0, 0, 0)
-
-
-      const punchOut = formatTime()
+      const { attendanceId, date, time: punchOut } = input;
 
       const attendanceData =
         await ctx.db.query.employeeAttendanceTable.findFirst({
           where: and(
             eq(employeeAttendanceTable.empId, id),
-            eq(employeeAttendanceTable.date, formatDate()),
+            eq(employeeAttendanceTable.date, date),
           ),
         });
 
@@ -217,7 +214,7 @@ export const employeeRouter = createTRPCRouter({
       const [punchOutQuery] = await ctx.db
         .update(employeeAttendanceTable)
         .set({
-          punchOut: formatTime(),
+          punchOut,
           shiftHours,
         })
         .where(eq(employeeAttendanceTable.id, attendanceId));

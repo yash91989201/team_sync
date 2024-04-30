@@ -253,13 +253,24 @@ export const DeleteEmployeeSchema = z.object({
 })
 
 // EMPLOYEE ATTENDANCE SCHEMAS
-export const AttendancePunchOutSchema = z.object({
-  attendanceId: z.string(),
-});
-
 export const GetAttendanceByMonthInput = z.object({
   start: z.date(),
   end: z.date()
+})
+
+export const GetAttendanceStatusInputSchema = z.object({
+  date: z.string()
+})
+
+export const PunchInInputSchema = z.object({
+  time: z.string(),
+  date: z.string()
+})
+
+export const PunchOutInputSchema = z.object({
+  attendanceId: z.string(),
+  time: z.string(),
+  date: z.string()
 })
 
 // EMPLOYEE LEAVE SCHEMAS
