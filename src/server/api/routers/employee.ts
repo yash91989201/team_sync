@@ -6,7 +6,7 @@ import {
   calculateShiftHours,
   getDateRangeByRenewPeriod
 } from "@/lib/utils";
-import { formatDate, formatTime } from "@/lib/date-time-utils";
+import { formatDate, } from "@/lib/date-time-utils";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // DB TABLES
 import {
@@ -162,16 +162,17 @@ export const employeeRouter = createTRPCRouter({
     };
   }),
 
-  punchIn: protectedProcedure.input(PunchInInputSchema).mutation(async ({ ctx }): Promise<{ status: "SUCCESS", message: string } | { status: "FAILED", message: string; }> => {
+  punchIn: protectedProcedure.input(PunchInInputSchema).mutation(async ({ ctx, input }): Promise<{ status: "SUCCESS", message: string } | { status: "FAILED", message: string; }> => {
     const { id } = ctx.session.user;
+    const { date, time: punchIn } = input
 
     const [punchInQuery] = await ctx.db
       .insert(employeeAttendanceTable)
       .values({
         id: generateId(15),
         empId: id,
-        date: formatDate(),
-        punchIn: formatTime(),
+        date,
+        punchIn,
       });
 
     if (punchInQuery.affectedRows === 1) {
