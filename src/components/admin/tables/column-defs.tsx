@@ -178,9 +178,15 @@ export const EMPLOYEES_TABLE: ColumnDef<EmployeesTableProps>[] = [
           <AvatarImage src={row.original.imageUrl!} alt={row.original.name} />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
-        <p>{row.original.name}</p>
+        <div className="flex flex-col gap-1.5">
+          <p>{row.original.name}</p>
+        </div>
       </div>
     ),
+  },
+  {
+    accessorKey: "code",
+    header: "Code",
   },
   {
     accessorKey: "employeeProfile",

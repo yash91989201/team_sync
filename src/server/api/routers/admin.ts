@@ -114,7 +114,7 @@ export const adminRouter = createTRPCRouter({
 
   createEmployee: protectedProcedure
     .input(CreateEmployeeInputSchema)
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ ctx, input }): Promise<{ status: "SUCCESS", message: string; } | { status: "FAILED"; message: string; }> => {
       const {
         code,
         name,
@@ -144,7 +144,19 @@ export const adminRouter = createTRPCRouter({
         const empLeaveTypeData = leaveTypes.map(({ id }) => ({ empId: employeeId, leaveTypeId: id }))
         const employeeSalaryComponents = salaryComponents.map((salaryComponent) => ({ ...salaryComponent, empId: employeeId }))
 
-        const availableLeaveTypes = await ctx.db.query.leaveTypeTable.findMany();
+        const existingEmp = await ctx.db.query.userTable.findFirst({
+          where: and(
+            eq(userTable.role, "EMPLOYEE"),
+            eq(userTable.code, code)
+          ),
+        })
+
+        if (existingEmp !== undefined) {
+          return {
+            status: "FAILED",
+            message: `${existingEmp.name} has been given assigned ${code} , use another code instead`
+          }
+        }
 
         // add employee to userTable
         await ctx.db.insert(userTable).values({
@@ -182,6 +194,8 @@ export const adminRouter = createTRPCRouter({
         await ctx.db.insert(employeeSalaryComponentTable).values(employeeSalaryComponents)
 
         await ctx.db.insert(employeeLeaveTypeTable).values(empLeaveTypeData)
+
+        const availableLeaveTypes = await ctx.db.query.leaveTypeTable.findMany();
 
         if (availableLeaveTypes.length > 0) {
           await Promise.all(

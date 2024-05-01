@@ -76,6 +76,8 @@ export default function CreateEmployeeForm() {
       shiftStart,
       shiftEnd,
       breakMinutes: 60,
+      salaryComponents: [],
+      leaveTypes: [],
     },
     resolver: zodResolver(CreateEmployeeFormSchema),
   });
@@ -95,6 +97,28 @@ export default function CreateEmployeeForm() {
   const designationByDept = designationList.filter(
     (designation) => designation.deptId === selectedDeptId,
   );
+
+  const createEmployeeAction: SubmitHandler<
+    CreateEmployeeFormSchemaType
+  > = async (formData) => {
+    const { imageUrl } = await uploadProfileImage(formData.profileImage);
+    const actionResponse = await createEmployee({
+      ...formData,
+      imageUrl,
+    });
+
+    if (actionResponse.status === "SUCCESS") {
+      toast.success(actionResponse.message);
+      clearPersonalDetailFields();
+      clearProfessionalDetailFields();
+      clearShiftDetailFields();
+      clearSalaryDetailFields();
+      clearLeaveTypesField();
+      clearAdditionalDetailFields();
+    } else {
+      toast.error(actionResponse.message);
+    }
+  };
 
   const clearPersonalDetailFields = () => {
     resetField("name");
@@ -130,27 +154,6 @@ export default function CreateEmployeeForm() {
 
   const clearAdditionalDetailFields = () => {
     resetField("isTeamLead", { defaultValue: false });
-  };
-
-  const createEmployeeAction: SubmitHandler<
-    CreateEmployeeFormSchemaType
-  > = async (formData) => {
-    const { imageUrl } = await uploadProfileImage(formData.profileImage);
-    const actionResponse = await createEmployee({
-      ...formData,
-      imageUrl,
-    });
-    if (actionResponse.status === "SUCCESS") {
-      toast.success(actionResponse.message);
-      clearPersonalDetailFields();
-      clearProfessionalDetailFields();
-      clearShiftDetailFields();
-      clearSalaryDetailFields();
-      clearLeaveTypesField();
-      clearAdditionalDetailFields();
-    } else {
-      toast.error(actionResponse.message);
-    }
   };
 
   return (
