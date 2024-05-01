@@ -4,6 +4,7 @@ import { authPage } from "@/server/helpers";
 import GreetingHeader from "@/components/employee/greeting-header";
 import AttendancePunchCard from "@/components/employee/attendance-punch-card";
 import EmployeeMainWrapper from "@/components/employee/employee-main-wrapper";
+import UpcomingHolidays from "@/components/employee/upcoming-holidays";
 
 export default async function EmployeePortalPage() {
   await authPage("EMPLOYEE");
@@ -12,6 +13,7 @@ export default async function EmployeePortalPage() {
     <EmployeeMainWrapper>
       <GreetingHeader />
       <AttendancePunchCard />
+      <UpcomingHolidays />
     </EmployeeMainWrapper>
   );
 }
