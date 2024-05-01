@@ -136,7 +136,7 @@ export default function AttendanceCalendar() {
         `Shift timing: 
         ${getShiftTimeString(attendance.punchIn)} - 
         ${attendance.punchOut === null ? "TBD" : getShiftTimeString(attendance.punchOut)} 
-        ${shiftHourText(attendance.shiftHours)}`,
+        ${shiftHourText(attendance.shift)}`,
       );
 
     if (

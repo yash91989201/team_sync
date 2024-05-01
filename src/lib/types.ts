@@ -69,6 +69,8 @@ export type SalaryComponentType = z.infer<typeof SalaryComponentsSchema>
 export type EmployeeSalaryComponentType = z.infer<typeof EmployeeSalaryComponentSchema>
 export type HolidaySchemaType = z.infer<typeof HolidaySchema>
 
+export type ShiftType = Exclude<EmployeeAttendanceType["shift"], null>;
+
 // AUTH TYPES
 export type AdminSignupSchemaType = z.infer<typeof AdminSignupSchema>;
 export type LoginSchemaType = z.infer<typeof LoginSchema>;

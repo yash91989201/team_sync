@@ -15,6 +15,7 @@ import {
   format,
   parse,
   differenceInHours,
+  differenceInMilliseconds,
 } from "date-fns";
 import { clsx } from "clsx";
 import { toast } from "sonner";
@@ -24,7 +25,7 @@ import { parseTime, toUTC } from "./date-time-utils";
 // TYPES
 import type { ClassValue } from "clsx";
 import type { FunctionComponent } from "react";
-import type { EmployeeAttendanceType, } from "@/lib/types";
+import type { ShiftType, } from "@/lib/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -56,21 +57,48 @@ export function getGreeting() {
   }
 }
 
-export function calculateShiftHours({
+function getHoursDifference({ startDate, endDate }: { startDate: Date, endDate: Date }) {
+  const diffInMilliseconds = differenceInMilliseconds(endDate, startDate);
+  const hours = Math.floor(diffInMilliseconds / (1000 * 60 * 60));
+  const minutes = Math.floor(
+    (diffInMilliseconds % (1000 * 60 * 60)) / (1000 * 60)
+  );
+  const seconds = Math.floor((diffInMilliseconds % (1000 * 60)) / 1000);
+
+  return format(new Date(0, 0, 0, hours, minutes, seconds), "HH:mm:ss");
+}
+
+export function calculateShift({
   punchIn,
   punchOut,
 }: {
   punchIn: string;
   punchOut: string;
-}): Exclude<EmployeeAttendanceType["shiftHours"], null> {
+}): {
+  shift: ShiftType;
+  hours: string;
+} {
+
+  let shift: ShiftType = "0";
 
   const punchInTime = parseTime(punchIn)
   const punchOutTime = parseTime(punchOut)
   const hoursDifference = differenceInHours(punchOutTime, punchInTime)
 
-  if (hoursDifference <= 6) return "0.5";
-  if (hoursDifference > 6) return "1";
-  return "0";
+  const hours = getHoursDifference({
+    startDate: punchInTime,
+    endDate: punchOutTime
+  })
+
+  if (hoursDifference <= 6) shift = "0.5";
+  else if (hoursDifference > 6) shift = "1";
+  else shift = "0";
+
+  return {
+    shift,
+    hours,
+  }
+
 }
 
 export function getShiftTimeString(time: string) {

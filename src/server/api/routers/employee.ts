@@ -3,7 +3,7 @@ import { format, isSameDay, isWithinInterval } from "date-fns";
 import { and, between, eq, getTableColumns, like, or } from "drizzle-orm";
 // UTILS
 import {
-  calculateShiftHours,
+  calculateShift,
   getDateRangeByRenewPeriod
 } from "@/lib/utils";
 import { formatDate, } from "@/lib/date-time-utils";
@@ -210,13 +210,14 @@ export const employeeRouter = createTRPCRouter({
         }
       }
       const { punchIn } = attendanceData
-      const shiftHours = calculateShiftHours({ punchIn, punchOut, });
+      const { shift, hours } = calculateShift({ punchIn, punchOut, });
 
       const [punchOutQuery] = await ctx.db
         .update(employeeAttendanceTable)
         .set({
           punchOut,
-          shiftHours,
+          shift,
+          hours
         })
         .where(eq(employeeAttendanceTable.id, attendanceId));
 
