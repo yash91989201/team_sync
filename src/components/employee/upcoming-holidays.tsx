@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@ui/skeleton";
 
 export default async function UpcomingHolidays() {
   const currentDate = new Date();
@@ -45,6 +46,35 @@ export default async function UpcomingHolidays() {
             </p>
           ))
         )}
+      </CardContent>
+      <CardFooter className="justify-end">
+        <Link
+          href="/employee-portal/holiday-calendar"
+          className={buttonVariants({
+            variant: "link",
+            size: "sm",
+          })}
+        >
+          See more
+        </Link>
+      </CardFooter>
+    </Card>
+  );
+}
+
+export function UpcomingHolidaysSkeleton() {
+  return (
+    <Card className="w-[350px]">
+      <CardHeader>
+        <CardTitle>Upcoming holidays</CardTitle>
+        <CardDescription>
+          current and next month&apos;s holidays
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-1.5">
+        <Skeleton className="h-4 rounded" />
+        <Skeleton className="h-4 rounded" />
+        <Skeleton className="h-4 rounded" />
       </CardContent>
       <CardFooter className="justify-end">
         <Link

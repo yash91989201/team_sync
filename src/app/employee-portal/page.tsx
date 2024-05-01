@@ -4,7 +4,10 @@ import { authPage } from "@/server/helpers";
 import GreetingHeader from "@/components/employee/greeting-header";
 import AttendancePunchCard from "@/components/employee/attendance-punch-card";
 import EmployeeMainWrapper from "@/components/employee/employee-main-wrapper";
-import UpcomingHolidays from "@/components/employee/upcoming-holidays";
+import UpcomingHolidays, {
+  UpcomingHolidaysSkeleton,
+} from "@/components/employee/upcoming-holidays";
+import { Suspense } from "react";
 
 export default async function EmployeePortalPage() {
   await authPage("EMPLOYEE");
@@ -13,7 +16,9 @@ export default async function EmployeePortalPage() {
     <EmployeeMainWrapper>
       <GreetingHeader />
       <AttendancePunchCard />
-      <UpcomingHolidays />
+      <Suspense fallback={<UpcomingHolidaysSkeleton />}>
+        <UpcomingHolidays />
+      </Suspense>
     </EmployeeMainWrapper>
   );
 }
