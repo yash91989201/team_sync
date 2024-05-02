@@ -20,6 +20,7 @@ jobs:
       SMTP_HOST: ${{secrets.DEV_SMTP_HOST}}
       SMTP_PASSWORD: ${{secrets.DEV_SMTP_PASSWORD}}
       SMTP_USER: ${{secrets.DEV_SMTP_USER}}
+      POCKETBASE_URL: ${{secrets.DEV_POCKETBASE_URL}}
 
     steps:
       - name: Checkout code
@@ -34,7 +35,7 @@ jobs:
                 echo SMTP_HOST="$SMTP_HOST" >> .env
                 echo SMTP_PASSWORD="$SMTP_PASSWORD" >> .env
                 echo SMTP_USER="$SMTP_USER" >> .env
-                cat .env
+                echo POCKETBASE_URL="$POCKETBASE_URL" >> .env
 
       - name: Install dependencies
         run: bun install
