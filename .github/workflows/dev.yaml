@@ -35,7 +35,7 @@ jobs:
                 echo SMTP_PASSWORD="$env:SMTP_PASSWORD" >> .env
                 echo SMTP_USER="$env:SMTP_USER" >> .env
 
-        - name: Run db migration
+      - name: Run db migration
         run: |
           bun run db:migrate
 
