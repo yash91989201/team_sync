@@ -1,4 +1,4 @@
-export default async function POST(request: Request) {
+export async function POST(request: Request) {
   try {
     console.log(await request.json())
 
