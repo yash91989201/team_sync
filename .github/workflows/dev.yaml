@@ -1,5 +1,5 @@
-name: team_sync prod deployment
-# run when code is pushed to main branch
+name: team_sync dev deployment
+# run when code is pushed to dev branch
 on:
   push:
     branches:
@@ -47,20 +47,20 @@ jobs:
       - name: Build team_sync app
         run: bun run build
 
-      - name: Clear source code folder
-        run: |
-                cd /home/yash
-                rm -rf team_sync_preview
-                mkdir team_sync_preview
-
       - name: Copy public directory
         run: cp -r ./public ./.next/standalone/public
 
       - name: Copy static directory
         run: cp -r ./.next/static ./.next/standalone/.next/static
 
-      - name: Copy standalone directory
-        run: cp -a ./.next/standalone/. /home/yash/team_sync_preview
+      - name: Clear source code folder
+        run: |
+                cd /home/team-sync-preview
+                rm -rf team_sync_preview
+                mkdir team_sync_preview
+
+      - name: Copy server code to team_sync_preview folder
+        run: cp -a ./.next/standalone/. /home/team-sync-preview/team_sync_preview
 
       - name: Restart pm2
         run: pm2 restart team_sync_preview --update-env
