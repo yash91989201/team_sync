@@ -35,25 +35,21 @@ jobs:
                 echo SMTP_PASSWORD="$env:SMTP_PASSWORD" >> .env
                 echo SMTP_USER="$env:SMTP_USER" >> .env
 
-      - name: Run db migration
-        run: |
-          bun run db:migrate
-
       - name: Install dependencies
         run: bun install
 
       - name: Run db migration
         run: |
-          bun run db:migrate
+                bun run db:migrate
 
       - name: Build team_sync app
         run: bun run build
 
       - name: Clear source code folder
         run: |
-          cd /home/yash
-          rm -rf team_sync_preview
-          mkdir team_sync_preview
+                cd /home/yash
+                rm -rf team_sync_preview
+                mkdir team_sync_preview
 
       - name: Copy public directory
         run: cp -r ./public ./.next/standalone/public
