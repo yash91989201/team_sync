@@ -28,9 +28,9 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Run db migration
-        run: |
-          bun run db:migrate
+      # - name: Run db migration
+      #   run: |
+      #     bun run db:migrate
 
       - name: Build team_sync app
         run: bun run build
