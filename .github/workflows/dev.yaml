@@ -1,0 +1,54 @@
+name: team_sync prod deployment
+# run when code is pushed to main branch
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    strategy:
+      matrix:
+        node-version: [20.10.0]
+
+    env:
+      NEXT_SITE_URL: ${{secrets.NEXT_SITE_URL}}
+      DATABASE_URL: ${{secrets.DATABASE_URL}}
+      EMAIL_SENDER: ${{secrets.EMAIL_SENDER}}
+      SMTP_HOST: ${{secrets.SMTP_HOST}}
+      SMTP_PASSWORD: ${{secrets.SMTP_PASSWORD}}
+      SMTP_USER: ${{secrets.SMTP_USER}}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run db migration
+        run: |
+          bun run db:migrate
+
+      - name: Build team_sync app
+        run: bun run build
+
+      - name: Clear source code folder
+        run: |
+          cd /home/yash
+          rm -rf team_sync_preview
+          mkdir team_sync_preview
+
+      - name: Copy public directory
+        run: cp -r ./public ./.next/standalone/public
+
+      - name: Copy static directory
+        run: cp -r ./.next/static ./.next/standalone/.next/static
+
+      - name: Copy standalone directory
+        run: cp -a ./.next/standalone/. /home/yash/team_sync_preview
+
+      - name: Restart pm2
+        run: pm2 restart team_sync_preview --update-env
