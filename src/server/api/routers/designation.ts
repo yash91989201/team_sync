@@ -3,7 +3,7 @@ import { generateId } from "lucia";
 // UTILS
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // SCHEMAS
-import { designationTable, employeeProfileTable } from "@/server/db/schema";
+import { designationTable, empProfileTable } from "@/server/db/schema";
 import { CreateDesignationSchema, DeleteDesignationSchema, UpdateDesignationSchema } from "@/lib/schema";
 
 export const designationRouter = createTRPCRouter({
@@ -59,11 +59,11 @@ export const designationRouter = createTRPCRouter({
 
       const designationEmployee = await ctx.db
         .select({ employees: count() })
-        .from(employeeProfileTable)
+        .from(empProfileTable)
         .where(
           and(
-            eq(employeeProfileTable.deptId, input.deptId),
-            eq(employeeProfileTable.designationId, input.id)
+            eq(empProfileTable.deptId, input.deptId),
+            eq(empProfileTable.designationId, input.id)
           )
         )
 

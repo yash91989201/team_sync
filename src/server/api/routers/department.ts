@@ -3,7 +3,7 @@ import { eq, count, getTableColumns } from "drizzle-orm";
 // UTILS
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // DB TABLES
-import { departmentTable, employeeProfileTable } from "@/server/db/schema";
+import { departmentTable, empProfileTable } from "@/server/db/schema";
 // SCHEMAS
 import { CreateDepartmentSchema, DeleteDepartmentSchema, UpdateDepartmentSchema } from "@/lib/schema";
 
@@ -12,10 +12,10 @@ export const departmentRouter = createTRPCRouter({
     return ctx.db
       .select({
         ...getTableColumns(departmentTable),
-        employeeCount: count(employeeProfileTable.empId),
+        employeeCount: count(empProfileTable.empId),
       })
       .from(departmentTable)
-      .leftJoin(employeeProfileTable, eq(employeeProfileTable.deptId, departmentTable.id))
+      .leftJoin(empProfileTable, eq(empProfileTable.deptId, departmentTable.id))
       .groupBy(departmentTable.name)
   }),
 
@@ -41,8 +41,8 @@ export const departmentRouter = createTRPCRouter({
     try {
       const departmentEmployees = await ctx.db
         .select({ employees: count() })
-        .from(employeeProfileTable)
-        .where(eq(employeeProfileTable.deptId, input.id))
+        .from(empProfileTable)
+        .where(eq(empProfileTable.deptId, input.id))
 
       const employees = departmentEmployees[0]?.employees ?? 0
 

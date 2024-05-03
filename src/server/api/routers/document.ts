@@ -3,7 +3,7 @@ import { eq, inArray } from "drizzle-orm";
 import { pbClient } from "@/server/pb/config";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // DB TABLES
-import { documentTypeTable, employeeDocumentFileTable, employeeDocumentTable } from "@/server/db/schema";
+import { documentTypeTable, empDocumentFileTable, empDocumentTable } from "@/server/db/schema";
 // SCHEMAS
 import {
   CreateDocumentTypeSchema,
@@ -26,8 +26,8 @@ export const documentRouter = createTRPCRouter({
     }),
 
   getEmployeeDocuments: protectedProcedure.input(GetEmployeeDocumentsInput).query(({ ctx, input }) => {
-    return ctx.db.query.employeeDocumentTable.findFirst({
-      where: eq(employeeDocumentTable.id, input.id),
+    return ctx.db.query.empDocumentTable.findFirst({
+      where: eq(empDocumentTable.id, input.id),
       with: {
         documentType: true,
         documentFiles: true,
@@ -41,7 +41,7 @@ export const documentRouter = createTRPCRouter({
   }),
 
   getEmployeesDocuments: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.employeeDocumentTable.findMany({
+    return ctx.db.query.empDocumentTable.findMany({
       with: {
         documentType: true,
         documentFiles: true,
@@ -65,7 +65,7 @@ export const documentRouter = createTRPCRouter({
         documentFiles
       } = input
 
-      await ctx.db.insert(employeeDocumentTable).values({
+      await ctx.db.insert(empDocumentTable).values({
         id,
         verified,
         uniqueDocumentId,
@@ -73,7 +73,7 @@ export const documentRouter = createTRPCRouter({
         documentTypeId,
       })
 
-      await ctx.db.insert(employeeDocumentFileTable).values(documentFiles)
+      await ctx.db.insert(empDocumentFileTable).values(documentFiles)
       return {
         status: "SUCCESS",
         message: "Employee Document added successfully."
@@ -88,10 +88,10 @@ export const documentRouter = createTRPCRouter({
 
   updateEmployeeDocument: protectedProcedure.input(UpdateEmployeeDocumentSchema).mutation(async ({ ctx, input }) => {
     try {
-      await ctx.db.update(employeeDocumentTable).set({
+      await ctx.db.update(empDocumentTable).set({
         uniqueDocumentId: input.uniqueDocumentId,
         verified: input.verified
-      }).where(eq(employeeDocumentTable.id, input.id))
+      }).where(eq(empDocumentTable.id, input.id))
 
       return {
         status: "SUCCESS",
@@ -107,8 +107,8 @@ export const documentRouter = createTRPCRouter({
 
   deleteDocumentType: protectedProcedure.input(DeleteDocumentTypeSchema).mutation(async ({ ctx, input }) => {
     try {
-      const employeesDocuments = await ctx.db.query.employeeDocumentTable.findMany({
-        where: eq(employeeDocumentTable.documentTypeId, input.id),
+      const employeesDocuments = await ctx.db.query.empDocumentTable.findMany({
+        where: eq(empDocumentTable.documentTypeId, input.id),
         with: {
           documentFiles: true
         }
@@ -118,9 +118,9 @@ export const documentRouter = createTRPCRouter({
       const employeesDocumentFiles = employeesDocuments.flatMap(employeeDocuments => employeeDocuments.documentFiles)
       const employeesDocumentFilesId = employeesDocumentFiles.map(employeeDocumentFile => employeeDocumentFile.id)
 
-      await ctx.db.delete(employeeDocumentFileTable).where(inArray(employeeDocumentFileTable.id, employeesDocumentFilesId))
+      await ctx.db.delete(empDocumentFileTable).where(inArray(empDocumentFileTable.id, employeesDocumentFilesId))
 
-      await ctx.db.delete(employeeDocumentTable).where(inArray(employeeDocumentTable.id, employeesDocumentsId))
+      await ctx.db.delete(empDocumentTable).where(inArray(empDocumentTable.id, employeesDocumentsId))
 
       await ctx.db.delete(documentTypeTable).where(eq(documentTypeTable.id, input.id))
 
@@ -147,14 +147,14 @@ export const documentRouter = createTRPCRouter({
   deleteEmployeeDocument: protectedProcedure.input(DeleteEmployeeDocumentSchema).mutation(async ({ ctx, input }) => {
     try {
       await ctx.db
-        .delete(employeeDocumentFileTable)
+        .delete(empDocumentFileTable)
         .where(
-          inArray(employeeDocumentFileTable.id, input.filesId)
+          inArray(empDocumentFileTable.id, input.filesId)
         )
 
       await ctx.db
-        .delete(employeeDocumentTable)
-        .where(eq(employeeDocumentTable.id, input.id))
+        .delete(empDocumentTable)
+        .where(eq(empDocumentTable.id, input.id))
 
       return {
         status: "SUCCESS",

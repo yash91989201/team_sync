@@ -14,7 +14,7 @@ import {
 } from "@/lib/schema";
 // DB TABLES
 import {
-  employeeLeaveTypeTable,
+  empLeaveTypeTable,
   leaveBalanceTable,
   leaveRequestTable,
   leaveTypeTable,
@@ -166,7 +166,7 @@ export const leaveRouter = createTRPCRouter({
   deleteLeaveType: protectedProcedure.input(DeleteLeaveTypeSchema).mutation(async ({ ctx, input }) => {
 
     try {
-      await ctx.db.delete(employeeLeaveTypeTable).where(eq(employeeLeaveTypeTable.leaveTypeId, input.id))
+      await ctx.db.delete(empLeaveTypeTable).where(eq(empLeaveTypeTable.leaveTypeId, input.id))
 
       await ctx.db.delete(leaveBalanceTable).where(eq(leaveBalanceTable.leaveTypeId, input.id))
 

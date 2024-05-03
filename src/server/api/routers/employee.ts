@@ -10,10 +10,10 @@ import { formatDate, } from "@/lib/date-time-utils";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // DB TABLES
 import {
-  employeeAttendanceTable,
-  employeeDocumentTable,
-  employeeLeaveTypeTable,
-  employeeProfileTable,
+  empAttendanceTable,
+  empDocumentTable,
+  empLeaveTypeTable,
+  empProfileTable,
   leaveBalanceTable,
   leaveRequestTable,
   leaveTypeTable,
@@ -63,8 +63,8 @@ export const employeeRouter = createTRPCRouter({
     }),
 
   getData: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.employeeProfileTable.findFirst({
-      where: eq(employeeProfileTable.empId, ctx.session.user.id),
+    return ctx.db.query.empProfileTable.findFirst({
+      where: eq(empProfileTable.empId, ctx.session.user.id),
       with: {
         employee: true,
         designation: true,
@@ -79,17 +79,17 @@ export const employeeRouter = createTRPCRouter({
       })
       .from(leaveTypeTable)
       .innerJoin(
-        employeeLeaveTypeTable,
+        empLeaveTypeTable,
         and(
-          eq(employeeLeaveTypeTable.empId, ctx.session.user.id),
-          eq(leaveTypeTable.id, employeeLeaveTypeTable.leaveTypeId)
+          eq(empLeaveTypeTable.empId, ctx.session.user.id),
+          eq(leaveTypeTable.id, empLeaveTypeTable.leaveTypeId)
         )
       )
   }),
 
   getDocuments: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.employeeDocumentTable.findMany({
-      where: eq(employeeDocumentTable.empId, ctx.session.user.id),
+    return ctx.db.query.empDocumentTable.findMany({
+      where: eq(empDocumentTable.empId, ctx.session.user.id),
       with: {
         documentType: true,
         documentFiles: true,
@@ -103,10 +103,10 @@ export const employeeRouter = createTRPCRouter({
   }),
 
   getAttendanceByMonth: protectedProcedure.input(GetAttendanceByMonthInput).query(({ ctx, input }) => {
-    return ctx.db.query.employeeAttendanceTable.findMany({
+    return ctx.db.query.empAttendanceTable.findMany({
       where: and(
-        eq(employeeAttendanceTable.empId, ctx.session.user.id),
-        between(employeeAttendanceTable.date, formatDate(input.start), formatDate(input.end))
+        eq(empAttendanceTable.empId, ctx.session.user.id),
+        between(empAttendanceTable.date, formatDate(input.start), formatDate(input.end))
       ),
     })
   }),
@@ -148,10 +148,10 @@ export const employeeRouter = createTRPCRouter({
     const { id } = ctx.session.user;
 
     const employeeAttendance =
-      await ctx.db.query.employeeAttendanceTable.findFirst({
+      await ctx.db.query.empAttendanceTable.findFirst({
         where: and(
-          eq(employeeAttendanceTable.empId, id),
-          eq(employeeAttendanceTable.date, formatDate()),
+          eq(empAttendanceTable.empId, id),
+          eq(empAttendanceTable.date, formatDate()),
         ),
       });
 
@@ -162,31 +162,35 @@ export const employeeRouter = createTRPCRouter({
     };
   }),
 
-  punchIn: protectedProcedure.input(PunchInInputSchema).mutation(async ({ ctx, input }): Promise<{ status: "SUCCESS", message: string } | { status: "FAILED", message: string; }> => {
-    const { id } = ctx.session.user;
-    const { date, time: punchIn } = input
+  punchIn:
+    protectedProcedure
+      .input(PunchInInputSchema)
+      .mutation(async ({ ctx, input }):
+        Promise<{ status: "SUCCESS", message: string } | { status: "FAILED", message: string; }> => {
+        const { id } = ctx.session.user;
+        const { date, time: punchIn } = input
 
-    const [punchInQuery] = await ctx.db
-      .insert(employeeAttendanceTable)
-      .values({
-        id: generateId(15),
-        empId: id,
-        date,
-        punchIn,
-      });
+        const [punchInQuery] = await ctx.db
+          .insert(empAttendanceTable)
+          .values({
+            id: generateId(15),
+            empId: id,
+            date,
+            punchIn,
+          });
 
-    if (punchInQuery.affectedRows === 1) {
-      return {
-        status: "SUCCESS",
-        message: "You have successfully punched in"
-      }
-    }
+        if (punchInQuery.affectedRows === 1) {
+          return {
+            status: "SUCCESS",
+            message: "You have successfully punched in"
+          }
+        }
 
-    return {
-      status: "FAILED",
-      message: "Unable to punch in, try again!"
-    }
-  }),
+        return {
+          status: "FAILED",
+          message: "Unable to punch in, try again!"
+        }
+      }),
 
   punchOut: protectedProcedure
     .input(PunchOutInputSchema)
@@ -196,10 +200,10 @@ export const employeeRouter = createTRPCRouter({
       const { attendanceId, date, time: punchOut } = input;
 
       const attendanceData =
-        await ctx.db.query.employeeAttendanceTable.findFirst({
+        await ctx.db.query.empAttendanceTable.findFirst({
           where: and(
-            eq(employeeAttendanceTable.empId, id),
-            eq(employeeAttendanceTable.date, date),
+            eq(empAttendanceTable.empId, id),
+            eq(empAttendanceTable.date, date),
           ),
         });
 
@@ -213,13 +217,13 @@ export const employeeRouter = createTRPCRouter({
       const { shift, hours } = calculateShift({ punchIn, punchOut, });
 
       const [punchOutQuery] = await ctx.db
-        .update(employeeAttendanceTable)
+        .update(empAttendanceTable)
         .set({
           punchOut,
           shift,
           hours
         })
-        .where(eq(employeeAttendanceTable.id, attendanceId));
+        .where(eq(empAttendanceTable.id, attendanceId));
 
       if (punchOutQuery.affectedRows === 1) {
         return {
@@ -283,17 +287,16 @@ export const employeeRouter = createTRPCRouter({
                 id: generateId(15),
                 createdAt: leaveDate.startDate,
                 balance: daysAllowed - leaveDate.days,
+                fromDate: leaveDate.startDate,
+                toDate: leaveDate.endDate,
                 empId,
                 leaveTypeId,
                 status: "create",
               };
             }
             return {
-              id: existingLeaveBalance.id,
-              createdAt: leaveDate.startDate,
+              ...existingLeaveBalance,
               balance: existingLeaveBalance.balance - leaveDate.days,
-              empId,
-              leaveTypeId,
               status: "update",
             };
           });

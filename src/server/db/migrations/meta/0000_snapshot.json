@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "cdcacbc3-323e-4b74-af8f-69c19244abd0",
+  "id": "4951b266-409e-4cec-b4ba-8952f2022b32",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "admin_profile": {
@@ -181,8 +181,8 @@
       },
       "uniqueConstraints": {}
     },
-    "employee_attendance": {
-      "name": "employee_attendance",
+    "emp_attendance": {
+      "name": "emp_attendance",
       "columns": {
         "id": {
           "name": "id",
@@ -198,22 +198,29 @@
           "notNull": true,
           "autoincrement": false
         },
-        "punchIn": {
-          "name": "punchIn",
+        "punch_in": {
+          "name": "punch_in",
           "type": "time",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "punchOut": {
-          "name": "punchOut",
+        "punch_out": {
+          "name": "punch_out",
           "type": "time",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "shift_hours": {
-          "name": "shift_hours",
+        "hours": {
+          "name": "hours",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "shift": {
+          "name": "shift",
           "type": "enum('0','0.5','0.75','1')",
           "primaryKey": false,
           "notNull": false,
@@ -229,9 +236,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "employee_attendance_emp_id_user_id_fk": {
-          "name": "employee_attendance_emp_id_user_id_fk",
-          "tableFrom": "employee_attendance",
+        "emp_attendance_emp_id_user_id_fk": {
+          "name": "emp_attendance_emp_id_user_id_fk",
+          "tableFrom": "emp_attendance",
           "tableTo": "user",
           "columnsFrom": [
             "emp_id"
@@ -244,8 +251,8 @@
         }
       },
       "compositePrimaryKeys": {
-        "employee_attendance_id": {
-          "name": "employee_attendance_id",
+        "emp_attendance_id": {
+          "name": "emp_attendance_id",
           "columns": [
             "id"
           ]
@@ -253,8 +260,8 @@
       },
       "uniqueConstraints": {}
     },
-    "employee_document_file": {
-      "name": "employee_document_file",
+    "emp_document_file": {
+      "name": "emp_document_file",
       "columns": {
         "id": {
           "name": "id",
@@ -280,10 +287,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "employee_document_file_emp_document_id_employee_document_id_fk": {
-          "name": "employee_document_file_emp_document_id_employee_document_id_fk",
-          "tableFrom": "employee_document_file",
-          "tableTo": "employee_document",
+        "emp_document_file_emp_document_id_emp_document_id_fk": {
+          "name": "emp_document_file_emp_document_id_emp_document_id_fk",
+          "tableFrom": "emp_document_file",
+          "tableTo": "emp_document",
           "columnsFrom": [
             "emp_document_id"
           ],
@@ -295,8 +302,8 @@
         }
       },
       "compositePrimaryKeys": {
-        "employee_document_file_id": {
-          "name": "employee_document_file_id",
+        "emp_document_file_id": {
+          "name": "emp_document_file_id",
           "columns": [
             "id"
           ]
@@ -304,8 +311,8 @@
       },
       "uniqueConstraints": {}
     },
-    "employee_document": {
-      "name": "employee_document",
+    "emp_document": {
+      "name": "emp_document",
       "columns": {
         "id": {
           "name": "id",
@@ -345,9 +352,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "employee_document_emp_id_user_id_fk": {
-          "name": "employee_document_emp_id_user_id_fk",
-          "tableFrom": "employee_document",
+        "emp_document_emp_id_user_id_fk": {
+          "name": "emp_document_emp_id_user_id_fk",
+          "tableFrom": "emp_document",
           "tableTo": "user",
           "columnsFrom": [
             "emp_id"
@@ -358,9 +365,9 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "employee_document_document_type_id_document_type_id_fk": {
-          "name": "employee_document_document_type_id_document_type_id_fk",
-          "tableFrom": "employee_document",
+        "emp_document_document_type_id_document_type_id_fk": {
+          "name": "emp_document_document_type_id_document_type_id_fk",
+          "tableFrom": "emp_document",
           "tableTo": "document_type",
           "columnsFrom": [
             "document_type_id"
@@ -373,8 +380,8 @@
         }
       },
       "compositePrimaryKeys": {
-        "employee_document_id": {
-          "name": "employee_document_id",
+        "emp_document_id": {
+          "name": "emp_document_id",
           "columns": [
             "id"
           ]
@@ -382,8 +389,8 @@
       },
       "uniqueConstraints": {}
     },
-    "employee_leave_type": {
-      "name": "employee_leave_type",
+    "emp_leave_type": {
+      "name": "emp_leave_type",
       "columns": {
         "emp_id": {
           "name": "emp_id",
@@ -402,9 +409,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "employee_leave_type_emp_id_user_id_fk": {
-          "name": "employee_leave_type_emp_id_user_id_fk",
-          "tableFrom": "employee_leave_type",
+        "emp_leave_type_emp_id_user_id_fk": {
+          "name": "emp_leave_type_emp_id_user_id_fk",
+          "tableFrom": "emp_leave_type",
           "tableTo": "user",
           "columnsFrom": [
             "emp_id"
@@ -415,9 +422,9 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "employee_leave_type_leave_type_id_leave_type_id_fk": {
-          "name": "employee_leave_type_leave_type_id_leave_type_id_fk",
-          "tableFrom": "employee_leave_type",
+        "emp_leave_type_leave_type_id_leave_type_id_fk": {
+          "name": "emp_leave_type_leave_type_id_leave_type_id_fk",
+          "tableFrom": "emp_leave_type",
           "tableTo": "leave_type",
           "columnsFrom": [
             "leave_type_id"
@@ -430,8 +437,8 @@
         }
       },
       "compositePrimaryKeys": {
-        "employeeLeaveId": {
-          "name": "employeeLeaveId",
+        "empLeaveId": {
+          "name": "empLeaveId",
           "columns": [
             "emp_id",
             "leave_type_id"
@@ -440,8 +447,152 @@
       },
       "uniqueConstraints": {}
     },
-    "employee_profile": {
-      "name": "employee_profile",
+    "emp_payslip_comp": {
+      "name": "emp_payslip_comp",
+      "columns": {
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "arrear": {
+          "name": "arrear",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "adjustment": {
+          "name": "adjustment",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "amount_paid": {
+          "name": "amount_paid",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "emp_payslip_id": {
+          "name": "emp_payslip_id",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "emp_payslip_comp_emp_payslip_id_emp_payslip_id_fk": {
+          "name": "emp_payslip_comp_emp_payslip_id_emp_payslip_id_fk",
+          "tableFrom": "emp_payslip_comp",
+          "tableTo": "emp_payslip",
+          "columnsFrom": [
+            "emp_payslip_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "emp_payslip": {
+      "name": "emp_payslip",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "calendar_days": {
+          "name": "calendar_days",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "lopDays": {
+          "name": "lopDays",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "payable_days": {
+          "name": "payable_days",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "emp_id": {
+          "name": "emp_id",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "emp_payslip_emp_id_user_id_fk": {
+          "name": "emp_payslip_emp_id_user_id_fk",
+          "tableFrom": "emp_payslip",
+          "tableTo": "user",
+          "columnsFrom": [
+            "emp_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "emp_payslip_id": {
+          "name": "emp_payslip_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "emp_profile": {
+      "name": "emp_profile",
       "columns": {
         "emp_id": {
           "name": "emp_id",
@@ -452,7 +603,7 @@
         },
         "joining_date": {
           "name": "joining_date",
-          "type": "timestamp",
+          "type": "date",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -510,9 +661,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "employee_profile_emp_id_user_id_fk": {
-          "name": "employee_profile_emp_id_user_id_fk",
-          "tableFrom": "employee_profile",
+        "emp_profile_emp_id_user_id_fk": {
+          "name": "emp_profile_emp_id_user_id_fk",
+          "tableFrom": "emp_profile",
           "tableTo": "user",
           "columnsFrom": [
             "emp_id"
@@ -523,9 +674,9 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "employee_profile_dept_id_department_id_fk": {
-          "name": "employee_profile_dept_id_department_id_fk",
-          "tableFrom": "employee_profile",
+        "emp_profile_dept_id_department_id_fk": {
+          "name": "emp_profile_dept_id_department_id_fk",
+          "tableFrom": "emp_profile",
           "tableTo": "department",
           "columnsFrom": [
             "dept_id"
@@ -536,9 +687,9 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "employee_profile_designation_id_designation_id_fk": {
-          "name": "employee_profile_designation_id_designation_id_fk",
-          "tableFrom": "employee_profile",
+        "emp_profile_designation_id_designation_id_fk": {
+          "name": "emp_profile_designation_id_designation_id_fk",
+          "tableFrom": "emp_profile",
           "tableTo": "designation",
           "columnsFrom": [
             "designation_id"
@@ -551,8 +702,8 @@
         }
       },
       "compositePrimaryKeys": {
-        "employee_profile_emp_id": {
-          "name": "employee_profile_emp_id",
+        "emp_profile_emp_id": {
+          "name": "emp_profile_emp_id",
           "columns": [
             "emp_id"
           ]
@@ -560,8 +711,8 @@
       },
       "uniqueConstraints": {}
     },
-    "employee_salary_component": {
-      "name": "employee_salary_component",
+    "emp_salary_comp": {
+      "name": "emp_salary_comp",
       "columns": {
         "id": {
           "name": "id",
@@ -570,16 +721,16 @@
           "notNull": true,
           "autoincrement": false
         },
-        "name": {
-          "name": "name",
-          "type": "varchar(256)",
+        "amount": {
+          "name": "amount",
+          "type": "int",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "amount": {
-          "name": "amount",
-          "type": "int",
+        "sal_comp_id": {
+          "name": "sal_comp_id",
+          "type": "varchar(24)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -594,9 +745,22 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "employee_salary_component_emp_id_user_id_fk": {
-          "name": "employee_salary_component_emp_id_user_id_fk",
-          "tableFrom": "employee_salary_component",
+        "emp_salary_comp_sal_comp_id_salary_component_id_fk": {
+          "name": "emp_salary_comp_sal_comp_id_salary_component_id_fk",
+          "tableFrom": "emp_salary_comp",
+          "tableTo": "salary_component",
+          "columnsFrom": [
+            "sal_comp_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "emp_salary_comp_emp_id_user_id_fk": {
+          "name": "emp_salary_comp_emp_id_user_id_fk",
+          "tableFrom": "emp_salary_comp",
           "tableTo": "user",
           "columnsFrom": [
             "emp_id"
@@ -609,25 +773,17 @@
         }
       },
       "compositePrimaryKeys": {
-        "employee_salary_component_id": {
-          "name": "employee_salary_component_id",
+        "emp_salary_comp_id": {
+          "name": "emp_salary_comp_id",
           "columns": [
             "id"
           ]
         }
       },
-      "uniqueConstraints": {
-        "employee_salary_component_name_emp_id_unique": {
-          "name": "employee_salary_component_name_emp_id_unique",
-          "columns": [
-            "name",
-            "emp_id"
-          ]
-        }
-      }
+      "uniqueConstraints": {}
     },
-    "employee_shift": {
-      "name": "employee_shift",
+    "emp_shift": {
+      "name": "emp_shift",
       "columns": {
         "emp_id": {
           "name": "emp_id",
@@ -660,9 +816,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "employee_shift_emp_id_user_id_fk": {
-          "name": "employee_shift_emp_id_user_id_fk",
-          "tableFrom": "employee_shift",
+        "emp_shift_emp_id_user_id_fk": {
+          "name": "emp_shift_emp_id_user_id_fk",
+          "tableFrom": "emp_shift",
           "tableTo": "user",
           "columnsFrom": [
             "emp_id"
@@ -675,8 +831,8 @@
         }
       },
       "compositePrimaryKeys": {
-        "employee_shift_emp_id": {
-          "name": "employee_shift_emp_id",
+        "emp_shift_emp_id": {
+          "name": "emp_shift_emp_id",
           "columns": [
             "emp_id"
           ]
@@ -731,11 +887,25 @@
           "notNull": true,
           "autoincrement": false
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "date",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "from_date": {
+          "name": "from_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "to_date": {
+          "name": "to_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "balance": {
@@ -799,6 +969,64 @@
       },
       "uniqueConstraints": {}
     },
+    "leave_encashment": {
+      "name": "leave_encashment",
+      "columns": {
+        "amount": {
+          "name": "amount",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "arrear": {
+          "name": "arrear",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "adjustment": {
+          "name": "adjustment",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "amount_paid": {
+          "name": "amount_paid",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "emp_payslip_id": {
+          "name": "emp_payslip_id",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "leave_encashment_emp_payslip_id_emp_payslip_id_fk": {
+          "name": "leave_encashment_emp_payslip_id_emp_payslip_id_fk",
+          "tableFrom": "leave_encashment",
+          "tableTo": "emp_payslip",
+          "columnsFrom": [
+            "emp_payslip_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "leave_request": {
       "name": "leave_request",
       "columns": {
@@ -846,7 +1074,7 @@
         },
         "status": {
           "name": "status",
-          "type": "enum('pending','approved','rejected')",
+          "type": "enum('pending','approved','rejected','withdrawn')",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -972,6 +1200,13 @@
         },
         "paid_leave": {
           "name": "paid_leave",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "leave_encashment": {
+          "name": "leave_encashment",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,

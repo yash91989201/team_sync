@@ -1,1 +1,0 @@
-ALTER TABLE `leave_type` ADD `leave_encashment` boolean NOT NULL;

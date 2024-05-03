@@ -34,17 +34,17 @@ export const userTable = mysqlTable("user", {
 
 export const userTableRelations = relations(userTable, ({ one, many }) => ({
   adminProfile: one(adminProfileTable),
-  employeeProfile: one(employeeProfileTable),
-  employeeShift: one(employeeShiftTable),
-  employeeAttendance: many(employeeAttendanceTable),
+  employeeProfile: one(empProfileTable),
+  employeeShift: one(empShiftTable),
+  employeeAttendance: many(empAttendanceTable),
   employeeLeaveRequest: many(leaveRequestTable, {
-    relationName: "employeeLeaveRequest",
+    relationName: "empLeaveRequest",
   }),
   leaveRequestReviewer: many(leaveRequestTable, {
     relationName: "leaveRequestReviewer",
   }),
   leaveBalance: many(leaveBalanceTable),
-  employeeDocument: many(employeeDocumentTable),
+  employeeDocument: many(empDocumentTable),
 }));
 
 export const adminProfileTable = mysqlTable("admin_profile", {
@@ -64,7 +64,7 @@ export const adminProfileTableRelations = relations(
   }),
 );
 
-export const employeeProfileTable = mysqlTable("employee_profile", {
+export const empProfileTable = mysqlTable("emp_profile", {
   // FOREIGN KEY AS PRIMAY KEY - SINCE USER - EMPLOYEE PROFILE IS ONE-ONE RELATIONSHIP
   empId: varchar("emp_id", { length: 24 })
     .primaryKey()
@@ -80,19 +80,19 @@ export const employeeProfileTable = mysqlTable("employee_profile", {
   designationId: varchar("designation_id", { length: 24 }).notNull().references(() => designationTable.id)
 });
 
-export const employeeProfileTableRelations = relations(
-  employeeProfileTable,
+export const empProfileTableRelations = relations(
+  empProfileTable,
   ({ one }) => ({
     employee: one(userTable, {
-      fields: [employeeProfileTable.empId],
+      fields: [empProfileTable.empId],
       references: [userTable.id],
     }),
     department: one(departmentTable, {
-      fields: [employeeProfileTable.deptId],
+      fields: [empProfileTable.deptId],
       references: [departmentTable.id]
     }),
     designation: one(designationTable, {
-      fields: [employeeProfileTable.designationId],
+      fields: [empProfileTable.designationId],
       references: [designationTable.id]
     })
   }),
@@ -109,7 +109,7 @@ export const departmentTableRelations = relations(
   departmentTable,
   ({ many }) => ({
     designation: many(designationTable),
-    employees: many(employeeProfileTable),
+    employees: many(empProfileTable),
   }),
 );
 
@@ -136,11 +136,11 @@ export const designationTableRelations = relations(
       fields: [designationTable.deptId],
       references: [departmentTable.id],
     }),
-    employees: many(employeeProfileTable),
+    employees: many(empProfileTable),
   }),
 );
 
-export const employeeShiftTable = mysqlTable("employee_shift", {
+export const empShiftTable = mysqlTable("emp_shift", {
   // FOREIGN KEY AS PRIMAY KEY - SINCE EMPLOYEE AND EMPLOYEE SHIFT IS ONE-ONE RELATIONSHIP
   empId: varchar("emp_id", { length: 24 })
     .primaryKey()
@@ -150,17 +150,17 @@ export const employeeShiftTable = mysqlTable("employee_shift", {
   breakMinutes: int("break_minutes").notNull(),
 });
 
-export const employeeShiftTableRelations = relations(
-  employeeShiftTable,
+export const empShiftTableRelations = relations(
+  empShiftTable,
   ({ one }) => ({
     employee: one(userTable, {
-      fields: [employeeShiftTable.empId],
+      fields: [empShiftTable.empId],
       references: [userTable.id],
     }),
   }),
 );
 
-export const employeeAttendanceTable = mysqlTable("employee_attendance", {
+export const empAttendanceTable = mysqlTable("emp_attendance", {
   id: varchar("id", { length: 24 }).primaryKey(),
   date: date("date", { mode: "string" }).notNull(),
   punchIn: time("punch_in").notNull(),
@@ -173,11 +173,11 @@ export const employeeAttendanceTable = mysqlTable("employee_attendance", {
     .references(() => userTable.id),
 });
 
-export const employeeAttendanceTableRelations = relations(
-  employeeAttendanceTable,
+export const empAttendanceTableRelations = relations(
+  empAttendanceTable,
   ({ one }) => ({
     employee: one(userTable, {
-      fields: [employeeAttendanceTable.empId],
+      fields: [empAttendanceTable.empId],
       references: [userTable.id],
     }),
   }),
@@ -204,15 +204,22 @@ export const leaveTypeTableRelations = relations(
   }),
 );
 
-export const employeeLeaveTypeTable = mysqlTable("employee_leave_type", {
+export const empLeaveTypeTable = mysqlTable("emp_leave_type", {
   empId: varchar("emp_id", {
     length: 24,
   }).notNull().references(() => userTable.id),
   leaveTypeId: varchar("leave_type_id", {
     length: 24,
   }).notNull().references(() => leaveTypeTable.id),
-}, (employeeLeaveTypeTable) => ({
-  employeeLeaveId: primaryKey({ name: "employeeLeaveId", columns: [employeeLeaveTypeTable.empId, employeeLeaveTypeTable.leaveTypeId] })
+}, (table) => ({
+  employeeLeaveId: primaryKey({ name: "empLeaveId", columns: [table.empId, table.leaveTypeId] })
+}))
+
+export const empLeaveTypeTableRelations = relations(empLeaveTypeTable, ({ one }) => ({
+  leaveType: one(leaveTypeTable, {
+    fields: [empLeaveTypeTable.leaveTypeId],
+    references: [leaveTypeTable.id]
+  })
 }))
 
 export const leaveRequestTable = mysqlTable("leave_request", {
@@ -243,7 +250,7 @@ export const leaveRequestTableRelations = relations(
     employee: one(userTable, {
       fields: [leaveRequestTable.empId],
       references: [userTable.id],
-      relationName: "employeeLeaveRequest",
+      relationName: "empLeaveRequest",
     }),
     leaveType: one(leaveTypeTable, {
       fields: [leaveRequestTable.leaveTypeId],
@@ -261,7 +268,9 @@ export const leaveBalanceTable = mysqlTable("leave_balance", {
   id: varchar("id", {
     length: 24,
   }).primaryKey(),
-  createdAt: date("createdAt", { mode: "date" }).notNull(),
+  createdAt: date("created_at", { mode: "date" }).notNull(),
+  fromDate: date("from_date", { mode: "date" }),
+  toDate: date("to_date", { mode: "date" }),
   balance: int("balance").notNull(),
   // FOREIGN KEY RELATIONS
   empId: varchar("emp_id", { length: 24 })
@@ -304,11 +313,11 @@ export const documentTypeTable = mysqlTable("document_type", {
 export const documentTypeTableRelations = relations(
   documentTypeTable,
   ({ many }) => ({
-    employeeDocuments: many(employeeDocumentTable),
+    employeeDocuments: many(empDocumentTable),
   }),
 );
 
-export const employeeDocumentTable = mysqlTable("employee_document", {
+export const empDocumentTable = mysqlTable("emp_document", {
   id: varchar("id", {
     length: 24,
   }).primaryKey(),
@@ -327,22 +336,22 @@ export const employeeDocumentTable = mysqlTable("employee_document", {
     .references(() => documentTypeTable.id),
 });
 
-export const employeDocumentTableRelations = relations(
-  employeeDocumentTable,
+export const empDocumentTableRelations = relations(
+  empDocumentTable,
   ({ one, many }) => ({
     employee: one(userTable, {
-      fields: [employeeDocumentTable.empId],
+      fields: [empDocumentTable.empId],
       references: [userTable.id],
     }),
     documentType: one(documentTypeTable, {
-      fields: [employeeDocumentTable.documentTypeId],
+      fields: [empDocumentTable.documentTypeId],
       references: [documentTypeTable.id],
     }),
-    documentFiles: many(employeeDocumentFileTable),
+    documentFiles: many(empDocumentFileTable),
   }),
 );
 
-export const employeeDocumentFileTable = mysqlTable("employee_document_file", {
+export const empDocumentFileTable = mysqlTable("emp_document_file", {
   id: varchar("id", {
     length: 24,
   }).primaryKey(),
@@ -352,15 +361,15 @@ export const employeeDocumentFileTable = mysqlTable("employee_document_file", {
     length: 24,
   })
     .notNull()
-    .references(() => employeeDocumentTable.id),
+    .references(() => empDocumentTable.id),
 });
 
-export const employeeDocumentFileTableRelations = relations(
-  employeeDocumentFileTable,
+export const empDocumentFileTableRelations = relations(
+  empDocumentFileTable,
   ({ one }) => ({
-    employeeDocument: one(employeeDocumentTable, {
-      fields: [employeeDocumentFileTable.empDocumentId],
-      references: [employeeDocumentTable.id],
+    employeeDocument: one(empDocumentTable, {
+      fields: [empDocumentFileTable.empDocumentId],
+      references: [empDocumentTable.id],
     }),
   }),
 );
@@ -372,22 +381,82 @@ export const salaryComponentTable = mysqlTable("salary_component", {
   name: varchar("name", { length: 256 }).unique().notNull(),
 })
 
-export const employeeSalaryComponentTable = mysqlTable("employee_salary_component", {
+export const empSalaryCompTable = mysqlTable("emp_salary_comp", {
   id: varchar("id", {
     length: 24,
   }).primaryKey(),
-  name: varchar("name", { length: 256 }).notNull(),
   amount: int("amount").notNull(),
+  // FOREIGN KEY RELATIONS
+  salaryComponentId: varchar("sal_comp_id", {
+    length: 24,
+  })
+    .notNull()
+    .references(() => salaryComponentTable.id),
+  empId: varchar("emp_id", {
+    length: 24,
+  })
+    .notNull()
+    .references(() => userTable.id),
+})
+
+export const emplSalaryCompTableRelations = relations(empSalaryCompTable, ({ one }) => ({
+  salaryComponent: one(salaryComponentTable, {
+    fields: [empSalaryCompTable.salaryComponentId],
+    references: [salaryComponentTable.id]
+  })
+}))
+
+export const empPayslipTable = mysqlTable("emp_payslip", {
+  id: varchar("id", {
+    length: 24,
+  }).primaryKey(),
+  date: date("date", { mode: "date" }).notNull(),
+  createdAt: datetime("created_at", { mode: "date" }).notNull(),
+  calendarDays: int("calendar_days").notNull(),
+  lopDays: int("lopDays").notNull(),
+  payableDays: int("payable_days").notNull(),
   // FOREIGN KEY RELATIONS
   empId: varchar("emp_id", {
     length: 24,
   })
     .notNull()
     .references(() => userTable.id),
-}, (empSalaryComponentTable) => ({
-  // UNIQUE DESIGNATIONS ACCORDING TO DEPARTMENT
-  empSalaryComponent: unique().on(empSalaryComponentTable.name, empSalaryComponentTable.empId)
+})
+
+export const empPayslipTableRelations = relations(empPayslipTable, ({ one, many }) => ({
+  payslipComponents: many(empPayslipCompTable),
+  leaveEncashment: one(leaveEncashmentTable, {
+    fields: [empPayslipTable.id],
+    references: [leaveEncashmentTable.empPayslipId]
+  })
 }))
+
+export const empPayslipCompTable = mysqlTable("emp_payslip_comp", {
+  name: varchar("name", { length: 256 }).notNull(),
+  amount: int("amount").notNull(),
+  arrear: int("arrear").notNull(),
+  adjustment: int("adjustment").notNull(),
+  amountPaid: int("amount_paid").notNull(),
+  // FOREIGN KEY RELATIONS
+  empPayslipId: varchar("emp_payslip_id", {
+    length: 24,
+  })
+    .notNull()
+    .references(() => empPayslipTable.id),
+})
+
+export const leaveEncashmentTable = mysqlTable("leave_encashment", {
+  amount: int("amount").notNull(),
+  arrear: int("arrear").notNull(),
+  adjustment: int("adjustment").notNull(),
+  amountPaid: int("amount_paid").notNull(),
+  // FOREIGN KEY RELATIONS
+  empPayslipId: varchar("emp_payslip_id", {
+    length: 24,
+  })
+    .notNull()
+    .references(() => empPayslipTable.id),
+})
 
 export const holidayTable = mysqlTable("holiday", {
   id: varchar("id", {
