@@ -25,6 +25,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { RotateCw } from "lucide-react";
+import { generateId } from "lucia";
 
 export default function SalaryComponentsField() {
   const { data: salaryComponents = [] } =
@@ -143,7 +144,11 @@ export default function SalaryComponentsField() {
                   onClick={() => {
                     isSalaryComponentSelected(id)
                       ? removeSalaryComponent(id)
-                      : addSalaryComponent({ id, name, amount: 0 });
+                      : addSalaryComponent({
+                          id: generateId(15),
+                          amount: 0,
+                          salaryComponent: { id, name },
+                        });
                   }}
                 >
                   {name}

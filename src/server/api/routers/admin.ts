@@ -217,7 +217,14 @@ export const adminRouter = createTRPCRouter({
           const hashedPassword = await hashPassword(password);
           const empLeaveTypeIds = leaveTypes.map(({ id }) => id)
           const empLeaveTypeData = leaveTypes.map(({ id }) => ({ empId: employeeId, leaveTypeId: id }))
-          const employeeSalaryComponents = salaryComponents.map((salaryComponent) => ({ ...salaryComponent, salaryComponentId: salaryComponent.id, empId: employeeId }))
+          const employeeSalaryComponents = salaryComponents
+            .map((salaryComponent) => (
+              {
+                ...salaryComponent,
+                salaryComponentId: salaryComponent.id,
+                empId: employeeId
+              }
+            ))
 
           const existingEmp = await ctx.db.query.userTable.findFirst({
             where: and(
