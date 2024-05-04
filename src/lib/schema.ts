@@ -6,13 +6,13 @@ import {
   departmentTable,
   designationTable,
   documentTypeTable,
-  employeeAttendanceTable,
-  employeeDocumentFileTable,
-  employeeDocumentTable,
-  employeeLeaveTypeTable,
-  employeeProfileTable,
-  employeeSalaryComponentTable,
-  employeeShiftTable,
+  empAttendanceTable,
+  empDocumentFileTable,
+  empDocumentTable,
+  empLeaveTypeTable,
+  empProfileTable,
+  empSalaryCompTable,
+  empShiftTable,
   holidayTable,
   leaveBalanceTable,
   leaveRequestTable,
@@ -25,25 +25,25 @@ import { ACCEPTED_FILE_MIME_TYPES, MAX_FILE_SIZE } from "@/constants";
 
 // Database table schemas
 export const UserSchema = createSelectSchema(userTable);
-export const EmployeeProfileSchema = createSelectSchema(employeeProfileTable);
+export const EmployeeProfileSchema = createSelectSchema(empProfileTable);
 export const AdminProfileSchema = createSelectSchema(adminProfileTable);
 export const DepartmentSchema = createSelectSchema(departmentTable);
 export const DesignationSchema = createSelectSchema(designationTable);
-export const EmployeeShiftSchema = createSelectSchema(employeeShiftTable);
+export const EmployeeShiftSchema = createSelectSchema(empShiftTable);
 export const EmployeeAttendanceSchema = createSelectSchema(
-  employeeAttendanceTable,
+  empAttendanceTable,
 );
 export const LeaveTypeSchema = createSelectSchema(leaveTypeTable);
-export const EmployeeLeaveTypeSchema = createSelectSchema(employeeLeaveTypeTable)
+export const EmployeeLeaveTypeSchema = createSelectSchema(empLeaveTypeTable)
 export const LeaveRequestSchema = createSelectSchema(leaveRequestTable);
 export const LeaveBalanceSchema = createSelectSchema(leaveBalanceTable);
 export const DocumentTypeSchema = createSelectSchema(documentTypeTable);
-export const EmployeeDocumentSchema = createSelectSchema(employeeDocumentTable);
+export const EmployeeDocumentSchema = createSelectSchema(empDocumentTable);
 export const EmployeeDocumentFileSchema = createSelectSchema(
-  employeeDocumentFileTable,
+  empDocumentFileTable,
 );
-export const SalaryComponentsSchema = createSelectSchema(salaryComponentTable)
-export const EmployeeSalaryComponentSchema = createSelectSchema(employeeSalaryComponentTable)
+export const SalaryComponentSchema = createSelectSchema(salaryComponentTable)
+export const EmployeeSalaryComponentSchema = createSelectSchema(empSalaryCompTable)
 export const HolidaySchema = createSelectSchema(holidayTable)
 // AUTH SCHEMAS
 export const AdminSignupSchema = z.object({
@@ -198,8 +198,8 @@ export const CreateEmployeeSchema = z.object({
     .min(15, { message: "Min. break hours should be 15 min." }),
   salaryComponents: z.array(z.object({
     id: z.string(),
-    name: z.string(),
-    amount: z.number()
+    amount: z.number(),
+    salaryComponent: SalaryComponentSchema
   })).min(1, {
     message: "Min. 1 salary component is required"
   }),
@@ -240,8 +240,8 @@ export const UpdateEmployeeSchema = z.object({
     .min(15, { message: "Min. break hours should be 15 min." }),
   salaryComponents: z.array(z.object({
     id: z.string(),
-    name: z.string(),
-    amount: z.number()
+    amount: z.number(),
+    salaryComponent: SalaryComponentSchema
   })).min(1, {
     message: "Min. 1 salary component is required"
   }),
@@ -350,4 +350,11 @@ export const UpdateHolidaySchema = CreateHolidaySchema
 
 export const DeleteHolidaySchema = z.object({
   id: z.string(),
+})
+
+// SALARY SCHEMAS
+export const GetEmpSalaryDataInput = z.object({
+  empId: z.string(),
+  startDate: z.string(),
+  endDate: z.string()
 })

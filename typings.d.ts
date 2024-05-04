@@ -108,3 +108,5 @@ type UploadEmployeeDocumentsStatusType =
 type UpdateDocumentFileStatusType = { status: "SUCCESS", message: string } | { status: "FAILED", message: string; }
 
 type DeleteDocumentsFilesStatusType = { status: "SUCCESS", message: string } | { status: "FAILED", message: string; }
+
+type ProcedureStatusType = { status: "SUCCESS", message: string; } | { status: "FAILED"; message: string; }

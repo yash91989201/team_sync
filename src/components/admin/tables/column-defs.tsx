@@ -15,7 +15,7 @@ import type {
 import type { ColumnDef } from "@tanstack/react-table";
 // UI
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@ui/avatar";
 // CUSTOM COMPONENTS
 import {
@@ -32,7 +32,8 @@ import DeleteDocumentTypeForm from "@/components/admin/document-types/delete-doc
 // CONSTANTS
 import { DOCUMENT_FILE_TYPES_DISPLAY } from "@/constants";
 // ICONS
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, CornerUpRight } from "lucide-react";
+import Link from "next/link";
 
 export const DEPARTMENT_TABLE: ColumnDef<DepartmentTableProps>[] = [
   {
@@ -344,5 +345,25 @@ export const SALARIES_TABLE: ColumnDef<SalariesTableProps>[] = [
     accessorKey: "actions",
     header: "Update Salary",
     cell: ({ row }) => <SalariesTableActions empId={row.original.id} />,
+  },
+  {
+    accessorKey: "payslip",
+    header: "Generate Payslip",
+    cell: ({ row }) => (
+      <Link
+        className={cn(
+          buttonVariants({
+            size: "icon",
+            variant: "outline",
+            className:
+              "rounded-xl  text-green-500  hover:border-green-500 hover:bg-white hover:text-green-500",
+          }),
+          "border-green-500 ",
+        )}
+        href={`/admin/payroll/salary-info/${row.original.id}/generate-payslip`}
+      >
+        <CornerUpRight className="size-4" />
+      </Link>
+    ),
   },
 ];

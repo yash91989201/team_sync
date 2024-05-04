@@ -82,10 +82,10 @@ export default function SalaryComponentsField() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {fields.map(({ name }, index) => (
+            {fields.map(({ salaryComponent }, index) => (
               <TableRow key={index} className="hover:bg-white">
                 <TableCell>
-                  <FormLabel>{name}</FormLabel>
+                  <FormLabel>{salaryComponent.name}</FormLabel>
                 </TableCell>
                 <TableCell>
                   <FormField

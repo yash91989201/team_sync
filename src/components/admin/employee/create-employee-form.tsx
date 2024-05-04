@@ -317,7 +317,7 @@ export default function CreateEmployeeForm() {
                           >
                             <CalendarIcon className="mr-3 size-4 opacity-50" />
                             {field.value ? (
-                              format(field.value, "PPP")
+                              format(field.value, "do MMM, yyyy")
                             ) : (
                               <span>dd/mm/yyyy</span>
                             )}
@@ -480,7 +480,7 @@ export default function CreateEmployeeForm() {
                             >
                               <CalendarIcon className="mr-3 size-4 opacity-50" />
                               {field.value ? (
-                                format(field.value, "PPP")
+                                format(field.value, "do MMM, yyyy")
                               ) : (
                                 <span>dd/mm/yyyy</span>
                               )}

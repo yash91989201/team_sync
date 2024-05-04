@@ -30,7 +30,7 @@ import type {
   CreateDocumentTypeSchema,
   GetEmployeeByQueryInput,
   CreateEmployeeDocumentFormSchema,
-  SalaryComponentsSchema,
+  SalaryComponentSchema,
   EmployeeSalaryComponentSchema,
   CreateSalaryComponentSchema,
   UpdateEmployeeSchema,
@@ -65,7 +65,7 @@ export type EmployeeDocumentSchemaType = z.infer<typeof EmployeeDocumentSchema>;
 export type EmployeeDocumentFileSchemaType = z.infer<
   typeof EmployeeDocumentFileSchema
 >;
-export type SalaryComponentType = z.infer<typeof SalaryComponentsSchema>
+export type SalaryComponentType = z.infer<typeof SalaryComponentSchema>
 export type EmployeeSalaryComponentType = z.infer<typeof EmployeeSalaryComponentSchema>
 export type HolidaySchemaType = z.infer<typeof HolidaySchema>
 
