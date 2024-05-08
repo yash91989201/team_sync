@@ -1,0 +1,1 @@
+ALTER TABLE `emp_payslip` ADD `total_salary` int NOT NULL;

@@ -1,0 +1,1 @@
+ALTER TABLE `emp_payslip` RENAME COLUMN `lopDays` TO `lop_days`;

@@ -54,7 +54,9 @@ export default function SalaryComponentsField() {
   };
 
   const isSalaryComponentSelected = (id: string) => {
-    const salaryComponent = fields.find((field) => field.id === id);
+    const salaryComponent = fields.find(
+      (field) => field.salaryComponent.id === id,
+    );
     return salaryComponent === undefined ? false : true;
   };
 

@@ -176,6 +176,8 @@ export const UpdateEmployeeDocumentSchema = z.object({
 // EMPLOYEE SCHEMAS
 export const GetEmployeeByQueryInput = z.object({ query: z.string() });
 export const GetEmployeeByIdInput = z.object({ empId: z.string() })
+export const GetEmployeeProfileInput = z.object({ empId: z.string() })
+export const GetEmpSalaryCompInput = z.object({ empId: z.string() })
 
 export const CreateEmployeeSchema = z.object({
   code: z.string({ required_error: "Employee code is required" }).min(4, { message: "Min. 4 characters is required" }),
@@ -263,14 +265,12 @@ export const GetAttendanceStatusInputSchema = z.object({
 })
 
 export const PunchInInputSchema = z.object({
-  time: z.string(),
-  date: z.string()
+  date: z.date()
 })
 
 export const PunchOutInputSchema = z.object({
   attendanceId: z.string(),
-  time: z.string(),
-  date: z.string()
+  date: z.date()
 })
 
 // EMPLOYEE LEAVE SCHEMAS
@@ -353,8 +353,31 @@ export const DeleteHolidaySchema = z.object({
 })
 
 // SALARY SCHEMAS
+export const GeneratePayslipSchema = z.object({
+  empId: z.string(),
+  date: z.date(),
+  createdAt: z.date(),
+  calendarDays: z.number(),
+  lopDays: z.number(),
+  daysPayable: z.number(),
+  totalSalary: z.number(),
+  payslipComponents: z.array(z.object({
+    name: z.string(),
+    amount: z.number(),
+    arrear: z.number(),
+    adjustment: z.number(),
+    amountPaid: z.number(),
+  })),
+  leaveEncashment: z.object({
+    amount: z.number(),
+    arrear: z.number(),
+    adjustment: z.number(),
+    amountPaid: z.number(),
+  })
+})
+
 export const GetEmpSalaryDataInput = z.object({
   empId: z.string(),
-  startDate: z.string(),
-  endDate: z.string()
+  startDate: z.date(),
+  endDate: z.date()
 })

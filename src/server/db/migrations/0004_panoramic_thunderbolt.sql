@@ -1,0 +1,1 @@
+ALTER TABLE `emp_payslip` RENAME COLUMN `payable_days` TO `days_payable`;

@@ -6,7 +6,7 @@ import {
   calculateShift,
   getDateRangeByRenewPeriod
 } from "@/lib/utils";
-import { formatDate, } from "@/lib/date-time-utils";
+import { formatTime, } from "@/lib/date-time-utils";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // DB TABLES
 import {
@@ -106,7 +106,7 @@ export const employeeRouter = createTRPCRouter({
     return ctx.db.query.empAttendanceTable.findMany({
       where: and(
         eq(empAttendanceTable.empId, ctx.session.user.id),
-        between(empAttendanceTable.date, formatDate(input.start), formatDate(input.end))
+        between(empAttendanceTable.date, input.start, input.end)
       ),
     })
   }),
@@ -151,7 +151,7 @@ export const employeeRouter = createTRPCRouter({
       await ctx.db.query.empAttendanceTable.findFirst({
         where: and(
           eq(empAttendanceTable.empId, id),
-          eq(empAttendanceTable.date, formatDate()),
+          eq(empAttendanceTable.date, new Date()),
         ),
       });
 
@@ -166,9 +166,9 @@ export const employeeRouter = createTRPCRouter({
     protectedProcedure
       .input(PunchInInputSchema)
       .mutation(async ({ ctx, input }):
-        Promise<{ status: "SUCCESS", message: string } | { status: "FAILED", message: string; }> => {
+        Promise<ProcedureStatusType> => {
         const { id } = ctx.session.user;
-        const { date, time: punchIn } = input
+        const { date, } = input
 
         const [punchInQuery] = await ctx.db
           .insert(empAttendanceTable)
@@ -176,7 +176,7 @@ export const employeeRouter = createTRPCRouter({
             id: generateId(15),
             empId: id,
             date,
-            punchIn,
+            punchIn: formatTime(date),
           });
 
         if (punchInQuery.affectedRows === 1) {
@@ -194,10 +194,11 @@ export const employeeRouter = createTRPCRouter({
 
   punchOut: protectedProcedure
     .input(PunchOutInputSchema)
-    .mutation(async ({ ctx, input }): Promise<{ status: "SUCCESS", message: string } | { status: "FAILED", message: string; }> => {
+    .mutation(async ({ ctx, input }): Promise<ProcedureStatusType> => {
 
       const { id } = ctx.session.user;
-      const { attendanceId, date, time: punchOut } = input;
+      const { attendanceId, date } = input;
+      const punchOut = formatTime(date)
 
       const attendanceData =
         await ctx.db.query.empAttendanceTable.findFirst({
@@ -287,8 +288,6 @@ export const employeeRouter = createTRPCRouter({
                 id: generateId(15),
                 createdAt: leaveDate.startDate,
                 balance: daysAllowed - leaveDate.days,
-                fromDate: leaveDate.startDate,
-                toDate: leaveDate.endDate,
                 empId,
                 leaveTypeId,
                 status: "create",
@@ -334,14 +333,13 @@ export const employeeRouter = createTRPCRouter({
           });
 
           await Promise.all(
-            updatedLeaveBalances.map(async (leaveBalance) => {
-              if (leaveBalance.status === "update") {
+            updatedLeaveBalances.map(async ({ status, ...leaveBalanceData }) => {
+              if (status === "update") {
                 await ctx.db
                   .update(leaveBalanceTable)
-                  .set({ balance: leaveBalance.balance })
-                  .where(eq(leaveBalanceTable.id, leaveBalance.id));
+                  .set({ balance: leaveBalanceData.balance })
+                  .where(eq(leaveBalanceTable.id, leaveBalanceData.id));
               } else {
-                const { status: _, ...leaveBalanceData } = leaveBalance;
                 await ctx.db.insert(leaveBalanceTable).values(leaveBalanceData);
               }
             }),

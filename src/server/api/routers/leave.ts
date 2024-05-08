@@ -79,7 +79,7 @@ export const leaveRouter = createTRPCRouter({
       async ({
         ctx,
         input,
-      }): Promise<{ status: "SUCCESS" | "FAILED"; message: string }> => {
+      }): Promise<ProcedureStatusType> => {
         const { leaveRequestId, empId } = input;
 
         const leaveRequest = await ctx.db.query.leaveRequestTable.findFirst({

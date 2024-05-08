@@ -57,7 +57,7 @@ export function getGreeting() {
   }
 }
 
-function getHoursDifference({ startDate, endDate }: { startDate: Date, endDate: Date }) {
+export function getHoursDifference({ startDate, endDate }: { startDate: Date, endDate: Date }) {
   const diffInMilliseconds = differenceInMilliseconds(endDate, startDate);
   const hours = Math.floor(diffInMilliseconds / (1000 * 60 * 60));
   const minutes = Math.floor(

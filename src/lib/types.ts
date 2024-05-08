@@ -42,11 +42,14 @@ import type {
   UpdateDesignationSchema,
   UpdateLeaveTypeSchema,
   UpdateEmployeeDocumentSchema,
+  GeneratePayslipSchema,
 } from "@/lib/schema";
 // TYPES
 import type { z } from "zod";
 import type { Session } from "lucia";
 import type { LucideIcon } from "lucide-react";
+import type { AppRouter } from "@/server/api/root";
+import type { inferProcedureOutput } from "@trpc/server";
 
 // DB TABLE TYPES
 export type UserType = Omit<z.infer<typeof UserSchema>, "password">;
@@ -122,6 +125,7 @@ export type UpdateDesignationchemaType = z.infer<typeof UpdateDesignationSchema>
 export type GetEmployeesSalariesOutputType = UserType & {
   employeeProfile: EmployeeProfileType | null
 }
+export type GeneratePayslipSchemaType = z.infer<typeof GeneratePayslipSchema>
 
 // ADMIN DATA TABLE TYPES
 export type EmployeesDocumentsTableProps = EmployeeDocumentSchemaType & {
@@ -166,6 +170,14 @@ export type LeaveApplicationTableProps = LeaveRequestSchemaType & {
 
 export type CreateHolidaySchemaType = z.infer<typeof CreateHolidaySchema>
 export type UpdateHolidaySchemaType = z.infer<typeof UpdateHolidaySchema>
+
+export type GeneratePayslipFormProps = {
+  empId: string;
+  date: Date;
+  payslipData: inferProcedureOutput<
+    AppRouter["adminRouter"]["getEmpPayslipData"]
+  >;
+};
 
 
 // OTHER TYPES

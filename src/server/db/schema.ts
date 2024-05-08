@@ -162,7 +162,7 @@ export const empShiftTableRelations = relations(
 
 export const empAttendanceTable = mysqlTable("emp_attendance", {
   id: varchar("id", { length: 24 }).primaryKey(),
-  date: date("date", { mode: "string" }).notNull(),
+  date: date("date", { mode: "date" }).notNull(),
   punchIn: time("punch_in").notNull(),
   punchOut: time("punch_out"),
   hours: time("hours"),
@@ -269,8 +269,6 @@ export const leaveBalanceTable = mysqlTable("leave_balance", {
     length: 24,
   }).primaryKey(),
   createdAt: date("created_at", { mode: "date" }).notNull(),
-  fromDate: date("from_date", { mode: "date" }),
-  toDate: date("to_date", { mode: "date" }),
   balance: int("balance").notNull(),
   // FOREIGN KEY RELATIONS
   empId: varchar("emp_id", { length: 24 })
@@ -413,8 +411,9 @@ export const empPayslipTable = mysqlTable("emp_payslip", {
   date: date("date", { mode: "date" }).notNull(),
   createdAt: datetime("created_at", { mode: "date" }).notNull(),
   calendarDays: int("calendar_days").notNull(),
-  lopDays: int("lopDays").notNull(),
-  payableDays: int("payable_days").notNull(),
+  lopDays: int("lop_days").notNull(),
+  daysPayable: int("days_payable").notNull(),
+  totalSalary: int("total_salary").notNull(),
   // FOREIGN KEY RELATIONS
   empId: varchar("emp_id", {
     length: 24,

@@ -1,7 +1,9 @@
 "use client";
+import { toast } from "sonner";
 // UTILS
 import { api } from "@/trpc/react";
 import { getShiftTimeString } from "@/lib/utils";
+import { formatDate } from "@/lib/date-time-utils";
 // UI
 import { Button } from "@ui/button";
 import {
@@ -15,8 +17,6 @@ import {
 import { Skeleton } from "@ui/skeleton";
 // ICONS
 import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
-import { formatDate, formatTime } from "@/lib/date-time-utils";
 
 export default function AttendancePunchCard() {
   const {
@@ -35,8 +35,7 @@ export default function AttendancePunchCard() {
 
   const punchInAction = async () => {
     const actionResponse = await punchIn({
-      date: formatDate(),
-      time: formatTime(),
+      date: new Date(),
     });
     if (actionResponse.status === "SUCCESS") {
       toast.success(actionResponse.message);
@@ -50,8 +49,7 @@ export default function AttendancePunchCard() {
     if (attendanceData === undefined) return;
     const actionResponse = await punchOut({
       attendanceId: attendanceData.id,
-      date: formatDate(),
-      time: formatTime(),
+      date: new Date(),
     });
     if (actionResponse.status === "SUCCESS") {
       toast.success(actionResponse.message);

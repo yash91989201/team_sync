@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
 import AdminMainWrapper from "@/components/admin/admin-main-wrapper";
+import GeneratePayslip from "@/components/admin/payroll/generate-payslip";
 
 export default async function GeneratePayslipPage({
   params,
@@ -26,7 +27,9 @@ export default async function GeneratePayslipPage({
   if (employeeData.status === "SUCCESS") {
     return (
       <AdminMainWrapper>
-        <div className="mx-auto max-w-7xl"></div>
+        <div className="mx-auto max-w-7xl">
+          <GeneratePayslip empId={params.empId} />
+        </div>
       </AdminMainWrapper>
     );
   }
