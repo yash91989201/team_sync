@@ -1,8 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Document, Page, pdfjs } from "react-pdf";
-import "react-pdf/dist/Page/TextLayer.css";
-import "react-pdf/dist/Page/AnnotationLayer.css";
 // UTILS
 import { buttonVariants } from "@/components/ui/button";
 // TYPES
@@ -20,15 +17,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 // ICONS
-import { ArrowDownToLine, Eye } from "lucide-react";
+import { ArrowDownToLine, Eye, FileText } from "lucide-react";
 
 type FilesPreviewProps = {
   files: EmployeeDocumentFileSchemaType[];
   documentType: DocumentTypeSchemaType;
   employee: UserType;
 };
-
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 export default function DocumentsPreview({
   files,
@@ -39,30 +34,18 @@ export default function DocumentsPreview({
     return (
       <article>
         {files.map((file) => (
-          <Dialog key={file.id}>
-            <DialogTrigger>pdf</DialogTrigger>
-            <DialogContent className="min-h-[80%] min-w-[90%]">
-              <DialogTitle className="text-base font-semibold">
-                {employee.name}&apos;s {documentType.type} pdf
-              </DialogTitle>
-              <div className="h-full overflow-auto">
-                <Document file={file.fileUrl.slice(21)} className="mx-auto">
-                  <Page pageNumber={1} />
-                </Document>
-              </div>
-              <DialogFooter>
-                <Link
-                  download={`${employee.name}'s ${documentType.type}`}
-                  target="_blank"
-                  href={file.fileUrl.slice(21)}
-                  className={buttonVariants({ className: "gap-1" })}
-                >
-                  <ArrowDownToLine className="size-4" />
-                  <span>Download</span>
-                </Link>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <Link
+            key={file.id}
+            target="_blank"
+            href={file.fileUrl}
+            className={buttonVariants({
+              variant: "ghost",
+              className: "group relative gap-1",
+            })}
+          >
+            <Eye className="hidden size-4 text-gray-600 group-hover:block" />
+            <FileText className="size-4 group-hover:hidden" />
+          </Link>
         ))}
       </article>
     );

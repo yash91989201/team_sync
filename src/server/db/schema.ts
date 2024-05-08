@@ -423,6 +423,10 @@ export const empPayslipTable = mysqlTable("emp_payslip", {
 })
 
 export const empPayslipTableRelations = relations(empPayslipTable, ({ one, many }) => ({
+  employee: one(userTable, {
+    fields: [empPayslipTable.empId],
+    references: [userTable.id]
+  }),
   payslipComponents: many(empPayslipCompTable),
   leaveEncashment: one(leaveEncashmentTable, {
     fields: [empPayslipTable.id],

@@ -1,12 +1,16 @@
 "use client";
-
-import type { DocumentTypeSchemaType } from "@/lib/types";
-import { formatFileSize } from "@/lib/utils";
-import { UploadCloudIcon } from "lucide-react";
+import Link from "next/link";
 import * as React from "react";
-import { useDropzone, type DropzoneOptions } from "react-dropzone";
-import { Document, Page } from "react-pdf";
 import { twMerge } from "tailwind-merge";
+import { useDropzone } from "react-dropzone";
+// UTILS
+import { formatFileSize } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
+// TYPES
+import type { DropzoneOptions } from "react-dropzone";
+import type { DocumentTypeSchemaType } from "@/lib/types";
+// ICONS
+import { UploadCloudIcon } from "lucide-react";
 
 const variants = {
   base: "relative rounded-md p-4 flex justify-center items-center flex-col cursor-pointer border border-dashed border-gray-400 dark:border-gray-300 transition-colors duration-200 ease-in-out",
@@ -63,8 +67,6 @@ const UpdateDocumentInput = React.forwardRef<HTMLInputElement, InputProps>(
       }
       return null;
     }, [value]);
-    console.log(imageUrl);
-
     // dropzone configuration
     const {
       getRootProps,
@@ -134,9 +136,16 @@ const UpdateDocumentInput = React.forwardRef<HTMLInputElement, InputProps>(
           {fileType === "application/pdf" ? (
             <div className="relative flex h-16 w-16 flex-1 flex-col gap-1.5">
               <p>Current file</p>
-              <Document file={fileUrl.slice(21)}>
-                <Page pageNumber={1} />
-              </Document>
+              <Link
+                target="_blank"
+                href={fileUrl}
+                className={buttonVariants({
+                  variant: "ghost",
+                  className: "group relative gap-1",
+                })}
+              >
+                Preview file
+              </Link>
             </div>
           ) : (
             <picture className="relative aspect-square h-full">

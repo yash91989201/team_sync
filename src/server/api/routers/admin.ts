@@ -724,11 +724,13 @@ export const adminRouter = createTRPCRouter({
         ...leaveEncashment,
         empPayslipId
       })
+
       return {
         status: "SUCCESS",
         message: "Payslip generated and pdf stored successfully."
       }
     } catch (error) {
+      console.debug(error)
       return {
         status: "FAILED",
         message: "Unable to generate payslip"

@@ -7,6 +7,7 @@ import type { RecordService } from 'pocketbase'
 
 export enum Collections {
 	EmployeeDocumentFile = "employee_document_file",
+	Payslip = "payslip",
 	UserProfile = "user_profile",
 }
 
@@ -40,6 +41,10 @@ export type EmployeeDocumentFileRecord = {
 	file_type: string
 }
 
+export type PayslipRecord = {
+	file?: string
+}
+
 export type UserProfileRecord = {
 	file_size: number
 	file_type: string
@@ -48,17 +53,20 @@ export type UserProfileRecord = {
 
 // Response types include system fields and match responses from the PocketBase API
 export type EmployeeDocumentFileResponse<Texpand = unknown> = Required<EmployeeDocumentFileRecord> & BaseSystemFields<Texpand>
+export type PayslipResponse<Texpand = unknown> = Required<PayslipRecord> & BaseSystemFields<Texpand>
 export type UserProfileResponse<Texpand = unknown> = Required<UserProfileRecord> & BaseSystemFields<Texpand>
 
 // Types containing all Records and Responses, useful for creating typing helper functions
 
 export type CollectionRecords = {
 	employee_document_file: EmployeeDocumentFileRecord
+	payslip: PayslipRecord
 	user_profile: UserProfileRecord
 }
 
 export type CollectionResponses = {
 	employee_document_file: EmployeeDocumentFileResponse
+	payslip: PayslipResponse
 	user_profile: UserProfileResponse
 }
 
@@ -67,5 +75,6 @@ export type CollectionResponses = {
 
 export type TypedPocketBase = PocketBase & {
 	collection(idOrName: 'employee_document_file'): RecordService<EmployeeDocumentFileResponse>
+	collection(idOrName: 'payslip'): RecordService<PayslipResponse>
 	collection(idOrName: 'user_profile'): RecordService<UserProfileResponse>
 }

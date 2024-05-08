@@ -16,7 +16,8 @@
     "db:studio": "drizzle-kit studio --verbose --port 3002",
     "db:check": "drizzle-kit check:mysql",
     "prepare": "husky",
-    "pb:typegen": "pocketbase-typegen --db ~/pb_data/data.db --out ./src/lib/pocketbase-types.ts"
+    "pb:start": "./pb/pocketbase serve",
+    "pb:typegen": "pocketbase-typegen --db ./pb/pb_data/data.db --out ./src/lib/pocketbase-types.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
@@ -46,7 +47,6 @@
     "@trpc/next": "next",
     "@trpc/react-query": "next",
     "@trpc/server": "next",
-    "@types/nodemailer": "^6.4.14",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "cmdk": "^1.0.0",
@@ -69,7 +69,6 @@
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.51.1",
     "react-mail": "^0.0.1",
-    "react-pdf": "^7.7.1",
     "server-only": "^0.0.1",
     "sharp": "^0.33.3",
     "sonner": "^1.4.41",
@@ -82,6 +81,7 @@
     "@hookform/devtools": "^4.3.1",
     "@types/eslint": "^8.56.2",
     "@types/node": "^20.11.20",
+    "@types/nodemailer": "^6.4.15",
     "@types/react": "^18.2.57",
     "@types/react-dom": "^18.2.19",
     "@typescript-eslint/eslint-plugin": "^7.1.1",

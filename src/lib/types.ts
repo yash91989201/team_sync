@@ -14,6 +14,9 @@ import type {
   DocumentTypeSchema,
   EmployeeDocumentSchema,
   EmployeeDocumentFileSchema,
+  EmpPayslipSchema,
+  EmpPayslipCompSchema,
+  LeaveEncashmentSchema,
   // OTHER SCHEMAS
   AdminSignupSchema,
   LoginSchema,
@@ -71,6 +74,10 @@ export type EmployeeDocumentFileSchemaType = z.infer<
 export type SalaryComponentType = z.infer<typeof SalaryComponentSchema>
 export type EmployeeSalaryComponentType = z.infer<typeof EmployeeSalaryComponentSchema>
 export type HolidaySchemaType = z.infer<typeof HolidaySchema>
+export type EmpPayslipType = z.infer<typeof EmpPayslipSchema>
+export type EmpPayslipCompType = z.infer<typeof EmpPayslipCompSchema>
+export type LeaveEncashmentType = z.infer<typeof LeaveEncashmentSchema>
+
 
 export type ShiftType = Exclude<EmployeeAttendanceType["shift"], null>;
 
@@ -179,6 +186,12 @@ export type GeneratePayslipFormProps = {
   >;
 };
 
+export type PayslipTemplateProps = {
+  payslip: EmpPayslipType;
+  employee: UserType;
+  payslipComps: EmpPayslipCompType[];
+  leaveEncashment: LeaveEncashmentType
+}
 
 // OTHER TYPES
 export type UserSessionType =

@@ -10,11 +10,14 @@ import {
   empDocumentFileTable,
   empDocumentTable,
   empLeaveTypeTable,
+  empPayslipCompTable,
+  empPayslipTable,
   empProfileTable,
   empSalaryCompTable,
   empShiftTable,
   holidayTable,
   leaveBalanceTable,
+  leaveEncashmentTable,
   leaveRequestTable,
   leaveTypeTable,
   salaryComponentTable,
@@ -45,6 +48,9 @@ export const EmployeeDocumentFileSchema = createSelectSchema(
 export const SalaryComponentSchema = createSelectSchema(salaryComponentTable)
 export const EmployeeSalaryComponentSchema = createSelectSchema(empSalaryCompTable)
 export const HolidaySchema = createSelectSchema(holidayTable)
+export const EmpPayslipSchema = createSelectSchema(empPayslipTable)
+export const EmpPayslipCompSchema = createSelectSchema(empPayslipCompTable)
+export const LeaveEncashmentSchema = createSelectSchema(leaveEncashmentTable)
 // AUTH SCHEMAS
 export const AdminSignupSchema = z.object({
   name: z.string().min(6, { message: "Full name is required." }),

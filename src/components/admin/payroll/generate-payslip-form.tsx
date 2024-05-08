@@ -40,6 +40,7 @@ import {
   CalendarMinus,
   CalendarOff,
   HandCoins,
+  Loader2,
 } from "lucide-react";
 
 export default function GeneratePayslipForm({
@@ -65,7 +66,7 @@ export default function GeneratePayslipForm({
     },
   });
 
-  const { control, handleSubmit, watch } = generatePayslipForm;
+  const { control, handleSubmit, watch, formState } = generatePayslipForm;
 
   const componentsData = watch("payslipComponents");
   const leaveEncashmentAdjustment = watch("leaveEncashment.adjustment");
@@ -246,7 +247,15 @@ export default function GeneratePayslipForm({
           </div>
         </div>
         <div className="flex items-center justify-end">
-          <Button className="font-semibold">Generate Payslip</Button>
+          <Button
+            className="gap-1 font-semibold"
+            disabled={formState.isSubmitting}
+          >
+            {formState.isSubmitting ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : null}
+            <span>Generate payslip</span>
+          </Button>
         </div>
       </form>
     </Form>
