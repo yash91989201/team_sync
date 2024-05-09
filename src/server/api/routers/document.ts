@@ -118,13 +118,11 @@ export const documentRouter = createTRPCRouter({
       const employeesDocumentFiles = employeesDocuments.flatMap(employeeDocuments => employeeDocuments.documentFiles)
       const employeesDocumentFilesId = employeesDocumentFiles.map(employeeDocumentFile => employeeDocumentFile.id)
 
-      await ctx.db.delete(empDocumentFileTable).where(inArray(empDocumentFileTable.id, employeesDocumentFilesId))
-
-      await ctx.db.delete(empDocumentTable).where(inArray(empDocumentTable.id, employeesDocumentsId))
-
-      await ctx.db.delete(documentTypeTable).where(eq(documentTypeTable.id, input.id))
-
       if (employeesDocumentFilesId.length > 0) {
+        await ctx.db.delete(empDocumentFileTable).where(inArray(empDocumentFileTable.id, employeesDocumentFilesId))
+
+        await ctx.db.delete(empDocumentTable).where(inArray(empDocumentTable.id, employeesDocumentsId))
+
         await Promise.all(employeesDocumentFilesId.map(async (fileId) => {
           // eslint-disable-next-line
           await pbClient
@@ -132,6 +130,8 @@ export const documentRouter = createTRPCRouter({
             .delete(fileId)
         }))
       }
+
+      await ctx.db.delete(documentTypeTable).where(eq(documentTypeTable.id, input.id))
 
       return {
         status: "SUCCESS",
