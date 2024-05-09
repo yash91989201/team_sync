@@ -124,12 +124,14 @@ export const documentRouter = createTRPCRouter({
 
       await ctx.db.delete(documentTypeTable).where(eq(documentTypeTable.id, input.id))
 
-      await Promise.all(employeesDocumentFilesId.map(async (fileId) => {
-        // eslint-disable-next-line
-        await pbClient
-          .collection("employee_document_file")
-          .delete(fileId)
-      }))
+      if (employeesDocumentFilesId.length > 0) {
+        await Promise.all(employeesDocumentFilesId.map(async (fileId) => {
+          // eslint-disable-next-line
+          await pbClient
+            .collection("employee_document_file")
+            .delete(fileId)
+        }))
+      }
 
       return {
         status: "SUCCESS",
