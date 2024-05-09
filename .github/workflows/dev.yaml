@@ -6,7 +6,7 @@ on:
       - dev
 
 jobs:
-  build:
+  deploy_preview:
     runs-on: self-hosted
 
     strategy:
