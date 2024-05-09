@@ -186,12 +186,34 @@ export type GeneratePayslipFormProps = {
   >;
 };
 
-export type PayslipTemplateProps = {
+export type PayslipDataType = {
+  empData: UserType;
+  empProfile: EmployeeProfileType & {
+    department: DepartmentSchemaType;
+    designation: DesignationSchemaType;
+  };
   payslip: EmpPayslipType;
-  employee: UserType;
   payslipComps: EmpPayslipCompType[];
-  leaveEncashment: LeaveEncashmentType
+  leaveEncashment: LeaveEncashmentType;
 }
+
+export type PayslipTemplateProps = {
+  payslipData: PayslipDataType;
+  previewMode: boolean;
+}
+
+type GetPayslipDataSuccess = {
+  status: "SUCCESS";
+  message: string;
+  data: PayslipDataType
+}
+
+type GetPayslipDataFailed = {
+  status: "FAILED";
+  message: string;
+}
+
+export type GetPayslipDataStatus = GetPayslipDataSuccess | GetPayslipDataFailed
 
 // OTHER TYPES
 export type UserSessionType =

@@ -2,8 +2,11 @@ import { headers } from "next/headers";
 // UTILS
 import { env } from "@/env";
 import { auth } from "@/server/helpers";
+import { getPayslipDataForPdf } from "@/server/helpers/payslip";
 // CUSTOM COMPONENTS
-import PayslipPdfTemplate from "@/components/pdf/payslip-pdf-template";
+import PayslipPdfTemplate, {
+  NoPayslipData,
+} from "@/components/pdf/payslip-pdf-template";
 import PdfPreviewWrapper from "@/components/pdf/pdf-preview-wrapper";
 import PdfPreviewBlocked from "@/components/pdf/pdf-preview-blocked";
 
@@ -14,6 +17,7 @@ export default async function PayslipPdfPreviewPage({
 }) {
   const header = headers();
   const { session } = await auth();
+  const { payslipId } = params;
 
   const generatePdfSecret = header.get("x-generate-pdf-secret");
 
@@ -24,13 +28,27 @@ export default async function PayslipPdfPreviewPage({
     return <PdfPreviewBlocked />;
   }
 
+  const payslipDataForPdf = await getPayslipDataForPdf({ payslipId });
+
+  if (payslipDataForPdf.status == "FAILED") {
+    return <NoPayslipData />;
+  }
+
   if (generatePdfSecret === null) {
     return (
       <PdfPreviewWrapper>
-        <PayslipPdfTemplate />
+        <PayslipPdfTemplate
+          previewMode={true}
+          payslipData={payslipDataForPdf.data}
+        />
       </PdfPreviewWrapper>
     );
   }
 
-  return <PayslipPdfTemplate />;
+  return (
+    <PayslipPdfTemplate
+      previewMode={false}
+      payslipData={payslipDataForPdf.data}
+    />
+  );
 }

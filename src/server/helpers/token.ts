@@ -1,3 +1,4 @@
+import "server-only";
 import crypto from "crypto";
 import { eq } from "drizzle-orm";
 import { generateId } from "lucia";

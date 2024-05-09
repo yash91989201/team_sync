@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 // CUSTOM COMPONENTS
 import PdfPreviewWrapper from "@/components/pdf/pdf-preview-wrapper";
 
-export default async function PdfPreviewBlocked() {
+export default function PdfPreviewBlocked() {
   return (
     <PdfPreviewWrapper>
       <Card>

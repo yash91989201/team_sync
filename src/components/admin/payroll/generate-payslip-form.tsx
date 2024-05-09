@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm, useFormContext } from "react-hook-form";
 // UTILS
 import { api } from "@/trpc/react";
+import { formatSalary } from "@/lib/utils";
 // SCHEMAS
 import { GeneratePayslipSchema } from "@/lib/schema";
 // TYPES
@@ -200,7 +201,7 @@ export default function GeneratePayslipForm({
                 Total
               </TableCell>
               <TableCell colSpan={2} className="text-lg font-semibold">
-                Rs.&nbsp;{totalSalary}
+                {formatSalary(totalSalary)}
               </TableCell>
             </TableRow>
           </TableFooter>

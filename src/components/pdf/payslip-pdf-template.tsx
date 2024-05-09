@@ -1,3 +1,8 @@
+import Image from "next/image";
+// UTILS
+import { cn, formatSalary, getRenewPeriodRange } from "@/lib/utils";
+// TYPES
+import type { PayslipTemplateProps } from "@/lib/types";
 // UI
 import {
   Table,
@@ -10,42 +15,33 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Separator } from "@ui/separator";
-import Image from "next/image";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// CUSTOM COMPONENTS
+import PdfPreviewWrapper from "@/components/pdf/pdf-preview-wrapper";
+import { formatDate } from "@/lib/date-time-utils";
 
-const payslipDummyData = [
-  {
-    name: "Base Salary",
-    amount: 8500,
-    adjustment: -300,
-    arrear: 100,
-    amountPaid: 8300,
-  },
-  {
-    name: "House Rent Allowance",
-    amount: 8500,
-    adjustment: -300,
-    arrear: 100,
-    amountPaid: 8300,
-  },
-  {
-    name: "Medical Allowance",
-    amount: 8500,
-    adjustment: -300,
-    arrear: 100,
-    amountPaid: 8300,
-  },
-  {
-    name: "Internet Allowance",
-    amount: 8500,
-    adjustment: -300,
-    arrear: 100,
-    amountPaid: 8300,
-  },
-];
+export default function PayslipPdfTemplate({
+  payslipData,
+  previewMode,
+}: PayslipTemplateProps) {
+  const { empData, empProfile, payslip, payslipComps, leaveEncashment } =
+    payslipData;
 
-export default function PayslipPdfTemplate() {
+  const { startDate: payPeriodStart, endDate: payPeriodEnd } =
+    getRenewPeriodRange({
+      referenceDate: payslip.date,
+      renewPeriod: "month",
+      renewPeriodCount: 1,
+    });
+
   return (
-    <div id="main-pdf" className="flex h-full w-full flex-col gap-9 p-6 py-9">
+    <div
+      id="main-pdf"
+      className={cn(
+        "flex flex-col gap-9 p-6 py-9",
+        previewMode ? "h-full w-full" : "h-screen w-screen",
+      )}
+    >
       <div className="mx-auto my-6 h-fit w-fit rounded-lg bg-primary/5 p-3">
         <div className="relative h-[4.5rem] w-96">
           <Image src="/novafy_logo_banner.png" alt="Novafy logo banner" fill />
@@ -60,25 +56,25 @@ export default function PayslipPdfTemplate() {
             <p>Employee Code:</p>
             <p>Employee Name:</p>
             <p>Employee Band:</p>
-            <p>Department:</p>
             <p>Designation:</p>
+            <p>Department:</p>
+            <p>Calendar Days:</p>
             <p>LOP Days:</p>
-            <p>Onsite Salary Days:</p>
             <p>Leave Encashment:</p>
             <p>Holiday Allowance Days:</p>
             <p>Days Payable:</p>
           </div>
           <div>
-            <p>EMP0001</p>
-            <p>Shubham Mohanty</p>
-            <p>U3</p>
-            <p>IT Dept</p>
-            <p>Junior Developer</p>
-            <p>3</p>
-            <p>26</p>
-            <p>2</p>
-            <p>1</p>
-            <p>26</p>
+            <p>{empData.code}</p>
+            <p>{empData.name}</p>
+            <p>{empProfile.empBand}</p>
+            <p>{empProfile.designation.name}</p>
+            <p>{empProfile.department.name}</p>
+            <p>{payslip.calendarDays}</p>
+            <p>{payslip.lopDays}</p>
+            <p>0</p>
+            <p>0</p>
+            <p>{payslip.daysPayable}</p>
           </div>
         </section>
         <Separator orientation="vertical" />
@@ -98,8 +94,11 @@ export default function PayslipPdfTemplate() {
             <p>PF Number:</p>
           </div>
           <div>
-            <p>10/04/2024 to 31/04/2024</p>
-            <p>10/04/2024</p>
+            <p>
+              {formatDate(payPeriodStart, "dd/MM/yyyy")} to&nbsp;
+              {formatDate(payPeriodEnd, "dd/MM/yyyy")}
+            </p>
+            <p>{formatDate(empProfile.joiningDate, "dd/MM/yyyy")}</p>
             <p>Novafy Limited</p>
             <p>Novafy Mumbai Pl.No.4</p>
             <p>EBPWA2973K</p>
@@ -135,31 +134,39 @@ export default function PayslipPdfTemplate() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {payslipDummyData.map((payslipData, index) => (
+            {payslipComps.map((payslipComp, index) => (
               <TableRow key={index} className="h-12">
                 <TableCell className="font-semibold">
-                  {payslipData.name}
+                  {payslipComp.name}
                 </TableCell>
                 <TableCell className="text-right">
-                  {payslipData.amount}
+                  {payslipComp.amount}
                 </TableCell>
                 <TableCell className="text-right">
-                  {payslipData.adjustment}
+                  {payslipComp.adjustment}
                 </TableCell>
                 <TableCell className="text-right">
-                  {payslipData.arrear}
+                  {payslipComp.arrear}
                 </TableCell>
                 <TableCell className="text-right">
-                  {payslipData.amountPaid}
+                  {payslipComp.amountPaid}
                 </TableCell>
               </TableRow>
             ))}
             <TableRow>
               <TableCell className="font-semibold">Leave Encashment</TableCell>
-              <TableCell className="text-right">834</TableCell>
-              <TableCell className="text-right">-200</TableCell>
-              <TableCell className="text-right">0</TableCell>
-              <TableCell className="text-right">634</TableCell>
+              <TableCell className="text-right">
+                {leaveEncashment.amount}
+              </TableCell>
+              <TableCell className="text-right">
+                {leaveEncashment.adjustment}
+              </TableCell>
+              <TableCell className="text-right">
+                {leaveEncashment.arrear}
+              </TableCell>
+              <TableCell className="text-right">
+                {leaveEncashment.amountPaid}
+              </TableCell>
             </TableRow>
           </TableBody>
           <TableFooter>
@@ -168,12 +175,14 @@ export default function PayslipPdfTemplate() {
                 Total Earnings
               </TableCell>
               <TableCell className="text-right text-base font-semibold">
-                Rs. 18,000
+                {formatSalary(payslip.totalSalary)}
               </TableCell>
             </TableRow>
           </TableFooter>
           <TableCaption className="mt-6 font-semibold text-gray-900">
-            Total earnings for April,2024 month is Rs.18,000
+            Total earnings for {formatDate(payslip.date, "MMMM,yyyy")} month
+            is&nbsp;
+            {formatSalary(payslip.totalSalary)}.
           </TableCaption>
         </Table>
       </main>
@@ -184,5 +193,22 @@ export default function PayslipPdfTemplate() {
         </p>
       </footer>
     </div>
+  );
+}
+
+export function NoPayslipData() {
+  return (
+    <PdfPreviewWrapper>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl text-primary">
+            Payslip PDF preview
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>You are not authorized to view this page</p>
+        </CardContent>
+      </Card>
+    </PdfPreviewWrapper>
   );
 }

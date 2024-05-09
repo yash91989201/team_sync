@@ -312,3 +312,21 @@ export function formatFileSize(bytes?: number) {
 export function renderOnClient<T>(Component: FunctionComponent<T>) {
   return dynamic(() => Promise.resolve(Component), { ssr: false });
 }
+
+export function formatSalary(
+  salary: number | string,
+  options?: {
+    currency?: "USD" | "EUR" | "GBP" | "BDT" | "INR";
+    notation?: Intl.NumberFormatOptions["notation"];
+  },
+) {
+  const { currency = "INR", notation = "standard" } = options ?? {};
+  const numericPrice = typeof salary === "string" ? parseFloat(salary) : salary;
+
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency,
+    notation,
+    maximumFractionDigits: 2,
+  }).format(numericPrice);
+}
