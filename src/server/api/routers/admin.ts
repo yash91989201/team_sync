@@ -3,7 +3,7 @@ import { addDays, differenceInDays, isSameMonth } from "date-fns";
 import { and, between, count, desc, eq, getTableColumns, inArray, or, sql } from "drizzle-orm";
 // UTILS
 import { pbClient } from "@/server/pb/config";
-import { hashPassword } from "@/server/helpers";
+import { getPayslipPdfAsFormData, hashPassword } from "@/server/helpers";
 import { getRenewPeriodRange, getShiftTimeDate } from "@/lib/utils";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // DB TABLES
@@ -735,7 +735,11 @@ export const adminRouter = createTRPCRouter({
         empPayslipId
       })
 
-      // const response=await fetch(`team-sync-preview.novafyasia.in/pdf-service/generate-pdf/payslip?url=www.google.com`)
+      // add delay of 500ms before generating pdf
+      await new Promise(resolve => setTimeout(resolve, 500))
+      // generate pdf and store to pocketbase
+      const payslipPdfFormData = await getPayslipPdfAsFormData(empPayslipId)
+      await pbClient.collection("payslip").create(payslipPdfFormData)
 
       // set leave encashment balances to 0
       // const empLeaveTypes = await ctx.db.query.empLeaveTypeTable.findMany({

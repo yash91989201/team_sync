@@ -77,3 +77,16 @@ export async function authPage(
     if (user.role !== expectedRole) return redirect(DEFAULT_ROUTE);
   }
 }
+
+export async function getPayslipPdfAsFormData(payslipId: string) {
+  const payslipPdfUrl = `https://team-sync-preview.novafyasia.in/pdf/payslip/${payslipId}`
+
+  const response = await fetch(`team-sync-preview.novafyasia.in/pdf-service/generate-pdf/payslip?url=${payslipPdfUrl}`)
+  const payslipPdf = await response.blob()
+
+  const formData = new FormData()
+  formData.append("id", payslipId)
+  formData.append("file", payslipPdf)
+
+  return formData
+}
