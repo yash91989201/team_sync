@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { env } from "@/env";
 import { auth } from "@/server/helpers";
 // CUSTOM COMPONENTS
-import PayslipPdf from "@/components/pdf/payslip-pdf";
+import PayslipPdfTemplate from "@/components/pdf/payslip-pdf-template";
 import PdfPreviewWrapper from "@/components/pdf/pdf-preview-wrapper";
 import PdfPreviewBlocked from "@/components/pdf/pdf-preview-blocked";
 
@@ -27,10 +27,10 @@ export default async function PayslipPdfPreviewPage({
   if (generatePdfSecret === null) {
     return (
       <PdfPreviewWrapper>
-        <PayslipPdf />
+        <PayslipPdfTemplate />
       </PdfPreviewWrapper>
     );
   }
 
-  return <PayslipPdf />;
+  return <PayslipPdfTemplate />;
 }

@@ -24,6 +24,7 @@ export const env = createEnv({
     SMTP_PASSWORD: z.string(),
     EMAIL_SENDER: z.string(),
     GENERATE_PDF_SECRET: z.string(),
+    PDF_SERVICE_URL: z.string(),
   },
 
   /**
@@ -49,6 +50,7 @@ export const env = createEnv({
     SMTP_PASSWORD: process.env.SMTP_PASSWORD,
     EMAIL_SENDER: process.env.EMAIL_SENDER,
     GENERATE_PDF_SECRET: process.env.GENERATE_PDF_SECRET,
+    PDF_SERVICE_URL: process.env.PDF_SERVICE_URL,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
