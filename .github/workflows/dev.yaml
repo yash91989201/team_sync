@@ -21,6 +21,7 @@ jobs:
       SMTP_PASSWORD: ${{secrets.DEV_SMTP_PASSWORD}}
       SMTP_USER: ${{secrets.DEV_SMTP_USER}}
       POCKETBASE_URL: ${{secrets.DEV_POCKETBASE_URL}}
+      GENERATE_PDF_SECRET: ${{secrets.GENERATE_PDF_SECRET}}
 
     steps:
       - name: Checkout code
@@ -36,6 +37,7 @@ jobs:
                 echo SMTP_PASSWORD="$SMTP_PASSWORD" >> .env
                 echo SMTP_USER="$SMTP_USER" >> .env
                 echo POCKETBASE_URL="$POCKETBASE_URL" >> .env
+                echo GENERATE_PDF_SECRET="$GENERATE_PDF_SECRET" >> .env
 
       - name: Install dependencies
         run: bun install
