@@ -46,6 +46,11 @@ export async function getUser() {
   };
 }
 
+export async function auth() {
+  const { user, session } = await validateRequest();
+  return { user, session }
+}
+
 export async function authPage(
   expectedRole?: "ADMIN" | "EMPLOYEE",
   isAuthPage = false,

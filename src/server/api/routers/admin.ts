@@ -121,8 +121,18 @@ export const adminRouter = createTRPCRouter({
     // Step 1: Leave encashment
     const empLeaveTypes = await ctx.db.query.empLeaveTypeTable.findMany({
       where: eq(empLeaveTypeTable.empId, empId),
+      columns: {
+        leaveTypeId: true
+      },
       with: {
-        leaveType: true
+        leaveType: {
+          columns: {
+            renewPeriod: true,
+            renewPeriodCount: true,
+            leaveEncashment: true,
+            daysAllowed: true,
+          }
+        }
       }
     })
 
@@ -725,6 +735,59 @@ export const adminRouter = createTRPCRouter({
         empPayslipId
       })
 
+      // const response=await fetch(`team-sync-preview.novafyasia.in/pdf-service/generate-pdf/payslip?url=www.google.com`)
+
+      // set leave encashment balances to 0
+      // const empLeaveTypes = await ctx.db.query.empLeaveTypeTable.findMany({
+      //   where: eq(empLeaveTypeTable.empId, empId),
+      //   columns: {
+      //     leaveTypeId: true
+      //   },
+      //   with: {
+      //     leaveType: {
+      //       columns: {
+      //         renewPeriod: true,
+      //         renewPeriodCount: true,
+      //         leaveEncashment: true,
+      //       }
+      //     }
+      //   }
+      // })
+
+      // const empLeaveTypesId = empLeaveTypes.map(empLeaveType => empLeaveType.leaveTypeId)
+
+      // const leaveBalances = await ctx.db.query.leaveBalanceTable.findMany({
+      //   where: inArray(leaveBalanceTable.leaveTypeId, empLeaveTypesId)
+      // })
+
+      // const encashmentTypeBalancesId = empLeaveTypes.map(empLeaveType => {
+      //   const { renewPeriod, renewPeriodCount, leaveEncashment } = empLeaveType.leaveType
+      //   // get renew period range according to payslip for date
+      //   const { startDate: renewPeriodStart, endDate: renewPeriodEnd } = getRenewPeriodRange({
+      //     renewPeriod,
+      //     renewPeriodCount,
+      //     referenceDate: date,
+      //   })
+
+      //   // check if leave balance for given payslip month exists
+      //   const leaveTypeBalance = leaveBalances.find(leaveBalance => isSameMonth(leaveBalance.createdAt, renewPeriodStart))
+      //   const allowEncashment = leaveEncashment && isSameMonth(date, renewPeriodEnd)
+
+      //   if (leaveTypeBalance === undefined) return ""
+      //   else if (allowEncashment) return leaveTypeBalance.id
+      //   else return ""
+      // })
+
+      // await Promise.all(encashmentTypeBalancesId.map(async (encashmentBalanceId) => {
+      //   if (encashmentBalanceId.length === 0) return
+      //   await ctx.db
+      //     .update(leaveBalanceTable)
+      //     .set({ balance: 0 })
+      //     .where(
+      //       eq(leaveBalanceTable.id, encashmentBalanceId)
+      //     )
+      // }))
+
       return {
         status: "SUCCESS",
         message: "Payslip generated and pdf stored successfully."
@@ -736,7 +799,5 @@ export const adminRouter = createTRPCRouter({
         message: "Unable to generate payslip"
       }
     }
-
-
   })
 });
