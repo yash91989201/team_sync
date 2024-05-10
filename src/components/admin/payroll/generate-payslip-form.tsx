@@ -55,6 +55,7 @@ export default function GeneratePayslipForm({
 
   const { refetch: refetchMonthPayslip } =
     api.payslipRouter.getMonthPayslip.useQuery({
+      empId,
       month: date,
     });
 

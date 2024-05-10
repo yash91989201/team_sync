@@ -1,4 +1,4 @@
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 // UTILS
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // DB TABLES
@@ -20,7 +20,10 @@ import type { GetPayslipDataStatus } from "@/lib/types";
 export const payslipRouter = createTRPCRouter({
   getMonthPayslip: protectedProcedure.input(GetMonthPayslipInput).query(({ ctx, input }) => {
     return ctx.db.query.empPayslipTable.findFirst({
-      where: sql`MONTH(${empPayslipTable.date}) = ${input.month.getMonth() + 1}`
+      where: and(
+        eq(empPayslipTable.empId, input.empId),
+        sql`MONTH(${empPayslipTable.date}) = ${input.month.getMonth() + 1}`
+      )
     })
   }),
 

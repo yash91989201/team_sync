@@ -65,6 +65,7 @@ export default function PayslipData({ empId }: { empId: string }) {
     isFetching,
   } = api.payslipRouter.getMonthPayslip.useQuery(
     {
+      empId,
       month: parseDate(currentMonth, "MMMM-yyyy"),
     },
     {
