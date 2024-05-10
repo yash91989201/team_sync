@@ -55,9 +55,14 @@ export default function GeneratePayslip({ empId }: { empId: string }) {
     data: payslipData,
     isLoading: isMonthPayslipLoading,
     isFetching: isMonthPayslipFetching,
-  } = api.payslipRouter.getMonthPayslip.useQuery({
-    month: firstDayOfCurrentMonth,
-  });
+  } = api.payslipRouter.getMonthPayslip.useQuery(
+    {
+      month: firstDayOfCurrentMonth,
+    },
+    {
+      refetchOnWindowFocus: false,
+    },
+  );
 
   const {
     data: createPayslipData,
