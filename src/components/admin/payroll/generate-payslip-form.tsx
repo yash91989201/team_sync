@@ -49,8 +49,8 @@ export default function GeneratePayslipForm({
   date,
   payslipData,
 }: GeneratePayslipFormProps) {
-  const { mutateAsync: createEmployeePayslip } =
-    api.adminRouter.createEmployeePayslip.useMutation();
+  const { mutateAsync: createEmpPayslip } =
+    api.adminRouter.createEmpPayslip.useMutation();
 
   const generatePayslipForm = useForm<GeneratePayslipSchemaType>({
     resolver: zodResolver(GeneratePayslipSchema),
@@ -110,7 +110,7 @@ export default function GeneratePayslipForm({
         0,
       ) + data.leaveEncashment.amountPaid;
 
-    const actionResponse = await createEmployeePayslip({
+    const actionResponse = await createEmpPayslip({
       ...data,
       leaveEncashment: {
         amount: leaveEncashmentAmount,
@@ -253,7 +253,7 @@ export default function GeneratePayslipForm({
             disabled={formState.isSubmitting}
           >
             {formState.isSubmitting ? (
-              <Loader2 className="size-4 animate-spin" />
+              <Loader2 className="animate-spin" />
             ) : null}
             <span>Generate payslip</span>
           </Button>

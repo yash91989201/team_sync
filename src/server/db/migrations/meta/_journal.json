@@ -36,6 +36,13 @@
       "when": 1715085472438,
       "tag": "0004_panoramic_thunderbolt",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1715309807017,
+      "tag": "0005_jittery_sentry",
+      "breakpoints": true
     }
   ]
 }

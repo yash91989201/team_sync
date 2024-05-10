@@ -6,7 +6,7 @@ import PdfPreviewWrapper from "@/components/pdf/pdf-preview-wrapper";
 export default function PdfPreviewBlocked() {
   return (
     <PdfPreviewWrapper>
-      <Card>
+      <Card className="rounded-none border-none shadow-none">
         <CardHeader>
           <CardTitle className="text-2xl text-primary">
             Payslip PDF preview

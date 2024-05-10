@@ -199,14 +199,12 @@ export default function PayslipPdfTemplate({
 export function NoPayslipData() {
   return (
     <PdfPreviewWrapper>
-      <Card>
+      <Card className="rounded-none border-none shadow-none">
         <CardHeader>
-          <CardTitle className="text-2xl text-primary">
-            Payslip PDF preview
-          </CardTitle>
+          <CardTitle className="text-2xl text-primary">Payslip PDF</CardTitle>
         </CardHeader>
         <CardContent>
-          <p>You are not authorized to view this page</p>
+          <p>Payslip with given id doesnot exists.</p>
         </CardContent>
       </Card>
     </PdfPreviewWrapper>

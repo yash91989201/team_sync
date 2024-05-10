@@ -3,7 +3,7 @@ import { addDays, differenceInDays, isSameMonth } from "date-fns";
 import { and, between, count, desc, eq, getTableColumns, inArray, or, sql } from "drizzle-orm";
 // UTILS
 import { pbClient } from "@/server/pb/config";
-import { getPayslipPdfAsFormData, hashPassword } from "@/server/helpers";
+import { getPayslipPdf, hashPassword } from "@/server/helpers";
 import { getRenewPeriodRange, getShiftTimeDate } from "@/lib/utils";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // DB TABLES
@@ -37,6 +37,8 @@ import {
 } from "@/lib/schema";
 // TYPES
 import type { EmployeeLeaveTypeSchemaType, EmployeeSalaryComponentType, GetEmployeeDataResponse } from "@/lib/types";
+import { env } from "process";
+import { formatDate } from "@/lib/date-time-utils";
 
 export const adminRouter = createTRPCRouter({
   getData: protectedProcedure.query(({ ctx }) => {
@@ -698,8 +700,7 @@ export const adminRouter = createTRPCRouter({
     }
   }),
 
-  createEmployeePayslip: protectedProcedure.input(GeneratePayslipSchema).mutation(async ({ ctx, input }): Promise<ProcedureStatusType> => {
-
+  createEmpPayslip: protectedProcedure.input(GeneratePayslipSchema).mutation(async ({ ctx, input }): Promise<ProcedureStatusType> => {
     const {
       empId,
       date,
@@ -713,6 +714,7 @@ export const adminRouter = createTRPCRouter({
     } = input
 
     const empPayslipId = generateId(15)
+    const pdfUrl = `${env.NEXT_SITE_URL}/api/payslip-pdf/${empPayslipId}`;
 
     try {
       await ctx.db.insert(empPayslipTable).values({
@@ -723,6 +725,7 @@ export const adminRouter = createTRPCRouter({
         lopDays,
         daysPayable,
         totalSalary,
+        pdfUrl,
         empId,
       })
 
@@ -735,11 +738,22 @@ export const adminRouter = createTRPCRouter({
         empPayslipId
       })
 
+      const { name: empName } = (await ctx.db.query.userTable.findFirst({
+        where: eq(userTable.id, empId),
+        columns: {
+          name: true,
+        }
+      }))!
+
       // add delay of 500ms before generating pdf
       await new Promise(resolve => setTimeout(resolve, 500))
       // generate pdf and store to pocketbase
-      const payslipPdfFormData = await getPayslipPdfAsFormData(empPayslipId)
-      await pbClient.collection("payslip").create(payslipPdfFormData)
+      const payslipPdf = await getPayslipPdf({
+        payslipId: empPayslipId,
+        pdfFileName: `${empName}'s ${formatDate(date, "MMMM-yyyy")} payslip`
+      })
+
+      await pbClient.collection("payslip").create(payslipPdf)
 
       // set leave encashment balances to 0
       // const empLeaveTypes = await ctx.db.query.empLeaveTypeTable.findMany({

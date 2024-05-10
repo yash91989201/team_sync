@@ -1,0 +1,1 @@
+ALTER TABLE `emp_payslip` ADD `pdf_url` varchar(1024) NOT NULL;

@@ -79,7 +79,7 @@ export async function authPage(
   }
 }
 
-export async function getPayslipPdfAsFormData(payslipId: string) {
+export async function getPayslipPdf({ payslipId, pdfFileName }: { payslipId: string, pdfFileName: string; }) {
   const payslipPdfUrl = `${env.NEXT_SITE_URL}/pdf/payslip/${payslipId}`
 
   const response = await fetch(`${env.PDF_SERVICE_URL}/generate-pdf/payslip?url=${payslipPdfUrl}`)
@@ -87,7 +87,8 @@ export async function getPayslipPdfAsFormData(payslipId: string) {
 
   const formData = new FormData()
   formData.append("id", payslipId)
-  formData.append("file", payslipPdf)
+  formData.append("file", payslipPdf, "payslip pdf")
+  formData.append("name", pdfFileName)
 
   return formData
 }

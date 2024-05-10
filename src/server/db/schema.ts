@@ -414,6 +414,7 @@ export const empPayslipTable = mysqlTable("emp_payslip", {
   lopDays: int("lop_days").notNull(),
   daysPayable: int("days_payable").notNull(),
   totalSalary: int("total_salary").notNull(),
+  pdfUrl: varchar("pdf_url", { length: 1024 }).notNull(),
   // FOREIGN KEY RELATIONS
   empId: varchar("emp_id", {
     length: 24,

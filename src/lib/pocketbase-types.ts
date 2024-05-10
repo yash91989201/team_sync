@@ -42,7 +42,8 @@ export type EmployeeDocumentFileRecord = {
 }
 
 export type PayslipRecord = {
-	file?: string
+	file: string
+	name: string
 }
 
 export type UserProfileRecord = {
