@@ -180,7 +180,7 @@ export function PayslipPdfTemplate({
             </TableRow>
           </TableFooter>
           <TableCaption className="mt-6 font-semibold text-gray-900">
-            Total earnings for {formatDate(payslip.date, "MMMM,yyyy")} month
+            Total salary for {formatDate(payslip.date, "MMMM,yyyy")} month
             is&nbsp;
             {formatSalary(payslip.totalSalary)}.
           </TableCaption>

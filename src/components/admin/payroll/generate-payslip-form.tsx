@@ -35,6 +35,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 // ICONS
 import {
+  BookX,
   Calendar,
   CalendarCheck2,
   CalendarDays,
@@ -52,18 +53,20 @@ export default function GeneratePayslipForm({
   const { mutateAsync: createEmpPayslip } =
     api.adminRouter.createEmpPayslip.useMutation();
 
+  const { refetch: refetchMonthPayslip } =
+    api.payslipRouter.getMonthPayslip.useQuery({
+      month: date,
+    });
+
   const generatePayslipForm = useForm<GeneratePayslipSchemaType>({
     resolver: zodResolver(GeneratePayslipSchema),
     defaultValues: {
+      date,
       empId,
+      createdAt: new Date(),
       leaveEncashment: payslipData.leaveEncashmentData,
       payslipComponents: payslipData.empPayslipComponents,
-      createdAt: new Date(),
-      date,
-      calendarDays: payslipData.calendarDays,
-      daysPayable: payslipData.daysPayable,
-      lopDays: payslipData.lopDays,
-      totalSalary: payslipData.totalSalary,
+      ...payslipData,
     },
   });
 
@@ -123,6 +126,7 @@ export default function GeneratePayslipForm({
     });
     if (actionResponse.status === "SUCCESS") {
       toast.success(actionResponse.message);
+      await refetchMonthPayslip();
     } else {
       toast.error(actionResponse.message);
     }
@@ -212,6 +216,18 @@ export default function GeneratePayslipForm({
             <FormMessage className="text-left" />
           </TableCaption>
         </Table>
+        <div className="flex items-center justify-end">
+          <Button
+            size="lg"
+            className="gap-1 text-base font-semibold"
+            disabled={formState.isSubmitting}
+          >
+            {formState.isSubmitting ? (
+              <Loader2 className="animate-spin" />
+            ) : null}
+            <span>Generate payslip</span>
+          </Button>
+        </div>
         <div className="space-y-1.5 text-gray-600">
           <p className="text-base font-medium text-gray-600">Additional Info</p>
           <div className="grid grid-cols-4 gap-3 text-base ">
@@ -237,7 +253,7 @@ export default function GeneratePayslipForm({
             </p>
             <p className="flex items-center justify-between gap-3 rounded-lg bg-fuchsia-100 p-3 text-fuchsia-600">
               <CalendarDays className="size-4" />
-              <span className="flex-1">Paid Leave Days</span>
+              <span className="flex-1">Paid Leaves</span>
               <span className="font-semibold">{payslipData.paidLeaveDays}</span>
             </p>
             <p className="rounded-mg flex items-center justify-between gap-3 rounded-lg bg-violet-100 p-3 text-violet-600">
@@ -245,18 +261,21 @@ export default function GeneratePayslipForm({
               <span className="flex-1">Holidays</span>
               <span className="font-semibold">{payslipData.holidays}</span>
             </p>
+            <p className="rounded-mg flex items-center justify-between gap-3 rounded-lg bg-lime-100 p-3 text-lime-600">
+              <BookX className="size-4" />
+              <span className="flex-1">Un-Paid Leaves</span>
+              <span className="font-semibold">
+                {payslipData.unPaidLeaveDays}
+              </span>
+            </p>
+            <p className="rounded-mg flex items-center justify-between gap-3 rounded-lg bg-indigo-100 p-3 text-indigo-600">
+              <BookX className="size-4" />
+              <span className="flex-1">Leave Encashment Days</span>
+              <span className="font-semibold">
+                {payslipData.leaveEncashmentDays}
+              </span>
+            </p>
           </div>
-        </div>
-        <div className="flex items-center justify-end">
-          <Button
-            className="gap-1 font-semibold"
-            disabled={formState.isSubmitting}
-          >
-            {formState.isSubmitting ? (
-              <Loader2 className="animate-spin" />
-            ) : null}
-            <span>Generate payslip</span>
-          </Button>
         </div>
       </form>
     </Form>

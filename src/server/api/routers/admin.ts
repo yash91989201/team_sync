@@ -1,6 +1,6 @@
 import { generateId } from "lucia";
 import { addDays, differenceInDays, isSameMonth } from "date-fns";
-import { and, between, count, desc, eq, getTableColumns, inArray, or, sql } from "drizzle-orm";
+import { and, between, desc, eq, getTableColumns, inArray, ne, or, sql } from "drizzle-orm";
 // UTILS
 import { env } from "process";
 import { pbClient } from "@/server/pb/config";
@@ -126,6 +126,7 @@ export const adminRouter = createTRPCRouter({
     .input(GetCreatePayslipDataInput)
     .query(async ({ ctx, input }) => {
       const { empId, startDate, endDate } = input
+      const calendarDays = differenceInDays(endDate, startDate) + 1
 
       // Step 1: Leave encashment
       const empLeaveTypes = await ctx.db.query.empLeaveTypeTable.findMany({
@@ -187,6 +188,7 @@ export const adminRouter = createTRPCRouter({
         }
       })
 
+      // create missing leave balances for employee leave types
       await Promise.all(empLeaveTypeBalances.map(async (empLeaveTypeBalance) => {
         const {
           status, leaveType: _lT,
@@ -200,32 +202,28 @@ export const adminRouter = createTRPCRouter({
         }
       }))
 
-      const leaveEncashmentDays = empLeaveTypeBalances.reduce((total, { allowEncashment, encashmentDays }) => (
-        allowEncashment ? total + encashmentDays : total
-      ), 0)
-
       // Step 2: Present days
-      const attendance = await ctx.db
-        .select({
-          date: empAttendanceTable.date,
-        })
-        .from(empAttendanceTable)
-        .where(
-          and(
-            eq(empAttendanceTable.empId, empId),
-            between(empAttendanceTable.date, startDate, endDate)
-          )
-        )
-        .groupBy(empAttendanceTable.date)
+      const attendance = await ctx.db.query.empAttendanceTable.findMany({
+        where: and(
+          eq(empAttendanceTable.empId, empId),
+          ne(empAttendanceTable.shift, "0"),
+          between(empAttendanceTable.date, startDate, endDate)
+        ),
+        columns: {
+          date: true,
+          shift: true
+        }
+      })
 
       const presentDays = attendance.length
 
-      // Step 3: Paid leave days
-      const paidLeaves = await ctx.db
+      // Step 3: approved leaves
+      const approvedLeaves = await ctx.db
         .select({
           fromDate: leaveRequestTable.fromDate,
           toDate: leaveRequestTable.toDate,
           leaveDays: leaveRequestTable.leaveDays,
+          paidLeave: leaveTypeTable.paidLeave
         })
         .from(leaveRequestTable)
         .innerJoin(leaveTypeTable, eq(leaveRequestTable.leaveTypeId, leaveTypeTable.id))
@@ -233,7 +231,6 @@ export const adminRouter = createTRPCRouter({
           and(
             eq(leaveRequestTable.empId, empId),
             eq(leaveRequestTable.status, "approved"),
-            eq(leaveTypeTable.paidLeave, true),
             or(
               between(leaveRequestTable.fromDate, startDate, endDate),
               between(leaveRequestTable.toDate, startDate, endDate),
@@ -241,25 +238,59 @@ export const adminRouter = createTRPCRouter({
           )
         )
 
-      const paidLeaveDays = paidLeaves.reduce((total, paidLeave) => {
-        const { fromDate, toDate, leaveDays } = paidLeave
+      let paidLeaveDays = 0;
+      let unPaidLeaveDays = 0
+      for (const approvedLeave of approvedLeaves) {
+        let totalDays = 0;
+        const { fromDate, toDate, leaveDays, paidLeave } = approvedLeave
         if (leaveDays === 1) {
-          return total + 1
+          totalDays += 1;
         }
         else if (isSameMonth(fromDate, startDate)) {
-          return total + differenceInDays(fromDate, startDate) + 1
+          totalDays += differenceInDays(fromDate, startDate) + 1
         }
         else if (isSameMonth(toDate, endDate)) {
-          return total + differenceInDays(endDate, toDate) + 1
+          totalDays += differenceInDays(endDate, toDate) + 1
         }
-        else return total
-      }, 0)
 
-      // Step 4: days payable
-      const daysPayable = presentDays + paidLeaveDays;
+        if (paidLeave) paidLeaveDays += totalDays;
+        else unPaidLeaveDays += totalDays
 
-      // Step 5: salary components with payslip comp data
-      const monthDays = differenceInDays(endDate, startDate) + 1
+      }
+
+      // step 5: holidays
+      const currentMonthHolidays = await ctx.db.query.holidayTable.findMany({
+        where: sql`MONTH(${holidayTable.date}) = ${startDate.getMonth() + 1}`
+      })
+      const holidays = currentMonthHolidays.length
+
+      // Step 4: lop days
+      const lopDays = (calendarDays - presentDays - holidays) - paidLeaveDays
+
+      // Step 5: leave encashment data
+      const employeeProfile = await ctx.db.query.empProfileTable.findFirst({
+        where: eq(empProfileTable.empId, empId),
+        columns: {
+          salary: true
+        }
+      })
+      const salary = employeeProfile?.salary
+      const leaveEncashmentDays = empLeaveTypeBalances.reduce((total, { allowEncashment, encashmentDays }) => (
+        allowEncashment ? total + encashmentDays : total
+      ), 0)
+      const leaveEncashmentAmount = Math.ceil((salary! * leaveEncashmentDays) / calendarDays)
+
+      const leaveEncashmentData = {
+        amount: leaveEncashmentAmount,
+        arrear: 0,
+        adjustment: 0,
+        amountPaid: leaveEncashmentAmount,
+      }
+
+      // Step 6: days payable
+      const daysPayable = presentDays + paidLeaveDays + holidays
+
+      // Step 7: payslip components
       const empSalaryComps = await ctx.db.query.empSalaryCompTable.findMany({
         where: eq(
           empSalaryCompTable.empId, input.empId,
@@ -269,10 +300,9 @@ export const adminRouter = createTRPCRouter({
           salaryComponent: true
         }
       })
-
       const empPayslipComponents = empSalaryComps.map(empSalaryComp => {
         const { amount, salaryComponent } = empSalaryComp
-        const compAmtByDaysPayable = Math.ceil((amount * daysPayable) / monthDays)
+        const compAmtByDaysPayable = Math.ceil((amount * daysPayable) / calendarDays)
         return {
           name: salaryComponent.name,
           amount: compAmtByDaysPayable,
@@ -282,41 +312,9 @@ export const adminRouter = createTRPCRouter({
         }
       })
 
-      const salaryCompAmount = empPayslipComponents.reduce((total, empPaySlipComp) => total + empPaySlipComp.amountPaid, 0)
-
-      // Step 6: Leave encashment data
-      const employeeProfile = await ctx.db.query.empProfileTable.findFirst({
-        where: eq(empProfileTable.empId, empId),
-        columns: {
-          salary: true
-        }
-      })
-      const salary = employeeProfile?.salary
-      const leaveEncashmentAmount = Math.ceil((salary! * leaveEncashmentDays) / monthDays)
-
-      const leaveEncashmentData = {
-        amount: leaveEncashmentAmount,
-        arrear: 0,
-        adjustment: 0,
-        amountPaid: leaveEncashmentAmount,
-      }
-
-      // Step 7: LOP days
-      const lopDays = monthDays - daysPayable
-
-      // Step 8: total salary
-      const totalSalary = salaryCompAmount + leaveEncashmentAmount
-
-      // Step 9: Holidays (optional)
-      const holidays = await ctx.db
-        .select({
-          count: count()
-        })
-        .from(holidayTable)
-        .where(
-          between(holidayTable.date, startDate, endDate)
-        )
-      const holidaysCount = holidays[0]?.count ?? 0
+      // Step 8: calculate total salary 
+      const salaryCompsTotalAmount = empPayslipComponents.reduce((total, empPaySlipComp) => total + empPaySlipComp.amountPaid, 0)
+      const totalSalary = salaryCompsTotalAmount + leaveEncashmentAmount
 
       return {
         leaveEncashmentDays,
@@ -326,9 +324,10 @@ export const adminRouter = createTRPCRouter({
         daysPayable,
         empPayslipComponents,
         totalSalary,
-        calendarDays: monthDays,
+        calendarDays,
         lopDays,
-        holidays: holidaysCount
+        holidays,
+        unPaidLeaveDays,
       }
     }),
 
@@ -718,6 +717,11 @@ export const adminRouter = createTRPCRouter({
       totalSalary,
       payslipComponents,
       leaveEncashment,
+      presentDays,
+      holidays,
+      paidLeaveDays,
+      unPaidLeaveDays,
+      leaveEncashmentDays,
     } = input
 
     const empPayslipId = generateId(15)
@@ -733,6 +737,11 @@ export const adminRouter = createTRPCRouter({
         daysPayable,
         totalSalary,
         pdfUrl,
+        presentDays,
+        holidays,
+        paidLeaveDays,
+        unPaidLeaveDays,
+        leaveEncashmentDays,
         empId,
       })
 

@@ -40,17 +40,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-// ICONS
+// CUSTOM COMPONENTS
 import {
-  Calendar,
-  CalendarCheck2,
-  CalendarDays,
-  CalendarMinus,
-  CalendarOff,
-  Download,
-  Eye,
-  HandCoins,
-} from "lucide-react";
+  NoPayslipDaysInfo,
+  PayslipDaysInfo,
+  PayslipDaysInfoSkeleton,
+} from "@/components/shared/payslip-days-info";
+// ICONS
+import { Download, Eye } from "lucide-react";
 
 export default function PayslipData({ empId }: { empId: string }) {
   const today = new Date(startOfToday().setHours(8, 30, 0, 0));
@@ -71,8 +68,8 @@ export default function PayslipData({ empId }: { empId: string }) {
       month: parseDate(currentMonth, "MMMM-yyyy"),
     },
     {
+      refetchOnReconnect: false,
       refetchOnWindowFocus: false,
-      refetchInterval: false,
     },
   );
 
@@ -117,15 +114,25 @@ export default function PayslipData({ empId }: { empId: string }) {
   );
 }
 
-const PayslipTable = ({ payslip }: { payslip: EmpPayslipType | undefined }) => {
+export const PayslipTable = ({
+  payslip,
+}: {
+  payslip: EmpPayslipType | undefined;
+}) => {
   if (payslip === undefined) {
     return <NoPayslipData />;
   }
 
   const { data, isLoading, isFetching } =
-    api.payslipRouter.getPayslipData.useQuery({
-      payslipId: payslip.id,
-    });
+    api.payslipRouter.getPayslipData.useQuery(
+      {
+        payslipId: payslip.id,
+      },
+      {
+        refetchOnReconnect: false,
+        refetchOnWindowFocus: false,
+      },
+    );
 
   if (isLoading || isFetching) {
     return <PayslipDataSkeleton />;
@@ -207,41 +214,6 @@ const PayslipTable = ({ payslip }: { payslip: EmpPayslipType | undefined }) => {
           {formatSalary(payslip.totalSalary)}.
         </TableCaption>
       </Table>
-      <div className="space-y-1.5 text-gray-600">
-        <p className="text-base font-medium text-gray-600">Additional Info</p>
-        <div className="grid grid-cols-4 gap-3 text-base ">
-          <p className="flex items-center justify-between gap-3 rounded-lg bg-blue-100 p-3 text-blue-600">
-            <Calendar className="size-4" />
-            <span className="flex-1">Calendar Days</span>
-            <span className="font-semibold">{payslip.calendarDays}</span>
-          </p>
-          <p className="flex items-center justify-between gap-3 rounded-lg bg-green-100 p-3 text-green-600">
-            <HandCoins className="size-4" />
-            <span className="flex-1">Days Payable</span>
-            <span className="font-semibold">{payslip.daysPayable}</span>
-          </p>
-          <p className="flex items-center justify-between gap-3 rounded-lg bg-orange-100 p-3 text-orange-600">
-            <CalendarMinus className="size-4" />
-            <span className="flex-1">LOP Days</span>
-            <span className="font-semibold">{payslip.lopDays}</span>
-          </p>
-          <p className="flex items-center justify-between gap-3 rounded-lg bg-pink-100 p-3 text-pink-600">
-            <CalendarCheck2 className="size-4" />
-            <span className="flex-1">Present Days</span>
-            {/* <span className="font-semibold">{payslip.presentDays}</span> */}
-          </p>
-          <p className="flex items-center justify-between gap-3 rounded-lg bg-fuchsia-100 p-3 text-fuchsia-600">
-            <CalendarDays className="size-4" />
-            <span className="flex-1">Paid Leave Days</span>
-            {/* <span className="font-semibold">{payslip.paidLeaveDays}</span> */}
-          </p>
-          <p className="rounded-mg flex items-center justify-between gap-3 rounded-lg bg-violet-100 p-3 text-violet-600">
-            <CalendarOff className="size-4" />
-            <span className="flex-1">Holidays</span>
-            {/* <span className="font-semibold">{payslip.holidays}</span> */}
-          </p>
-        </div>
-      </div>
       <div className="flex items-center justify-end gap-3 text-lg font-medium">
         <Link
           target="_blank"
@@ -268,6 +240,7 @@ const PayslipTable = ({ payslip }: { payslip: EmpPayslipType | undefined }) => {
           <span>Payslip PDF</span>
         </Link>
       </div>
+      <PayslipDaysInfo {...payslip} />
     </div>
   );
 };
@@ -304,45 +277,11 @@ const PayslipDataSkeleton = () => {
           </TableRow>
         </TableFooter>
       </Table>
-      <div className="space-y-1.5 text-gray-600">
-        <p className="text-base font-medium text-gray-600">Additional Info</p>
-        <div className="grid grid-cols-4 gap-3 text-base">
-          <div className="flex items-center justify-between gap-3 rounded-lg bg-blue-100 p-3 text-blue-600">
-            <Calendar className="size-4" />
-            <span className="flex-1">Calendar Days</span>
-            <Skeleton className="h-6 w-8" />
-          </div>
-          <div className="flex items-center justify-between gap-3 rounded-lg bg-green-100 p-3 text-green-600">
-            <HandCoins className="size-4" />
-            <span className="flex-1">Days Payable</span>
-            <Skeleton className="h-6 w-8" />
-          </div>
-          <div className="flex items-center justify-between gap-3 rounded-lg bg-orange-100 p-3 text-orange-600">
-            <CalendarMinus className="size-4" />
-            <span className="flex-1">LOP Days</span>
-            <Skeleton className="h-6 w-8" />
-          </div>
-          <div className="flex items-center justify-between gap-3 rounded-lg bg-pink-100 p-3 text-pink-600">
-            <CalendarCheck2 className="size-4" />
-            <span className="flex-1">Present Days</span>
-            <Skeleton className="h-6 w-8" />
-          </div>
-          <div className="flex items-center justify-between gap-3 rounded-lg bg-fuchsia-100 p-3 text-fuchsia-600">
-            <CalendarDays className="size-4" />
-            <span className="flex-1">Paid Leave Days</span>
-            <Skeleton className="h-6 w-8" />
-          </div>
-          <div className="rounded-mg flex items-center justify-between gap-3 rounded-lg bg-violet-100 p-3 text-violet-600">
-            <CalendarOff className="size-4" />
-            <span className="flex-1">Holidays</span>
-            <Skeleton className="h-6 w-8" />
-          </div>
-        </div>
-      </div>
       <div className="flex items-center justify-end gap-3">
         <Skeleton className="h-10 w-36" />
         <Skeleton className="h-10 w-36" />
       </div>
+      <PayslipDaysInfoSkeleton />
     </div>
   );
 };
@@ -367,46 +306,12 @@ const NoPayslipData = () => {
               colSpan={6}
               className="text-center text-base font-medium text-gray-500"
             >
-              No payslip data available for selected month.
+              No payslip data available for this month.
             </TableCell>
           </TableRow>
         </TableBody>
       </Table>
-      <div className="space-y-1.5 text-gray-600">
-        <p className="text-base font-medium text-gray-600">Additional Info</p>
-        <div className="grid grid-cols-4 gap-3 text-base">
-          <div className="flex items-center justify-between gap-3 rounded-lg bg-blue-100 p-3 text-blue-600">
-            <Calendar className="size-4" />
-            <span className="flex-1">Calendar Days</span>
-            <span>N/A</span>
-          </div>
-          <div className="flex items-center justify-between gap-3 rounded-lg bg-green-100 p-3 text-green-600">
-            <HandCoins className="size-4" />
-            <span className="flex-1">Days Payable</span>
-            <span>N/A</span>
-          </div>
-          <div className="flex items-center justify-between gap-3 rounded-lg bg-orange-100 p-3 text-orange-600">
-            <CalendarMinus className="size-4" />
-            <span className="flex-1">LOP Days</span>
-            <span>N/A</span>
-          </div>
-          <div className="flex items-center justify-between gap-3 rounded-lg bg-pink-100 p-3 text-pink-600">
-            <CalendarCheck2 className="size-4" />
-            <span className="flex-1">Present Days</span>
-            <span>N/A</span>
-          </div>
-          <div className="flex items-center justify-between gap-3 rounded-lg bg-fuchsia-100 p-3 text-fuchsia-600">
-            <CalendarDays className="size-4" />
-            <span className="flex-1">Paid Leave Days</span>
-            <span>N/A</span>
-          </div>
-          <div className="rounded-mg flex items-center justify-between gap-3 rounded-lg bg-violet-100 p-3 text-violet-600">
-            <CalendarOff className="size-4" />
-            <span className="flex-1">Holidays</span>
-            <span>N/A</span>
-          </div>
-        </div>
-      </div>
+      <NoPayslipDaysInfo />
     </div>
   );
 };

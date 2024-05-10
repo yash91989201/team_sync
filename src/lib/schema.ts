@@ -369,6 +369,11 @@ export const GeneratePayslipSchema = z.object({
   lopDays: z.number(),
   daysPayable: z.number(),
   totalSalary: z.number(),
+  presentDays: z.number(),
+  holidays: z.number(),
+  paidLeaveDays: z.number(),
+  unPaidLeaveDays: z.number(),
+  leaveEncashmentDays: z.number(),
   payslipComponents: z.array(z.object({
     name: z.string(),
     amount: z.number(),
@@ -387,5 +392,5 @@ export const GeneratePayslipSchema = z.object({
 export const GetCreatePayslipDataInput = z.object({
   empId: z.string(),
   startDate: z.date(),
-  endDate: z.date()
+  endDate: z.date(),
 })

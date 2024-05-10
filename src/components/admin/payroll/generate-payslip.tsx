@@ -36,15 +36,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 // CUSTOM COMPONENTS
 import GeneratePayslipForm from "./generate-payslip-form";
-// ICONS
-import {
-  Calendar,
-  CalendarCheck2,
-  CalendarDays,
-  CalendarMinus,
-  CalendarOff,
-  HandCoins,
-} from "lucide-react";
+import { PayslipDaysInfoSkeleton } from "@/components/shared/payslip-days-info";
+import { PayslipTable } from "@/components/employee/payslips/payslip-data";
 
 export default function GeneratePayslip({ empId }: { empId: string }) {
   const today = new Date(startOfToday().setHours(8, 30, 0, 0));
@@ -60,6 +53,14 @@ export default function GeneratePayslip({ empId }: { empId: string }) {
 
   const {
     data: payslipData,
+    isLoading: isMonthPayslipLoading,
+    isFetching: isMonthPayslipFetching,
+  } = api.payslipRouter.getMonthPayslip.useQuery({
+    month: firstDayOfCurrentMonth,
+  });
+
+  const {
+    data: createPayslipData,
     isLoading,
     isFetching,
   } = api.adminRouter.getCreatePayslipData.useQuery(
@@ -70,9 +71,11 @@ export default function GeneratePayslip({ empId }: { empId: string }) {
     },
     {
       refetchOnWindowFocus: false,
-      refetchInterval: false,
     },
   );
+
+  const showSkeleton =
+    isMonthPayslipLoading || isMonthPayslipFetching || isLoading || isFetching;
 
   const months = eachMonthOfInterval({
     start: joiningDate!,
@@ -104,13 +107,15 @@ export default function GeneratePayslip({ empId }: { empId: string }) {
           </Select>
         </div>
         {/* generate payslip form */}
-        {isLoading || isFetching ? (
+        {showSkeleton ? (
           <GeneratePayslipFormSkeleton />
+        ) : payslipData !== undefined ? (
+          <PayslipTable payslip={payslipData} />
         ) : (
           <GeneratePayslipForm
             empId={empId}
             date={lastDayOfCurrentMonth}
-            payslipData={payslipData!}
+            payslipData={createPayslipData!}
           />
         )}
       </CardContent>
@@ -150,44 +155,10 @@ const GeneratePayslipFormSkeleton = () => {
           </TableRow>
         </TableFooter>
       </Table>
-      <div className="space-y-1.5 text-gray-600">
-        <p className="text-base font-medium text-gray-600">Additional Info</p>
-        <div className="grid grid-cols-4 gap-3 text-base">
-          <div className="flex items-center justify-between gap-3 rounded-lg bg-blue-100 p-3 text-blue-600">
-            <Calendar className="size-4" />
-            <span className="flex-1">Calendar Days</span>
-            <Skeleton className="h-6 w-8" />
-          </div>
-          <div className="flex items-center justify-between gap-3 rounded-lg bg-green-100 p-3 text-green-600">
-            <HandCoins className="size-4" />
-            <span className="flex-1">Days Payable</span>
-            <Skeleton className="h-6 w-8" />
-          </div>
-          <div className="flex items-center justify-between gap-3 rounded-lg bg-orange-100 p-3 text-orange-600">
-            <CalendarMinus className="size-4" />
-            <span className="flex-1">LOP Days</span>
-            <Skeleton className="h-6 w-8" />
-          </div>
-          <div className="flex items-center justify-between gap-3 rounded-lg bg-pink-100 p-3 text-pink-600">
-            <CalendarCheck2 className="size-4" />
-            <span className="flex-1">Present Days</span>
-            <Skeleton className="h-6 w-8" />
-          </div>
-          <div className="flex items-center justify-between gap-3 rounded-lg bg-fuchsia-100 p-3 text-fuchsia-600">
-            <CalendarDays className="size-4" />
-            <span className="flex-1">Paid Leave Days</span>
-            <Skeleton className="h-6 w-8" />
-          </div>
-          <div className="rounded-mg flex items-center justify-between gap-3 rounded-lg bg-violet-100 p-3 text-violet-600">
-            <CalendarOff className="size-4" />
-            <span className="flex-1">Holidays</span>
-            <Skeleton className="h-6 w-8" />
-          </div>
-        </div>
-      </div>
       <div className="flex items-center justify-end">
-        <Skeleton className="h-9 w-32" />
+        <Skeleton className="h-11 w-44" />
       </div>
+      <PayslipDaysInfoSkeleton />
     </div>
   );
 };

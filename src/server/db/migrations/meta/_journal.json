@@ -43,6 +43,13 @@
       "when": 1715309807017,
       "tag": "0005_jittery_sentry",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1715329748929,
+      "tag": "0006_goofy_reptil",
+      "breakpoints": true
     }
   ]
 }
