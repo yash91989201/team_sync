@@ -60,9 +60,11 @@ export function PayslipPdfTemplate({
             <p>Department:</p>
             <p>Calendar Days:</p>
             <p>LOP Days:</p>
-            <p>Leave Encashment:</p>
+            <p>Leave Encashment Days:</p>
             <p>Holiday Allowance Days:</p>
             <p>Days Payable:</p>
+            <p>Paid Leaves:</p>
+            <p>Un-paid Leaves:</p>
           </div>
           <div>
             <p>{empData.code}</p>
@@ -72,9 +74,11 @@ export function PayslipPdfTemplate({
             <p>{empProfile.department.name}</p>
             <p>{payslip.calendarDays}</p>
             <p>{payslip.lopDays}</p>
-            <p>0</p>
-            <p>0</p>
+            <p>{payslip.leaveEncashmentDays}</p>
+            <p>{payslip.holidays}</p>
             <p>{payslip.daysPayable}</p>
+            <p>{payslip.paidLeaveDays}</p>
+            <p>{payslip.unPaidLeaveDays}</p>
           </div>
         </section>
         <Separator orientation="vertical" />
@@ -91,7 +95,9 @@ export function PayslipPdfTemplate({
             <p>Bank A/C No:</p>
             <p>Currency:</p>
             <p>Arrears Period:</p>
+            <p>ESI Number:</p>
             <p>PF Number:</p>
+            <p>PF UAN Number:</p>
           </div>
           <div>
             <p>
@@ -106,6 +112,8 @@ export function PayslipPdfTemplate({
             <p>777456782123484</p>
             <p>INR</p>
             <p>TO</p>
+            <p>Not Applicable</p>
+            <p>Not Applicable</p>
             <p>Not Applicable</p>
           </div>
         </section>
