@@ -1,14 +1,11 @@
 import { headers } from "next/headers";
 // UTILS
 import { env } from "@/env";
+import { api } from "@/trpc/server";
 import { auth } from "@/server/helpers";
-import { getPayslipDataForPdf } from "@/server/helpers/payslip";
 // CUSTOM COMPONENTS
-import PayslipPdfTemplate, {
-  NoPayslipData,
-} from "@/components/pdf/payslip-pdf-template";
-import PdfPreviewWrapper from "@/components/pdf/pdf-preview-wrapper";
-import PdfPreviewBlocked from "@/components/pdf/pdf-preview-blocked";
+import { PdfPreviewWrapper, PdfPreviewBlocked } from "@/components/pdf";
+import { NoPayslipData, PayslipPdfTemplate } from "@/components/pdf/payslip";
 
 export default async function PayslipPdfPreviewPage({
   params,
@@ -28,7 +25,9 @@ export default async function PayslipPdfPreviewPage({
     return <PdfPreviewBlocked />;
   }
 
-  const payslipDataForPdf = await getPayslipDataForPdf({ payslipId });
+  const payslipDataForPdf = await api.payslipRouter.getPayslipData({
+    payslipId,
+  });
 
   if (payslipDataForPdf.status == "FAILED") {
     return <NoPayslipData />;

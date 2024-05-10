@@ -184,6 +184,8 @@ export const GetEmployeeByQueryInput = z.object({ query: z.string() });
 export const GetEmployeeByIdInput = z.object({ empId: z.string() })
 export const GetEmployeeProfileInput = z.object({ empId: z.string() })
 export const GetEmpSalaryCompInput = z.object({ empId: z.string() })
+export const GetPayslipDataInput = z.object({ payslipId: z.string() })
+export const GetMonthPayslipInput = z.object({ month: z.date() })
 
 export const CreateEmployeeSchema = z.object({
   code: z.string({ required_error: "Employee code is required" }).min(4, { message: "Min. 4 characters is required" }),
@@ -382,7 +384,7 @@ export const GeneratePayslipSchema = z.object({
   })
 })
 
-export const GetEmpSalaryDataInput = z.object({
+export const GetCreatePayslipDataInput = z.object({
   empId: z.string(),
   startDate: z.date(),
   endDate: z.date()

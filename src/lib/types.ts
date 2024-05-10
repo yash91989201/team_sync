@@ -182,7 +182,7 @@ export type GeneratePayslipFormProps = {
   empId: string;
   date: Date;
   payslipData: inferProcedureOutput<
-    AppRouter["adminRouter"]["getEmpPayslipData"]
+    AppRouter["adminRouter"]["getCreatePayslipData"]
   >;
 };
 

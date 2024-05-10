@@ -28,7 +28,9 @@
     "paths": {
       "@/*": ["./src/*"],
       "@ui/*": ["./src/components/ui/*"],
-      "@sharedComponents/*": ["./src/components/shared/*"]
+      "@sharedComponents/*": ["./src/components/shared/*"],
+      // server side aliases
+      "@routers/*":["./src/server/api/routers/*"]
     }
   },
   "include": [

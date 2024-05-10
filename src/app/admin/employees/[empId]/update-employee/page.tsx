@@ -20,7 +20,7 @@ export default async function UpdateEmployeePage({
 }) {
   await authPage("ADMIN");
 
-  const employeeData = await api.adminRouter.getEmployeeData({
+  const employeeData = await api.adminRouter.getUpdateEmpData({
     empId: params.empId,
   });
 

@@ -1,23 +1,25 @@
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 // TRPC ROUTERS
-import { adminRouter } from "@/server/api/routers/admin";
-import { leaveRouter } from "@/server/api/routers/leave";
-import { salaryRouter } from "@/server/api/routers/salary";
-import { holidayRouter } from "@/server/api/routers/holiday";
-import { employeeRouter } from "@/server/api/routers/employee";
-import { documentRouter } from "@/server/api/routers/document";
-import { departmentRouter } from "@/server/api/routers/department";
-import { designationRouter } from "@/server/api/routers/designation";
+import { adminRouter } from "@routers/admin";
+import { leaveRouter } from "@routers/leave";
+import { salaryRouter } from "@routers/salary";
+import { payslipRouter } from "@routers/payslip";
+import { holidayRouter } from "@routers/holiday";
+import { employeeRouter } from "@routers/employee";
+import { documentRouter } from "@routers/document";
+import { departmentRouter } from "@routers/department";
+import { designationRouter } from "@routers/designation";
 
 export const appRouter = createTRPCRouter({
   adminRouter,
   leaveRouter,
   salaryRouter,
+  holidayRouter,
+  payslipRouter,
   employeeRouter,
   documentRouter,
   departmentRouter,
   designationRouter,
-  holidayRouter
 });
 
 // export type definition of API

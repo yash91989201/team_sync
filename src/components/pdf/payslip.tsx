@@ -1,5 +1,6 @@
 import Image from "next/image";
 // UTILS
+import { formatDate } from "@/lib/date-time-utils";
 import { cn, formatSalary, getRenewPeriodRange } from "@/lib/utils";
 // TYPES
 import type { PayslipTemplateProps } from "@/lib/types";
@@ -17,10 +18,9 @@ import {
 import { Separator } from "@ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 // CUSTOM COMPONENTS
-import PdfPreviewWrapper from "@/components/pdf/pdf-preview-wrapper";
-import { formatDate } from "@/lib/date-time-utils";
+import { PdfPreviewWrapper } from "@/components/pdf";
 
-export default function PayslipPdfTemplate({
+export function PayslipPdfTemplate({
   payslipData,
   previewMode,
 }: PayslipTemplateProps) {

@@ -6,12 +6,12 @@ export function toUTC(date: Date) {
 }
 
 /**
- * input date as string
+ * input date as string in format 'yyyy-MM-dd'
  * get Date type
  * format date 
 */
-export function parseDate(date: string): Date {
-  return parse(date, "yyyy-MM-dd", new Date())
+export function parseDate(date: string, formatStr = "yyyy-MM-dd"): Date {
+  return parse(date, formatStr, new Date())
 }
 
 /**

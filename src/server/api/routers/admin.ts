@@ -2,7 +2,9 @@ import { generateId } from "lucia";
 import { addDays, differenceInDays, isSameMonth } from "date-fns";
 import { and, between, count, desc, eq, getTableColumns, inArray, or, sql } from "drizzle-orm";
 // UTILS
+import { env } from "process";
 import { pbClient } from "@/server/pb/config";
+import { formatDate } from "@/lib/date-time-utils";
 import { getPayslipPdf, hashPassword } from "@/server/helpers";
 import { getRenewPeriodRange, getShiftTimeDate } from "@/lib/utils";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
@@ -30,15 +32,18 @@ import {
   CreateEmployeeInputSchema,
   DeleteEmployeeSchema,
   GeneratePayslipSchema,
-  GetEmpSalaryDataInput,
+  GetCreatePayslipDataInput,
   GetEmployeeByIdInput,
   GetEmployeeProfileInput,
   UpdateEmployeeSchema
 } from "@/lib/schema";
 // TYPES
-import type { EmployeeLeaveTypeSchemaType, EmployeeSalaryComponentType, GetEmployeeDataResponse } from "@/lib/types";
-import { env } from "process";
-import { formatDate } from "@/lib/date-time-utils";
+import type {
+  EmployeeLeaveTypeSchemaType,
+  EmployeeSalaryComponentType,
+  GetEmployeeDataResponse,
+} from "@/lib/types";
+
 
 export const adminRouter = createTRPCRouter({
   getData: protectedProcedure.query(({ ctx }) => {
@@ -55,7 +60,7 @@ export const adminRouter = createTRPCRouter({
   }),
 
   // get employee data for update
-  getEmployeeData:
+  getUpdateEmpData:
     protectedProcedure
       .input(GetEmployeeByIdInput)
       .query(async ({ ctx, input }): Promise<GetEmployeeDataResponse> => {
@@ -117,213 +122,215 @@ export const adminRouter = createTRPCRouter({
 
       }),
 
-  getEmpPayslipData: protectedProcedure.input(GetEmpSalaryDataInput).query(async ({ ctx, input }) => {
-    const { empId, startDate, endDate } = input
+  getCreatePayslipData: protectedProcedure
+    .input(GetCreatePayslipDataInput)
+    .query(async ({ ctx, input }) => {
+      const { empId, startDate, endDate } = input
 
-    // Step 1: Leave encashment
-    const empLeaveTypes = await ctx.db.query.empLeaveTypeTable.findMany({
-      where: eq(empLeaveTypeTable.empId, empId),
-      columns: {
-        leaveTypeId: true
-      },
-      with: {
-        leaveType: {
-          columns: {
-            renewPeriod: true,
-            renewPeriodCount: true,
-            leaveEncashment: true,
-            daysAllowed: true,
+      // Step 1: Leave encashment
+      const empLeaveTypes = await ctx.db.query.empLeaveTypeTable.findMany({
+        where: eq(empLeaveTypeTable.empId, empId),
+        columns: {
+          leaveTypeId: true
+        },
+        with: {
+          leaveType: {
+            columns: {
+              renewPeriod: true,
+              renewPeriodCount: true,
+              leaveEncashment: true,
+              daysAllowed: true,
+            }
           }
         }
-      }
-    })
-
-    const empLeaveTypesId = empLeaveTypes.map(empLeaveType => empLeaveType.leaveTypeId)
-
-    const leaveBalances = await ctx.db.query.leaveBalanceTable.findMany({
-      where: inArray(leaveBalanceTable.leaveTypeId, empLeaveTypesId)
-    })
-
-    const empLeaveTypeBalances = empLeaveTypes.map(empLeaveType => {
-      const { renewPeriod, renewPeriodCount, leaveEncashment, daysAllowed } = empLeaveType.leaveType
-      // get renew period range according to start date
-      const { startDate: renewPeriodStart, endDate: renewPeriodEnd } = getRenewPeriodRange({
-        renewPeriod,
-        renewPeriodCount,
-        referenceDate: startDate,
       })
 
-      // check if leave balance for current payslip month exists
-      const leaveTypeBalance = leaveBalances.find(leaveBalance => isSameMonth(leaveBalance.createdAt, renewPeriodStart))
-      const allowEncashment = leaveEncashment && isSameMonth(endDate, renewPeriodEnd)
+      const empLeaveTypesId = empLeaveTypes.map(empLeaveType => empLeaveType.leaveTypeId)
 
-      if (leaveTypeBalance === undefined) {
-        return {
-          id: generateId(15),
-          createdAt: renewPeriodStart,
-          balance: daysAllowed,
-          empId,
-          leaveTypeId: empLeaveType.leaveTypeId,
-          status: "create",
-          leaveType: empLeaveType.leaveType,
-          allowEncashment,
-          encashmentDays: daysAllowed
+      const leaveBalances = await ctx.db.query.leaveBalanceTable.findMany({
+        where: inArray(leaveBalanceTable.leaveTypeId, empLeaveTypesId)
+      })
+
+      const empLeaveTypeBalances = empLeaveTypes.map(empLeaveType => {
+        const { renewPeriod, renewPeriodCount, leaveEncashment, daysAllowed } = empLeaveType.leaveType
+        // get renew period range according to start date
+        const { startDate: renewPeriodStart, endDate: renewPeriodEnd } = getRenewPeriodRange({
+          renewPeriod,
+          renewPeriodCount,
+          referenceDate: startDate,
+        })
+
+        // check if leave balance for current payslip month exists
+        const leaveTypeBalance = leaveBalances.find(leaveBalance => isSameMonth(leaveBalance.createdAt, renewPeriodStart))
+        const allowEncashment = leaveEncashment && isSameMonth(endDate, renewPeriodEnd)
+
+        if (leaveTypeBalance === undefined) {
+          return {
+            id: generateId(15),
+            createdAt: renewPeriodStart,
+            balance: daysAllowed,
+            empId,
+            leaveTypeId: empLeaveType.leaveTypeId,
+            status: "create",
+            leaveType: empLeaveType.leaveType,
+            allowEncashment,
+            encashmentDays: daysAllowed
+          }
+        } else {
+          return {
+            ...leaveTypeBalance,
+            status: "update",
+            leaveType: empLeaveType.leaveType,
+            allowEncashment,
+            encashmentDays: leaveTypeBalance.balance
+          }
         }
-      } else {
-        return {
-          ...leaveTypeBalance,
-          status: "update",
-          leaveType: empLeaveType.leaveType,
-          allowEncashment,
-          encashmentDays: leaveTypeBalance.balance
+      })
+
+      await Promise.all(empLeaveTypeBalances.map(async (empLeaveTypeBalance) => {
+        const {
+          status, leaveType: _lT,
+          encashmentDays: _eE,
+          allowEncashment: _aE,
+          ...leaveTypeBalanceData
+        } = empLeaveTypeBalance
+
+        if (status === "create") {
+          await ctx.db.insert(leaveBalanceTable).values(leaveTypeBalanceData)
         }
-      }
-    })
+      }))
 
-    await Promise.all(empLeaveTypeBalances.map(async (empLeaveTypeBalance) => {
-      const {
-        status, leaveType: _lT,
-        encashmentDays: _eE,
-        allowEncashment: _aE,
-        ...leaveTypeBalanceData
-      } = empLeaveTypeBalance
+      const leaveEncashmentDays = empLeaveTypeBalances.reduce((total, { allowEncashment, encashmentDays }) => (
+        allowEncashment ? total + encashmentDays : total
+      ), 0)
 
-      if (status === "create") {
-        await ctx.db.insert(leaveBalanceTable).values(leaveTypeBalanceData)
-      }
-    }))
-
-    const leaveEncashmentDays = empLeaveTypeBalances.reduce((total, { allowEncashment, encashmentDays }) => (
-      allowEncashment ? total + encashmentDays : total
-    ), 0)
-
-    // Step 2: Present days
-    const attendance = await ctx.db
-      .select({
-        date: empAttendanceTable.date,
-      })
-      .from(empAttendanceTable)
-      .where(
-        and(
-          eq(empAttendanceTable.empId, empId),
-          between(empAttendanceTable.date, startDate, endDate)
-        )
-      )
-      .groupBy(empAttendanceTable.date)
-
-    const presentDays = attendance.length
-
-    // Step 3: Paid leave days
-    const paidLeaves = await ctx.db
-      .select({
-        fromDate: leaveRequestTable.fromDate,
-        toDate: leaveRequestTable.toDate,
-        leaveDays: leaveRequestTable.leaveDays,
-      })
-      .from(leaveRequestTable)
-      .innerJoin(leaveTypeTable, eq(leaveRequestTable.leaveTypeId, leaveTypeTable.id))
-      .where(
-        and(
-          eq(leaveRequestTable.empId, empId),
-          eq(leaveRequestTable.status, "approved"),
-          eq(leaveTypeTable.paidLeave, true),
-          or(
-            between(leaveRequestTable.fromDate, startDate, endDate),
-            between(leaveRequestTable.toDate, startDate, endDate),
+      // Step 2: Present days
+      const attendance = await ctx.db
+        .select({
+          date: empAttendanceTable.date,
+        })
+        .from(empAttendanceTable)
+        .where(
+          and(
+            eq(empAttendanceTable.empId, empId),
+            between(empAttendanceTable.date, startDate, endDate)
           )
         )
-      )
+        .groupBy(empAttendanceTable.date)
 
-    const paidLeaveDays = paidLeaves.reduce((total, paidLeave) => {
-      const { fromDate, toDate, leaveDays } = paidLeave
-      if (leaveDays === 1) {
-        return total + 1
-      }
-      else if (isSameMonth(fromDate, startDate)) {
-        return total + differenceInDays(fromDate, startDate) + 1
-      }
-      else if (isSameMonth(toDate, endDate)) {
-        return total + differenceInDays(endDate, toDate) + 1
-      }
-      else return total
-    }, 0)
+      const presentDays = attendance.length
 
-    // Step 4: days payable
-    const daysPayable = presentDays + paidLeaveDays;
+      // Step 3: Paid leave days
+      const paidLeaves = await ctx.db
+        .select({
+          fromDate: leaveRequestTable.fromDate,
+          toDate: leaveRequestTable.toDate,
+          leaveDays: leaveRequestTable.leaveDays,
+        })
+        .from(leaveRequestTable)
+        .innerJoin(leaveTypeTable, eq(leaveRequestTable.leaveTypeId, leaveTypeTable.id))
+        .where(
+          and(
+            eq(leaveRequestTable.empId, empId),
+            eq(leaveRequestTable.status, "approved"),
+            eq(leaveTypeTable.paidLeave, true),
+            or(
+              between(leaveRequestTable.fromDate, startDate, endDate),
+              between(leaveRequestTable.toDate, startDate, endDate),
+            )
+          )
+        )
 
-    // Step 5: salary components with payslip comp data
-    const monthDays = differenceInDays(endDate, startDate) + 1
-    const empSalaryComps = await ctx.db.query.empSalaryCompTable.findMany({
-      where: eq(
-        empSalaryCompTable.empId, input.empId,
-      ),
-      orderBy: [desc(empSalaryCompTable.amount)],
-      with: {
-        salaryComponent: true
-      }
-    })
+      const paidLeaveDays = paidLeaves.reduce((total, paidLeave) => {
+        const { fromDate, toDate, leaveDays } = paidLeave
+        if (leaveDays === 1) {
+          return total + 1
+        }
+        else if (isSameMonth(fromDate, startDate)) {
+          return total + differenceInDays(fromDate, startDate) + 1
+        }
+        else if (isSameMonth(toDate, endDate)) {
+          return total + differenceInDays(endDate, toDate) + 1
+        }
+        else return total
+      }, 0)
 
-    const empPayslipComponents = empSalaryComps.map(empSalaryComp => {
-      const { amount, salaryComponent } = empSalaryComp
-      const compAmtByDaysPayable = Math.ceil((amount * daysPayable) / monthDays)
-      return {
-        name: salaryComponent.name,
-        amount: compAmtByDaysPayable,
+      // Step 4: days payable
+      const daysPayable = presentDays + paidLeaveDays;
+
+      // Step 5: salary components with payslip comp data
+      const monthDays = differenceInDays(endDate, startDate) + 1
+      const empSalaryComps = await ctx.db.query.empSalaryCompTable.findMany({
+        where: eq(
+          empSalaryCompTable.empId, input.empId,
+        ),
+        orderBy: [desc(empSalaryCompTable.amount)],
+        with: {
+          salaryComponent: true
+        }
+      })
+
+      const empPayslipComponents = empSalaryComps.map(empSalaryComp => {
+        const { amount, salaryComponent } = empSalaryComp
+        const compAmtByDaysPayable = Math.ceil((amount * daysPayable) / monthDays)
+        return {
+          name: salaryComponent.name,
+          amount: compAmtByDaysPayable,
+          arrear: 0,
+          adjustment: 0,
+          amountPaid: compAmtByDaysPayable
+        }
+      })
+
+      const salaryCompAmount = empPayslipComponents.reduce((total, empPaySlipComp) => total + empPaySlipComp.amountPaid, 0)
+
+      // Step 6: Leave encashment data
+      const employeeProfile = await ctx.db.query.empProfileTable.findFirst({
+        where: eq(empProfileTable.empId, empId),
+        columns: {
+          salary: true
+        }
+      })
+      const salary = employeeProfile?.salary
+      const leaveEncashmentAmount = Math.ceil((salary! * leaveEncashmentDays) / monthDays)
+
+      const leaveEncashmentData = {
+        amount: leaveEncashmentAmount,
         arrear: 0,
         adjustment: 0,
-        amountPaid: compAmtByDaysPayable
+        amountPaid: leaveEncashmentAmount,
       }
-    })
 
-    const salaryCompAmount = empPayslipComponents.reduce((total, empPaySlipComp) => total + empPaySlipComp.amountPaid, 0)
+      // Step 7: LOP days
+      const lopDays = monthDays - daysPayable
 
-    // Step 6: Leave encashment data
-    const employeeProfile = await ctx.db.query.empProfileTable.findFirst({
-      where: eq(empProfileTable.empId, empId),
-      columns: {
-        salary: true
+      // Step 8: total salary
+      const totalSalary = salaryCompAmount + leaveEncashmentAmount
+
+      // Step 9: Holidays (optional)
+      const holidays = await ctx.db
+        .select({
+          count: count()
+        })
+        .from(holidayTable)
+        .where(
+          between(holidayTable.date, startDate, endDate)
+        )
+      const holidaysCount = holidays[0]?.count ?? 0
+
+      return {
+        leaveEncashmentDays,
+        leaveEncashmentData,
+        presentDays,
+        paidLeaveDays,
+        daysPayable,
+        empPayslipComponents,
+        totalSalary,
+        calendarDays: monthDays,
+        lopDays,
+        holidays: holidaysCount
       }
-    })
-    const salary = employeeProfile?.salary
-    const leaveEncashmentAmount = Math.ceil((salary! * leaveEncashmentDays) / monthDays)
-
-    const leaveEncashmentData = {
-      amount: leaveEncashmentAmount,
-      arrear: 0,
-      adjustment: 0,
-      amountPaid: leaveEncashmentAmount,
-    }
-
-    // Step 7: LOP days
-    const lopDays = monthDays - daysPayable
-
-    // Step 8: total salary
-    const totalSalary = salaryCompAmount + leaveEncashmentAmount
-
-    // Step 9: Holidays (optional)
-    const holidays = await ctx.db
-      .select({
-        count: count()
-      })
-      .from(holidayTable)
-      .where(
-        between(holidayTable.date, startDate, endDate)
-      )
-    const holidaysCount = holidays[0]?.count ?? 0
-
-    return {
-      leaveEncashmentDays,
-      leaveEncashmentData,
-      presentDays,
-      paidLeaveDays,
-      daysPayable,
-      empPayslipComponents,
-      totalSalary,
-      calendarDays: monthDays,
-      lopDays,
-      holidays: holidaysCount
-    }
-  }),
+    }),
 
   getEmployeesSalaries: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.userTable.findMany({

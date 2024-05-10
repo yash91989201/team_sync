@@ -2,8 +2,10 @@
 import { cn } from "@/lib/utils";
 // TYPES
 import type { ReactNode } from "react";
+// UI
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function PdfPreviewWrapper({
+export function PdfPreviewWrapper({
   children,
   className = "",
 }: {
@@ -23,5 +25,22 @@ export default function PdfPreviewWrapper({
         {children}
       </main>
     </div>
+  );
+}
+
+export function PdfPreviewBlocked() {
+  return (
+    <PdfPreviewWrapper>
+      <Card className="rounded-none border-none shadow-none">
+        <CardHeader>
+          <CardTitle className="text-2xl text-primary">
+            Payslip PDF preview
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>You are not authorized to view this page</p>
+        </CardContent>
+      </Card>
+    </PdfPreviewWrapper>
   );
 }

@@ -62,7 +62,7 @@ export default function GeneratePayslip({ empId }: { empId: string }) {
     data: payslipData,
     isLoading,
     isFetching,
-  } = api.adminRouter.getEmpPayslipData.useQuery(
+  } = api.adminRouter.getCreatePayslipData.useQuery(
     {
       empId,
       startDate: new Date(firstDayOfCurrentMonth.setHours(15, 30, 0, 0)),

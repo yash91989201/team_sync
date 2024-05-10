@@ -225,7 +225,7 @@ export const EMPLOYEE_ROUTES: NavLinkProps[] = [
   {
     Icon: HandCoins,
     label: "Payslips",
-    href: "/employee-portal/pay-slips",
+    href: "/employee-portal/payslips",
     matchExact: false,
     isNested: false,
     isChildLink: false,

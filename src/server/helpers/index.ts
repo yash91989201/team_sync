@@ -37,11 +37,10 @@ export async function getUser() {
   const { user, session } = await validateRequest();
 
   if (!session || !user) {
-    return { isLoggedIn: false };
+    throw new Error("UNAUTHORIZED")
   }
 
   return {
-    isLoggedIn: true,
     user,
     isAdmin: user.role === "ADMIN",
   };
