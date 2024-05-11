@@ -137,8 +137,8 @@ export default function GeneratePayslip({ empId }: { empId: string }) {
 const GeneratePayslipFormSkeleton = () => {
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-end">
-        <Skeleton className="h-19 w-40" />
+      <div className="flex items-center justify-end ">
+        <Skeleton className="h-9 w-40" />
       </div>
       <Table>
         <TableHeader>
