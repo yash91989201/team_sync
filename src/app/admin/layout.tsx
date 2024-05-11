@@ -1,8 +1,10 @@
+// TYPES
+import type { ReactNode } from "react";
+// UI
+import { ScrollArea } from "@/components/ui/scroll-area";
 // CUSTOM COMPONENTS
 import TopNav from "@/components/admin/top-nav";
 import SideNav from "@/components/admin/side-nav";
-// TYPES
-import type { ReactNode } from "react";
 
 export default async function AdminRootLayout({
   children,
@@ -12,9 +14,14 @@ export default async function AdminRootLayout({
   return (
     <div className="relative flex flex-col md:flex-row md:overflow-hidden">
       <SideNav />
-      <section className="flex-1 md:max-h-screen bg-primary-foreground flex flex-col">
+      <section className="flex flex-1 flex-col bg-primary-foreground md:max-h-screen">
         <TopNav />
-        {children}
+        <ScrollArea
+          type="always"
+          className="relative h-[calc(100vh-5rem)] flex-1 overflow-hidden"
+        >
+          {children}
+        </ScrollArea>
       </section>
     </div>
   );

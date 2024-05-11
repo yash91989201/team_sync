@@ -9,7 +9,7 @@ export default function SideNav() {
       <div className="z-50 flex h-20 items-center justify-center border-b bg-white p-6 py-3 shadow-sm">
         <h1 className="text-4xl font-bold text-primary">TEAM SYNC</h1>
       </div>
-      <ScrollArea className="p-6 pb-0">
+      <ScrollArea className="h-[calc(100vh-5rem)] p-6">
         <NavLinks />
       </ScrollArea>
     </aside>

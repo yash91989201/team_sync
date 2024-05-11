@@ -10,14 +10,5 @@ export default function AdminMainWrapper({
   children: ReactNode;
   className?: string;
 }) {
-  return (
-    <main
-      className={cn(
-        "relative flex-1 overflow-auto overflow-x-hidden p-6",
-        className,
-      )}
-    >
-      {children}
-    </main>
-  );
+  return <main className={cn(" p-6", className)}>{children}</main>;
 }

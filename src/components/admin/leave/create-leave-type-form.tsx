@@ -71,7 +71,7 @@ export default function CreateLeaveTypeForm() {
   return (
     <Form {...createLeaveTypeForm}>
       <form onSubmit={handleSubmit(createLeaveTypeAction)}>
-        <Card className="w-96">
+        <Card className="sticky top-6 w-96 ">
           <CardHeader>
             <CardTitle>Create new leave type</CardTitle>
           </CardHeader>
