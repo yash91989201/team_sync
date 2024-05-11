@@ -50,14 +50,10 @@ export default function GeneratePayslipForm({
   date,
   payslipData,
 }: GeneratePayslipFormProps) {
+  const apiUtils = api.useUtils();
+
   const { mutateAsync: createEmpPayslip } =
     api.adminRouter.createEmpPayslip.useMutation();
-
-  const { refetch: refetchMonthPayslip } =
-    api.payslipRouter.getMonthPayslip.useQuery({
-      empId,
-      month: date,
-    });
 
   const generatePayslipForm = useForm<GeneratePayslipSchemaType>({
     resolver: zodResolver(GeneratePayslipSchema),
@@ -127,7 +123,10 @@ export default function GeneratePayslipForm({
     });
     if (actionResponse.status === "SUCCESS") {
       toast.success(actionResponse.message);
-      await refetchMonthPayslip();
+      await apiUtils.payslipRouter.getMonthPayslip.invalidate({
+        empId,
+        month: date,
+      });
     } else {
       toast.error(actionResponse.message);
     }

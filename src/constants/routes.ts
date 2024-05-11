@@ -21,6 +21,7 @@ import {
   LayoutPanelTop,
   ListOrdered,
   Files,
+  TentTree,
 } from "lucide-react";
 
 /* 
@@ -175,7 +176,7 @@ export const ADMIN_ROUTES: NavLinkProps[] = [
     isChildLink: false,
     childrens: [
       {
-        Icon: PersonStanding,
+        Icon: TentTree,
         label: "Leave types",
         href: "/admin/leave/leave-types",
         matchExact: false,

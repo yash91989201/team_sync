@@ -15,16 +15,28 @@ import {
   GetPayslipDataInput
 } from "@/lib/schema";
 // TYPES
-import type { GetPayslipDataStatus } from "@/lib/types";
+import type { GetMonthPayslipStatus, GetPayslipDataStatus } from "@/lib/types";
 
 export const payslipRouter = createTRPCRouter({
-  getMonthPayslip: protectedProcedure.input(GetMonthPayslipInput).query(({ ctx, input }) => {
-    return ctx.db.query.empPayslipTable.findFirst({
+  getMonthPayslip: protectedProcedure.input(GetMonthPayslipInput).query(async ({ ctx, input }): Promise<GetMonthPayslipStatus> => {
+    const empMonthPayslip = await ctx.db.query.empPayslipTable.findFirst({
       where: and(
         eq(empPayslipTable.empId, input.empId),
         sql`MONTH(${empPayslipTable.date}) = ${input.month.getMonth() + 1}`
       )
     })
+    if (empMonthPayslip === undefined) {
+      return {
+        status: "FAILED",
+        message: "Payslip not found for given month."
+      }
+    } else {
+      return {
+        status: "SUCCESS",
+        message: "Payslip found for given month.",
+        data: empMonthPayslip
+      }
+    }
   }),
 
   getPayslipData: protectedProcedure.input(GetPayslipDataInput).query(async ({ ctx, input }): Promise<GetPayslipDataStatus> => {

@@ -3,10 +3,10 @@ import { useState, useEffect } from "react";
 // UTILS
 import { getGreeting } from "@/lib/utils";
 // CUSTOM HOOKS
-import useUser from "./use-user";
+import useUser from "@/hooks/use-user";
 
 export default function useGreeting() {
-  const user = useUser();
+  const { user } = useUser();
   const [greeting, setGreeting] = useState(getGreeting());
 
   useEffect(() => {
@@ -16,5 +16,5 @@ export default function useGreeting() {
 
     return () => clearInterval(intervalId);
   }, []);
-  return `${greeting}, ${user?.user?.name}!`;
+  return `${greeting}, ${user.name}!`;
 }

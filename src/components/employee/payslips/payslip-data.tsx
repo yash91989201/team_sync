@@ -1,30 +1,16 @@
 "use client";
-import Link from "next/link";
-import { useState } from "react";
 import {
-  format,
-  endOfMonth,
-  startOfToday,
   eachMonthOfInterval,
+  endOfMonth,
+  format,
+  startOfToday,
 } from "date-fns";
+import { useState } from "react";
 // UTILS
+import { parseDate } from "@/lib/date-time-utils";
 import { api } from "@/trpc/react";
-import { formatSalary } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
-import { formatDate, parseDate } from "@/lib/date-time-utils";
 // TYPES
-import type { EmpPayslipType } from "@/lib/types";
 // UI
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-  TableCaption,
-} from "@/components/ui/table";
 import {
   Card,
   CardContent,
@@ -39,15 +25,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
 // CUSTOM COMPONENTS
-import {
-  NoPayslipDaysInfo,
-  PayslipDaysInfo,
-  PayslipDaysInfoSkeleton,
-} from "@/components/shared/payslip-days-info";
 // ICONS
-import { Download, Eye } from "lucide-react";
+import {
+  NoPayslipData,
+  PayslipDataTableSkeleton,
+  PayslipDataTable,
+} from "@sharedComponents/payslip-data-table";
 
 export default function PayslipData({ empId }: { empId: string }) {
   const today = new Date(startOfToday().setHours(8, 30, 0, 0));
@@ -106,207 +90,13 @@ export default function PayslipData({ empId }: { empId: string }) {
         </div>
         {/* generate payslip form */}
         {isLoading || isFetching ? (
-          <PayslipDataSkeleton />
+          <PayslipDataTableSkeleton />
         ) : currentMonthPayslip === undefined ? (
           <NoPayslipData />
         ) : (
-          <PayslipTable payslip={currentMonthPayslip} />
+          <PayslipDataTable payslip={currentMonthPayslip} />
         )}
       </CardContent>
     </Card>
   );
 }
-
-export const PayslipTable = ({ payslip }: { payslip: EmpPayslipType }) => {
-  const { data, isLoading, isFetching } =
-    api.payslipRouter.getPayslipData.useQuery(
-      {
-        payslipId: payslip.id,
-      },
-      {
-        refetchOnReconnect: false,
-        refetchOnWindowFocus: false,
-      },
-    );
-
-  if (isLoading || isFetching) {
-    return <PayslipDataSkeleton />;
-  }
-
-  if (data === undefined || data?.status === "FAILED") {
-    return <NoPayslipData />;
-  }
-
-  const { empData, payslipComps, leaveEncashment } = data.data;
-
-  return (
-    <div className="space-y-3">
-      <Table>
-        <TableHeader className="bg-muted/50">
-          <TableRow className="h-12">
-            <TableHead className="font-semibold text-gray-700">
-              Salary Component
-            </TableHead>
-            <TableHead className="text-right font-semibold text-gray-700">
-              Component Master
-            </TableHead>
-            <TableHead className="text-right font-semibold text-gray-700">
-              Adjustment
-            </TableHead>
-            <TableHead className="text-right font-semibold text-gray-700">
-              Arrear
-            </TableHead>
-            <TableHead className="text-right font-semibold text-gray-700">
-              Amount Paid
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {payslipComps.map((payslipComp, index) => (
-            <TableRow key={index} className="h-12">
-              <TableCell className="font-semibold">
-                {payslipComp.name}
-              </TableCell>
-              <TableCell className="text-right">{payslipComp.amount}</TableCell>
-              <TableCell className="text-right">
-                {payslipComp.adjustment}
-              </TableCell>
-              <TableCell className="text-right">{payslipComp.arrear}</TableCell>
-              <TableCell className="text-right">
-                {payslipComp.amountPaid}
-              </TableCell>
-            </TableRow>
-          ))}
-          <TableRow>
-            <TableCell className="font-semibold">Leave Encashment</TableCell>
-            <TableCell className="text-right">
-              {leaveEncashment.amount}
-            </TableCell>
-            <TableCell className="text-right">
-              {leaveEncashment.adjustment}
-            </TableCell>
-            <TableCell className="text-right">
-              {leaveEncashment.arrear}
-            </TableCell>
-            <TableCell className="text-right">
-              {leaveEncashment.amountPaid}
-            </TableCell>
-          </TableRow>
-        </TableBody>
-        <TableFooter>
-          <TableRow className="h-12">
-            <TableCell colSpan={4} className="text-base font-semibold">
-              Total Earnings
-            </TableCell>
-            <TableCell className="text-right text-base font-semibold">
-              {formatSalary(payslip.totalSalary)}
-            </TableCell>
-          </TableRow>
-        </TableFooter>
-        <TableCaption className="mt-6 font-semibold text-gray-900">
-          Total earnings for {formatDate(payslip.date, "MMMM,yyyy")} month
-          is&nbsp;
-          {formatSalary(payslip.totalSalary)}.
-        </TableCaption>
-      </Table>
-      <div className="flex items-center justify-end gap-3 text-lg font-medium">
-        <Link
-          target="_blank"
-          href={payslip.pdfUrl}
-          className={buttonVariants({
-            size: "lg",
-            variant: "outline",
-            className: "gap-1.5",
-          })}
-        >
-          <Eye className="size-4" />
-          <span>Preview PDF</span>
-        </Link>
-        <Link
-          className={buttonVariants({
-            size: "lg",
-            className: "gap-1.5",
-          })}
-          download={`${empData.name}'s ${formatDate(payslip.date, "MMMM-yyyy")} payslip`}
-          target="_blank"
-          href={payslip.pdfUrl}
-        >
-          <Download className="size-4" />
-          <span>Payslip PDF</span>
-        </Link>
-      </div>
-      <PayslipDaysInfo {...payslip} />
-    </div>
-  );
-};
-
-const PayslipDataSkeleton = () => {
-  return (
-    <div className="space-y-3">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Salary Component</TableHead>
-            <TableHead>Comp Master</TableHead>
-            <TableHead className="w-40">Adjustment</TableHead>
-            <TableHead className="w-40">Arrears</TableHead>
-            <TableHead>Amount Paid</TableHead>
-            <TableHead>Remarks</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {[1, 2, 3, 4, 5].map((item) => (
-            <TableRow key={item}>
-              <TableCell colSpan={6}>
-                <Skeleton className="h-10" />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableCell colSpan={4}>Total</TableCell>
-            <TableCell colSpan={2} className="text-right">
-              <Skeleton className="h-6 w-32" />
-            </TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>
-      <div className="flex items-center justify-end gap-3">
-        <Skeleton className="h-10 w-36" />
-        <Skeleton className="h-10 w-36" />
-      </div>
-      <PayslipDaysInfoSkeleton />
-    </div>
-  );
-};
-
-const NoPayslipData = () => {
-  return (
-    <div className="space-y-3">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Salary Component</TableHead>
-            <TableHead>Comp Master</TableHead>
-            <TableHead className="w-40">Adjustment</TableHead>
-            <TableHead className="w-40">Arrears</TableHead>
-            <TableHead>Amount Paid</TableHead>
-            <TableHead>Remarks</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          <TableRow className="h-72">
-            <TableCell
-              colSpan={6}
-              className="text-center text-base font-medium text-gray-500"
-            >
-              No payslip data available for this month.
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-      <NoPayslipDaysInfo />
-    </div>
-  );
-};

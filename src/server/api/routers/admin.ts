@@ -31,6 +31,7 @@ import {
 import {
   CreateEmployeeInputSchema,
   DeleteEmployeeSchema,
+  DeletePayslipInput,
   GeneratePayslipSchema,
   GetCreatePayslipDataInput,
   GetEmployeeByIdInput,
@@ -833,5 +834,30 @@ export const adminRouter = createTRPCRouter({
         message: "Unable to generate payslip"
       }
     }
+  }),
+
+  deleteEmpPayslip: protectedProcedure.input(DeletePayslipInput).mutation(async ({ ctx, input }): Promise<ProcedureStatusType> => {
+    try {
+      const { payslipId } = input
+
+      await ctx.db.delete(leaveEncashmentTable).where(eq(leaveEncashmentTable.empPayslipId, payslipId))
+      await ctx.db.delete(empPayslipCompTable).where(eq(empPayslipCompTable.empPayslipId, payslipId))
+      await ctx.db.delete(empPayslipTable).where(eq(empPayslipTable.id, payslipId))
+
+      // eslint-disable-next-line drizzle/enforce-delete-with-where
+      await pbClient.collection("payslip").delete(payslipId)
+
+      return {
+        status: "SUCCESS",
+        message: "Payslip generated and pdf stored successfully."
+      }
+    } catch (error) {
+      return {
+        status: "FAILED",
+        message: "Unable to generate payslip"
+      }
+    }
+
   })
+
 });

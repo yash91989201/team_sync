@@ -6,14 +6,10 @@ import { SessionContext } from "@/providers/session-provider";
 export default function useUser() {
   const { user, session } = use(SessionContext);
 
-  if (session === null) {
-    return {
-      isLoggedIn: false,
-    };
-  }
+  if (session === null || user === null)
+    throw new Error("UN-AUTHORIZED")
 
   return {
-    isLoggedIn: true,
     user,
     isAdmin: user.role === "ADMIN",
   };

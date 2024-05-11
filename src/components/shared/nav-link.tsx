@@ -13,8 +13,7 @@ import { ChevronDown } from "lucide-react";
 
 export default function NavLink(props: NavLinkProps) {
   const pathname = usePathname();
-  const { href, label, matchExact, Icon, isNested, childrens, isChildLink } =
-    props;
+  const { href, label, matchExact, Icon, isNested, childrens } = props;
 
   const isAnyChildrenActive =
     childrens !== undefined
@@ -33,15 +32,15 @@ export default function NavLink(props: NavLinkProps) {
         <Button
           variant={nestedNav.isOpen ? "secondary" : "ghost"}
           className={cn(
-            "flex h-12 w-full justify-start gap-3 rounded-lg p-3",
+            "flex w-full justify-start gap-3 rounded-lg p-3",
             nestedNav.isOpen
               ? "bg-primary-foreground text-primary hover:bg-primary-foreground"
               : "text-gray-700",
           )}
           onClick={nestedNav.toggle}
         >
-          <Icon className="size-5" />
-          <p className="flex-1 text-left text-base font-medium">{label}</p>
+          <Icon className="size-4" />
+          <p className="flex-1 text-left text-base font-normal">{label}</p>
           <ChevronDown
             className={cn(
               "size-4 transition-all duration-150 ease-in-out",
@@ -51,15 +50,13 @@ export default function NavLink(props: NavLinkProps) {
         </Button>
         <div
           className={cn(
-            "grid overflow-hidden transition-all duration-150 ease-out",
-            nestedNav.isOpen ? "grid-rows-1" : "grid-rows-[0]",
+            nestedNav.isOpen ? "block" : "hidden",
+            "m-3 space-y-1.5",
           )}
         >
-          <div className="m-3 space-y-1.5">
-            {childrens?.map((nestedLink) => (
-              <NavLink key={nestedLink.href} {...nestedLink} />
-            ))}
-          </div>
+          {childrens?.map((nestedLink) => (
+            <NavLink key={nestedLink.href} {...nestedLink} />
+          ))}
         </div>
       </div>
     );
@@ -71,23 +68,15 @@ export default function NavLink(props: NavLinkProps) {
       className={cn(
         buttonVariants({
           variant: isActive ? "secondary" : "ghost",
+          className: "flex w-full items-center justify-start gap-3 rounded-lg",
         }),
-        "flex w-full items-center justify-start gap-3 rounded-lg",
-        isChildLink ? "h-9" : "h-12 p-3",
         isActive
           ? "bg-primary-foreground text-primary hover:bg-primary-foreground"
           : "text-gray-700",
       )}
     >
-      {!isChildLink && <Icon className="size-5" />}
-      <p
-        className={cn(
-          "flex-1 text-left text-base",
-          isChildLink ? "font-normal" : "font-medium",
-        )}
-      >
-        {label}
-      </p>
+      <Icon className="size-4" />
+      <p className="flex-1 text-left text-base font-normal">{label}</p>
     </Link>
   );
 }

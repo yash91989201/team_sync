@@ -186,6 +186,8 @@ export const GetEmployeeProfileInput = z.object({ empId: z.string() })
 export const GetEmpSalaryCompInput = z.object({ empId: z.string() })
 export const GetPayslipDataInput = z.object({ payslipId: z.string() })
 export const GetMonthPayslipInput = z.object({ empId: z.string(), month: z.date() })
+export const DeletePayslipInput = z.object({ payslipId: z.string() })
+
 
 export const CreateEmployeeSchema = z.object({
   code: z.string({ required_error: "Employee code is required" }).min(4, { message: "Min. 4 characters is required" }),

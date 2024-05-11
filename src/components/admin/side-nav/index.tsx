@@ -1,14 +1,17 @@
 "use client";
 // CUSTOM COMPONENTS
 import NavLinks from "@/components/admin/side-nav/nav-links";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function SideNav() {
   return (
-    <aside className="hidden h-screen w-72 flex-col gap-6 border-r p-6 md:flex">
-      <h1 className="h-12 rounded-md bg-primary p-1.5 text-center align-middle text-2xl font-semibold text-white">
-        TEAM SYNC
-      </h1>
-      <NavLinks />
+    <aside className="hidden h-screen w-72 flex-col border-r md:flex">
+      <div className="z-50 flex h-20 items-center justify-center border-b bg-white p-6 py-3 shadow-sm">
+        <h1 className="text-4xl font-bold text-primary">TEAM SYNC</h1>
+      </div>
+      <ScrollArea className="p-6 pb-0">
+        <NavLinks />
+      </ScrollArea>
     </aside>
   );
 }

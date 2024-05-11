@@ -215,6 +215,19 @@ type GetPayslipDataFailed = {
 
 export type GetPayslipDataStatus = GetPayslipDataSuccess | GetPayslipDataFailed
 
+type GetMonthPayslipSuccess = {
+  status: "SUCCESS";
+  message: string;
+  data: EmpPayslipType
+}
+
+type GetMonthPayslipFailed = {
+  status: "FAILED";
+  message: string;
+}
+
+export type GetMonthPayslipStatus = GetMonthPayslipSuccess | GetMonthPayslipFailed
+
 // OTHER TYPES
 export type UserSessionType =
   | {

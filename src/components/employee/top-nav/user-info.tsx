@@ -1,4 +1,5 @@
 // UTILS
+import { Badge } from "@/components/ui/badge";
 import { api } from "@/trpc/server";
 // UI
 import { Avatar, AvatarFallback, AvatarImage } from "@ui/avatar";
@@ -19,16 +20,14 @@ export default async function UserInfo() {
 
   return (
     <div className="flex items-center gap-3">
-      <Avatar className="h-14 w-14">
+      <Avatar className="h-12 w-12">
         <AvatarImage src={avatarUrl} alt={employee.name} />
         <AvatarFallback>{nameInitials}</AvatarFallback>
       </Avatar>
-      <p className="flex flex-col items-start gap-0.5">
-        <span className="text-lg font-medium">{employee.name}</span>
-        <span className="rounded-full bg-primary p-1 px-2 text-xs text-white">
-          {designation.name}
-        </span>
-      </p>
+      <div className="flex flex-col items-start gap-1">
+        <p className="text-lg font-medium">{employee.name}</p>
+        <Badge>{designation.name}</Badge>
+      </div>
     </div>
   );
 }

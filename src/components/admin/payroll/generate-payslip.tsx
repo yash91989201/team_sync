@@ -9,6 +9,8 @@ import {
 } from "date-fns";
 // UTILS
 import { api } from "@/trpc/react";
+// TYPES
+import type { ReactNode } from "react";
 // UI
 import {
   Table,
@@ -36,7 +38,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 // CUSTOM COMPONENTS
 import GeneratePayslipForm from "./generate-payslip-form";
-import { PayslipTable } from "@/components/employee/payslips/payslip-data";
+import { PayslipDataTable } from "@/components/shared/payslip-data-table";
 import { PayslipDaysInfoSkeleton } from "@/components/shared/payslip-days-info";
 
 export default function GeneratePayslip({ empId }: { empId: string }) {
@@ -61,6 +63,7 @@ export default function GeneratePayslip({ empId }: { empId: string }) {
       month: firstDayOfCurrentMonth,
     },
     {
+      refetchOnReconnect: false,
       refetchOnWindowFocus: false,
     },
   );
@@ -76,6 +79,7 @@ export default function GeneratePayslip({ empId }: { empId: string }) {
       endDate: new Date(lastDayOfCurrentMonth.setHours(15, 30, 0, 0)),
     },
     {
+      refetchOnReconnect: false,
       refetchOnWindowFocus: false,
     },
   );
@@ -88,50 +92,54 @@ export default function GeneratePayslip({ empId }: { empId: string }) {
     end: endOfMonth(today),
   }).map((month) => format(month, "MMMM-yyyy"));
 
+  if (showSkeleton) {
+    return (
+      <GeneratePayslipCardWrapper>
+        <GeneratePayslipFormSkeleton />
+      </GeneratePayslipCardWrapper>
+    );
+  }
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-2xl text-primary">
-          Generate Payslip
-        </CardTitle>
-        <CardDescription>Select a month and generate payslip</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {/* month selector */}
-        <div className="flex items-center justify-end">
-          <Select value={currentMonth} onValueChange={setCurrentMonth}>
-            <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder="Select month" />
-            </SelectTrigger>
-            <SelectContent>
-              {months.map((month) => (
-                <SelectItem key={month} value={month}>
-                  {month}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        {/* generate payslip form */}
-        {showSkeleton ? (
-          <GeneratePayslipFormSkeleton />
-        ) : payslipData !== undefined ? (
-          <PayslipTable payslip={payslipData} />
-        ) : (
-          <GeneratePayslipForm
-            empId={empId}
-            date={lastDayOfCurrentMonth}
-            payslipData={createPayslipData!}
-          />
-        )}
-      </CardContent>
-    </Card>
+    <GeneratePayslipCardWrapper>
+      {/* month selector */}
+      <div className="flex items-center justify-end">
+        <Select value={currentMonth} onValueChange={setCurrentMonth}>
+          <SelectTrigger className="w-[160px]">
+            <SelectValue placeholder="Select month" />
+          </SelectTrigger>
+          <SelectContent>
+            {months.map((month) => (
+              <SelectItem key={month} value={month}>
+                {month}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      {/* generate payslip form */}
+      {payslipData === undefined ? null : payslipData.status === "FAILED" ? (
+        <GeneratePayslipForm
+          empId={empId}
+          date={lastDayOfCurrentMonth}
+          payslipData={createPayslipData!}
+        />
+      ) : (
+        <PayslipDataTable
+          payslip={payslipData.data}
+          date={firstDayOfCurrentMonth}
+        />
+      )}
+    </GeneratePayslipCardWrapper>
   );
 }
 
 const GeneratePayslipFormSkeleton = () => {
   return (
     <div className="space-y-3">
+      <div className="flex items-center justify-end">
+        <Skeleton className="h-19 w-40" />
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
@@ -166,5 +174,19 @@ const GeneratePayslipFormSkeleton = () => {
       </div>
       <PayslipDaysInfoSkeleton />
     </div>
+  );
+};
+
+const GeneratePayslipCardWrapper = ({ children }: { children: ReactNode }) => {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-2xl text-primary">
+          Generate Payslip
+        </CardTitle>
+        <CardDescription>Select a month and generate payslip</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">{children}</CardContent>
+    </Card>
   );
 };

@@ -1,6 +1,6 @@
 import "@/styles/globals.css";
-import { Inter } from "next/font/google";
 import { Toaster } from "@ui/sonner";
+import { Inter } from "next/font/google";
 // UTILS
 import { TRPCReactProvider } from "@/trpc/react";
 import { validateRequest } from "@/lib/auth";
