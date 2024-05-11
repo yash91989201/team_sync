@@ -112,9 +112,9 @@ export function PayslipPdfTemplate({
             <p>777456782123484</p>
             <p>INR</p>
             <p>TO</p>
-            <p>Not Applicable</p>
-            <p>Not Applicable</p>
-            <p>Not Applicable</p>
+            <p>N/A</p>
+            <p>N/A</p>
+            <p>N/A</p>
           </div>
         </section>
       </div>

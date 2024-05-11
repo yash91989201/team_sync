@@ -107,6 +107,8 @@ export default function PayslipData({ empId }: { empId: string }) {
         {/* generate payslip form */}
         {isLoading || isFetching ? (
           <PayslipDataSkeleton />
+        ) : currentMonthPayslip === undefined ? (
+          <NoPayslipData />
         ) : (
           <PayslipTable payslip={currentMonthPayslip} />
         )}
@@ -115,15 +117,7 @@ export default function PayslipData({ empId }: { empId: string }) {
   );
 }
 
-export const PayslipTable = ({
-  payslip,
-}: {
-  payslip: EmpPayslipType | undefined;
-}) => {
-  if (payslip === undefined) {
-    return <NoPayslipData />;
-  }
-
+export const PayslipTable = ({ payslip }: { payslip: EmpPayslipType }) => {
   const { data, isLoading, isFetching } =
     api.payslipRouter.getPayslipData.useQuery(
       {

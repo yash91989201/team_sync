@@ -36,8 +36,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 // CUSTOM COMPONENTS
 import GeneratePayslipForm from "./generate-payslip-form";
-import { PayslipDaysInfoSkeleton } from "@/components/shared/payslip-days-info";
 import { PayslipTable } from "@/components/employee/payslips/payslip-data";
+import { PayslipDaysInfoSkeleton } from "@/components/shared/payslip-days-info";
 
 export default function GeneratePayslip({ empId }: { empId: string }) {
   const today = new Date(startOfToday().setHours(8, 30, 0, 0));
