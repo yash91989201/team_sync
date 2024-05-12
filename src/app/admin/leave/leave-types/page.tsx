@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
 import { LeaveTypeTable } from "@/components/admin/tables";
-import AdminMainWrapper from "@/components/admin/admin-main-wrapper";
+import AdminMainWrapper from "@/components/admin/layout/admin-main-wrapper";
 import CreateLeaveTypeForm from "@/components/admin/leave/create-leave-type-form";
 
 export default async function LeaveTypesPage() {

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
 import { EmployeesTable } from "@/components/admin/tables";
-import AdminMainWrapper from "@/components/admin/admin-main-wrapper";
+import AdminMainWrapper from "@/components/admin/layout/admin-main-wrapper";
 
 export default async function EmployeePage() {
   await authPage("ADMIN");

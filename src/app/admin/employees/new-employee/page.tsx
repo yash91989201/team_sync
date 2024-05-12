@@ -1,7 +1,7 @@
 // UTILS
 import { authPage } from "@/server/helpers";
 // CUSTOM COMPONENTS
-import AdminMainWrapper from "@/components/admin/admin-main-wrapper";
+import AdminMainWrapper from "@/components/admin/layout/admin-main-wrapper";
 import CreateEmployeeForm from "@/components/admin/employee/create-employee-form";
 
 export default async function NewEmployee() {

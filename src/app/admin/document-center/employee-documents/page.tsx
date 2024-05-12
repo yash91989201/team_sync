@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
 import { EmployeesDocumentsTable } from "@/components/admin/tables";
-import AdminMainWrapper from "@/components/admin/admin-main-wrapper";
+import AdminMainWrapper from "@/components/admin/layout/admin-main-wrapper";
 import CreateEmployeeDocumentForm from "@/components/admin/employee-documents/create-employee-document-form";
 
 export default async function EmployeeDocumentsPage() {

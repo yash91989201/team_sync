@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
-import AdminMainWrapper from "@/components/admin/admin-main-wrapper";
+import AdminMainWrapper from "@/components/admin/layout/admin-main-wrapper";
 import SalaryComponentTable from "@/components/admin/payroll/salary-component-table";
 import CreateSalaryComponentForm from "@/components/admin/payroll/create-salary-component-form";
 

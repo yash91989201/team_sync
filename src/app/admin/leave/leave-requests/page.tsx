@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
 import { LeaveRequestsTable } from "@/components/admin/tables";
-import AdminMainWrapper from "@/components/admin/admin-main-wrapper";
+import AdminMainWrapper from "@/components/admin/layout/admin-main-wrapper";
 
 export default async function LeaveRequestsPage() {
   await authPage("ADMIN");

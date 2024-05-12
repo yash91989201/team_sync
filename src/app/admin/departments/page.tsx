@@ -12,8 +12,8 @@ import {
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
 import { DepartmentTable } from "@/components/admin/tables";
-import AdminMainWrapper from "@/components/admin/admin-main-wrapper";
-import CreateDepartmentForm from "@/components/admin/department/create-department-form";
+import AdminMainWrapper from "@adminLayouts/admin-main-wrapper";
+import CreateDepartmentForm from "@adminComponents/department/create-department-form";
 
 export default async function DepartmentsPage() {
   await authPage("ADMIN");

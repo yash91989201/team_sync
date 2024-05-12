@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
 import { DocumentTypeTable } from "@/components/admin/tables";
-import AdminMainWrapper from "@/components/admin/admin-main-wrapper";
+import AdminMainWrapper from "@/components/admin/layout/admin-main-wrapper";
 import CreateDocumentTypeForm from "@/components/admin/document-types/create-document-type-form";
 
 export default async function DocumentTypesPage() {

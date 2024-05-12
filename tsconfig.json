@@ -28,7 +28,10 @@
     "paths": {
       "@/*": ["./src/*"],
       "@ui/*": ["./src/components/ui/*"],
+      "@adminComponents/*":["./src/components/admin/*"],
+      "@empComponents/*":["./src/components/employee/*"],
       "@sharedComponents/*": ["./src/components/shared/*"],
+      "@adminLayouts/*":["./src/components/admin/layout/*"],
       // server side aliases
       "@routers/*":["./src/server/api/routers/*"]
     }

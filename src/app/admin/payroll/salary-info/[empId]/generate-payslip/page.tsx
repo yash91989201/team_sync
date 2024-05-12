@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
-import AdminMainWrapper from "@/components/admin/admin-main-wrapper";
+import AdminMainWrapper from "@/components/admin/layout/admin-main-wrapper";
 import GeneratePayslip from "@/components/admin/payroll/generate-payslip";
 
 export default async function GeneratePayslipPage({
