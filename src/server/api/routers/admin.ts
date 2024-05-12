@@ -45,8 +45,10 @@ import type {
   GetEmployeeDataResponse,
 } from "@/lib/types";
 
-
 export const adminRouter = createTRPCRouter({
+  /**
+  * Returns admin data with profile info
+  */
   getData: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.userTable.findFirst({
       where: eq(userTable.id, ctx.session.user.id),
@@ -55,12 +57,16 @@ export const adminRouter = createTRPCRouter({
       }
     })
   }),
-
+  /**
+  * Returns employee profile by empId
+  */
   getEmployeeProfile: protectedProcedure.input(GetEmployeeProfileInput).query(({ ctx, input }) => {
     return ctx.db.query.empProfileTable.findFirst({ where: eq(empProfileTable.empId, input.empId) })
   }),
-
-  // get employee data for update
+  /**
+  * Returns existing employee data by empId
+  * for updation
+  */
   getUpdateEmpData:
     protectedProcedure
       .input(GetEmployeeByIdInput)
@@ -122,7 +128,14 @@ export const adminRouter = createTRPCRouter({
         }
 
       }),
-
+  /**
+  * Returns all required information by empId, (payslip) startDate, endDate,  like
+  * leaveEncashmentDays, leaveEncashmentData, presentDays, paidLeaveDays,
+  * daysPayable, empPayslipComponents, totalSalary, calendarDays,
+  * lopDays, holidays, unPaidLeaveDays,
+  * required by GeneratePayslipForm 
+  * to create employee's payslip
+  */
   getCreatePayslipData: protectedProcedure
     .input(GetCreatePayslipDataInput)
     .query(async ({ ctx, input }) => {
@@ -331,7 +344,10 @@ export const adminRouter = createTRPCRouter({
         unPaidLeaveDays,
       }
     }),
-
+  /**
+  * Returns all employees with their profile 
+  * which contains their salary
+  */
   getEmployeesSalaries: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.userTable.findMany({
       where: eq(userTable.role, "EMPLOYEE"),
@@ -343,7 +359,9 @@ export const adminRouter = createTRPCRouter({
       }
     })
   }),
-
+  /**
+  * Takes all required inputs and creates an employee 
+  */
   createEmployee: protectedProcedure
     .input(CreateEmployeeInputSchema)
     .mutation(async ({ ctx, input }): Promise<ProcedureStatusType> => {
@@ -477,7 +495,9 @@ export const adminRouter = createTRPCRouter({
 
       return createEmployeeTxResponse
     }),
-
+  /**
+  * Takes all required information and updates employee
+  */
   updateEmployee:
     protectedProcedure
       .input(UpdateEmployeeSchema)
@@ -633,7 +653,10 @@ export const adminRouter = createTRPCRouter({
           }
         }
       }),
-
+  /**
+  * Deletes employee and their related resources 
+  * by empId
+  */
   deleteEmployee: protectedProcedure.input(DeleteEmployeeSchema).mutation(async ({ ctx, input }) => {
     const { empId } = input
     try {
@@ -703,7 +726,10 @@ export const adminRouter = createTRPCRouter({
       }
     }
   }),
-
+  /**
+  * Creates employee payslip by taking required data
+  * and also generates payslip's PDF and stores into pocketbase
+  */
   createEmpPayslip: protectedProcedure.input(GeneratePayslipSchema).mutation(async ({ ctx, input }): Promise<ProcedureStatusType> => {
     const {
       empId,
@@ -831,7 +857,10 @@ export const adminRouter = createTRPCRouter({
       }
     }
   }),
-
+  /**
+  * Deletes employee's payslip data and PDF 
+  * by empPayslipId
+  */
   deleteEmpPayslip: protectedProcedure.input(DeletePayslipInput).mutation(async ({ ctx, input }): Promise<ProcedureStatusType> => {
     try {
       const { payslipId } = input
@@ -855,5 +884,4 @@ export const adminRouter = createTRPCRouter({
     }
 
   })
-
 });
