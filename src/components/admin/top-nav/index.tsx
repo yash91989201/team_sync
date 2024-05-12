@@ -12,7 +12,7 @@ import { Bolt } from "lucide-react";
 
 export default function TopNav() {
   return (
-    <header className="z-50 flex h-20 items-center justify-between border-b bg-white p-6 py-3 shadow-sm">
+    <header className="z-50 flex h-20 items-center justify-between border-b bg-white p-6 py-3">
       <Suspense fallback={<UserInfoSkeleton />}>
         <UserInfo />
       </Suspense>
