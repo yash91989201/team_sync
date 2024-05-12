@@ -1,5 +1,6 @@
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 // TRPC ROUTERS
+import { statsRouter } from "@routers/stats";
 import { adminRouter } from "@routers/admin";
 import { leaveRouter } from "@routers/leave";
 import { salaryRouter } from "@routers/salary";
@@ -12,6 +13,7 @@ import { designationRouter } from "@routers/designation";
 
 export const appRouter = createTRPCRouter({
   adminRouter,
+  statsRouter,
   leaveRouter,
   salaryRouter,
   holidayRouter,
