@@ -1,8 +1,13 @@
+import { count, eq, sql } from "drizzle-orm";
 // UTILS
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { departmentTable, empAttendanceTable, empProfileTable, userTable } from "@/server/db/schema";
-import { startOfToday } from "date-fns";
-import { count, eq, sql } from "drizzle-orm";
+// DB TABLES
+import {
+  userTable,
+  departmentTable,
+  empProfileTable,
+  empAttendanceTable,
+} from "@/server/db/schema";
 
 export const statsRouter = createTRPCRouter({
   empCount: protectedProcedure.query(async ({ ctx }) => {
@@ -38,10 +43,6 @@ export const statsRouter = createTRPCRouter({
     return deptCount
   }),
   attendance: protectedProcedure.query(async ({ ctx }) => {
-    const today = startOfToday()
-    const day = today.getDay();
-    const month = today.getMonth() + 1;
-
     const empsPresentSq = ctx.db
       .select()
       .from(empAttendanceTable)

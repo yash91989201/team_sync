@@ -68,7 +68,8 @@ export default function NavLink(props: NavLinkProps) {
       className={cn(
         buttonVariants({
           variant: isActive ? "secondary" : "ghost",
-          className: "flex w-full items-center justify-start gap-3 rounded-lg",
+          className:
+            "flex w-full items-center justify-start gap-3 rounded-lg p-3",
         }),
         isActive
           ? "bg-primary-foreground text-primary hover:bg-primary-foreground"
