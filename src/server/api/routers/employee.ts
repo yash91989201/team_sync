@@ -1,12 +1,12 @@
 import { generateId } from "lucia";
 import { format, isSameDay, isWithinInterval } from "date-fns";
-import { and, between, eq, getTableColumns, like, or } from "drizzle-orm";
+import { and, between, eq, getTableColumns, like, or, sql } from "drizzle-orm";
 // UTILS
 import {
   calculateShift,
   getDateRangeByRenewPeriod
 } from "@/lib/utils";
-import { formatTime, } from "@/lib/date-time-utils";
+import { formatTime, parseTime, } from "@/lib/date-time-utils";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // DB TABLES
 import {
@@ -14,6 +14,7 @@ import {
   empDocumentTable,
   empLeaveTypeTable,
   empProfileTable,
+  empShiftTable,
   leaveBalanceTable,
   leaveRequestTable,
   leaveTypeTable,
@@ -151,7 +152,7 @@ export const employeeRouter = createTRPCRouter({
       await ctx.db.query.empAttendanceTable.findFirst({
         where: and(
           eq(empAttendanceTable.empId, id),
-          eq(empAttendanceTable.date, new Date()),
+          sql`DATE(${empAttendanceTable.date}) = CURDATE()`,
         ),
       });
 
@@ -168,27 +169,49 @@ export const employeeRouter = createTRPCRouter({
       .mutation(async ({ ctx, input }):
         Promise<ProcedureStatusType> => {
         const { id } = ctx.session.user;
-        const { date, } = input
+        const { date } = input
 
-        const [punchInQuery] = await ctx.db
-          .insert(empAttendanceTable)
-          .values({
-            id: generateId(15),
-            empId: id,
-            date,
-            punchIn: formatTime(date),
-          });
+        try {
+          const empShift = await ctx.db.query.empShiftTable.findFirst({
+            where: eq(empShiftTable.empId, id),
+            columns: {
+              shiftStart: true
+            }
+          })
 
-        if (punchInQuery.affectedRows === 1) {
+          if (empShift === undefined) {
+            throw new Error("Employee shift timming not defined.")
+          }
+
+          const empShiftStart = parseTime(empShift.shiftStart)
+          const isLateLogin = date.getTime() <= (empShiftStart.getTime() * (10 * 60 * 1000))
+
+          await ctx.db
+            .insert(empAttendanceTable)
+            .values({
+              id: generateId(15),
+              empId: id,
+              date,
+              punchIn: formatTime(date),
+              shift: isLateLogin ? "0.75" : null
+            });
+
           return {
             status: "SUCCESS",
-            message: "You have successfully punched in"
+            message: isLateLogin ? `Your shift time is ${empShift.shiftStart}, late login will be applied.` : "You have successfully punched in."
           }
-        }
-
-        return {
-          status: "FAILED",
-          message: "Unable to punch in, try again!"
+        } catch (error) {
+          if (error instanceof Error) {
+            return {
+              status: "FAILED",
+              message: error.message
+            }
+          } else {
+            return {
+              status: "FAILED",
+              message: "Unable to punch in, try again!"
+            }
+          }
         }
       }),
 
@@ -200,45 +223,48 @@ export const employeeRouter = createTRPCRouter({
       const { attendanceId, date } = input;
       const punchOut = formatTime(date)
 
-      const attendanceData =
-        await ctx.db.query.empAttendanceTable.findFirst({
-          where: and(
-            eq(empAttendanceTable.empId, id),
-            eq(empAttendanceTable.date, date),
-          ),
-        });
+      try {
+        const attendanceData =
+          await ctx.db.query.empAttendanceTable.findFirst({
+            where: and(
+              eq(empAttendanceTable.empId, id),
+              eq(empAttendanceTable.date, date),
+            ),
+          });
 
-      if (!attendanceData) {
-        return {
-          status: "FAILED",
-          message: "Unable to punch out, try again!"
+        if (attendanceData === undefined) {
+          throw new Error("Punch In not initiated.")
         }
-      }
-      const { punchIn } = attendanceData
-      const { shift, hours } = calculateShift({ punchIn, punchOut, });
 
-      const [punchOutQuery] = await ctx.db
-        .update(empAttendanceTable)
-        .set({
-          punchOut,
-          shift,
-          hours
-        })
-        .where(eq(empAttendanceTable.id, attendanceId));
+        const { punchIn } = attendanceData
+        const { shift, hours } = calculateShift({ punchIn, punchOut, });
 
-      if (punchOutQuery.affectedRows === 1) {
+        await ctx.db
+          .update(empAttendanceTable)
+          .set({
+            punchOut,
+            shift,
+            hours
+          })
+          .where(eq(empAttendanceTable.id, attendanceId));
+
         return {
           status: "SUCCESS",
           message: "Punched out successfully."
         }
-      } else {
-        return {
-          status: "FAILED",
-          message: "Unable to punch in, try again!"
+      } catch (error) {
+        if (error instanceof Error) {
+          return {
+            status: "FAILED",
+            message: error.message
+          }
+        } else {
+          return {
+            status: "FAILED",
+            message: "Unable to punch out, try again!"
+          }
         }
       }
-
-
     }),
 
   leaveApply: protectedProcedure
