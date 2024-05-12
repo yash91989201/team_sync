@@ -874,14 +874,13 @@ export const adminRouter = createTRPCRouter({
 
       return {
         status: "SUCCESS",
-        message: "Payslip generated and pdf stored successfully."
+        message: "Payslip deleted, now you can re-generate it"
       }
     } catch (error) {
       return {
         status: "FAILED",
-        message: "Unable to generate payslip"
+        message: "Unable to delete payslip."
       }
     }
-
   })
 });
