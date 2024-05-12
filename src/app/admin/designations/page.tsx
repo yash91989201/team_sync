@@ -11,9 +11,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
-import { DesignationTable } from "@/components/admin/tables";
-import AdminMainWrapper from "@/components/admin/layout/admin-main-wrapper";
-import CreateDesignationForm from "@/components/admin/designation/create-designation-form";
+import { DesignationTable } from "@adminComponents/tables";
+import AdminMainWrapper from "@adminComponents/layouts/admin-main-wrapper";
+import CreateDesignationForm from "@adminComponents/designation/create-designation-form";
 
 export default async function DepartmentsPage() {
   await authPage("ADMIN");

@@ -1,7 +1,7 @@
 // UTILS
 import { authPage } from "@/server/helpers";
 // CUSTOM COMPONENTS
-import Attendance from "@/components/admin/dashboard/attendance";
+import Attendance from "@adminComponents/dashboard/attendance";
 
 export default async function AdminPage() {
   await authPage("ADMIN");

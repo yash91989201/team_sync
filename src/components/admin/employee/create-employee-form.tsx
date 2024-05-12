@@ -44,9 +44,9 @@ import { Calendar } from "@ui/calendar";
 import { RadioGroup, RadioGroupItem } from "@ui/radio-group";
 // CUSTOM COMPONENTS
 import LeaveTypesField from "./leave-types-field";
-import { EmployeeImageField } from "@/components/admin/employee/employee-image-field";
-import EmployeeShiftTimePicker from "@/components/admin/employee/employee-shift-time-picker";
-import SalaryComponentsField from "@/components/admin/employee/salary-components-field";
+import { EmployeeImageField } from "@adminComponents/employee/employee-image-field";
+import EmployeeShiftTimePicker from "@adminComponents/employee/employee-shift-time-picker";
+import SalaryComponentsField from "@adminComponents/employee/salary-components-field";
 // CONSTANTS
 import { MAX_FILE_SIZE } from "@/constants";
 // ICONS

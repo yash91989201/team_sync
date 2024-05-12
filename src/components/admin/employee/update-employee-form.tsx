@@ -47,8 +47,8 @@ import { Calendar } from "@ui/calendar";
 import { RadioGroup, RadioGroupItem } from "@ui/radio-group";
 // CUSTOM COMPONENTS
 import LeaveTypesField from "./leave-types-field";
-import SalaryComponentsField from "@/components/admin/employee/salary-components-field";
-import EmployeeShiftTimePicker from "@/components/admin/employee/employee-shift-time-picker";
+import SalaryComponentsField from "@adminComponents/employee/salary-components-field";
+import EmployeeShiftTimePicker from "@adminComponents/employee/employee-shift-time-picker";
 // ICONS
 import { Asterisk, Loader2, CalendarIcon } from "lucide-react";
 // CONSTANTS

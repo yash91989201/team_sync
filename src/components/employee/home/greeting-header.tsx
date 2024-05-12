@@ -2,7 +2,7 @@
 // CUSTOM HOOKS
 import useGreeting from "@/hooks/use-greeting";
 // CUSTOM COMPONENTS
-import CurrentTimeCard from "@/components/employee/current-time-card";
+import CurrentTimeCard from "@empComponents/home/current-time-card";
 
 export default function GreetingHeader() {
   const greeting = useGreeting();

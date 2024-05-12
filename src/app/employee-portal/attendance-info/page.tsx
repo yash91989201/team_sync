@@ -9,8 +9,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
-import EmployeeMainWrapper from "@/components/employee/employee-main-wrapper";
-import AttendanceCalendar from "@/components/employee/attendance-info/attendance-calendar";
+import EmployeeMainWrapper from "@empComponents/layouts/employee-main-wrapper";
+import AttendanceCalendar from "@empComponents/attendance-info/attendance-calendar";
 
 export default async function AttendanceInfoPage() {
   await authPage("EMPLOYEE");

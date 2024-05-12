@@ -31,7 +31,8 @@
       "@adminComponents/*":["./src/components/admin/*"],
       "@empComponents/*":["./src/components/employee/*"],
       "@sharedComponents/*": ["./src/components/shared/*"],
-      "@adminLayouts/*":["./src/components/admin/layout/*"],
+      "@adminLayouts/*":["src/components/admin/layouts/*"],
+      "@empLayouts/*":["src/components/employee/layouts/*"],
       // server side aliases
       "@routers/*":["./src/server/api/routers/*"]
     }
@@ -45,5 +46,5 @@
     "**/*.js",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules","pb"]
 }

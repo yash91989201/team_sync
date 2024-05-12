@@ -2,12 +2,13 @@ import { Suspense } from "react";
 // UTILS
 import { authPage } from "@/server/helpers";
 // CUSTOM COMPONENTS
-import UpcomingHolidays, {
+import {
+  UpcomingHolidays,
   UpcomingHolidaysSkeleton,
-} from "@/components/employee/upcoming-holidays";
-import GreetingHeader from "@/components/employee/greeting-header";
-import AttendancePunchCard from "@/components/employee/attendance-punch-card";
-import EmployeeMainWrapper from "@/components/employee/employee-main-wrapper";
+} from "@empComponents/home/upcoming-holidays";
+import GreetingHeader from "@empComponents/home/greeting-header";
+import EmployeeMainWrapper from "@empLayouts/employee-main-wrapper";
+import AttendancePunchCard from "@empComponents/home/attendance-punch-card";
 
 export default async function EmployeePortalPage() {
   await authPage("EMPLOYEE");

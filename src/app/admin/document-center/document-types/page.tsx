@@ -11,9 +11,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
-import { DocumentTypeTable } from "@/components/admin/tables";
-import AdminMainWrapper from "@/components/admin/layout/admin-main-wrapper";
-import CreateDocumentTypeForm from "@/components/admin/document-types/create-document-type-form";
+import { DocumentTypeTable } from "@adminComponents/tables";
+import AdminMainWrapper from "@adminComponents/layouts/admin-main-wrapper";
+import CreateDocumentTypeForm from "@adminComponents/document-types/create-document-type-form";
 
 export default async function DocumentTypesPage() {
   await authPage("ADMIN");

@@ -11,8 +11,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
-import LeaveCalendar from "@/components/employee/leave/leave-calendar";
-import EmployeeMainWrapper from "@/components/employee/employee-main-wrapper";
+import LeaveCalendar from "@empComponents/leave/leave-calendar";
+import EmployeeMainWrapper from "@empComponents/layouts/employee-main-wrapper";
 
 export default async function LeaveCalendarpage() {
   await authPage("EMPLOYEE");

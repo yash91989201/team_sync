@@ -11,8 +11,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
-import { SalariesTable } from "@/components/admin/tables";
-import AdminMainWrapper from "@/components/admin/layout/admin-main-wrapper";
+import { SalariesTable } from "@adminComponents/tables";
+import AdminMainWrapper from "@adminComponents/layouts/admin-main-wrapper";
 
 export default async function SalariesPage() {
   await authPage("ADMIN");

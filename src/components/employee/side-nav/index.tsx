@@ -2,7 +2,7 @@
 // UI
 import { ScrollArea } from "@/components/ui/scroll-area";
 // CUSTOM COMPONENTS
-import NavLinks from "@/components/employee/side-nav/nav-links";
+import NavLinks from "@empComponents/side-nav/nav-links";
 
 export default function SideNav() {
   return (

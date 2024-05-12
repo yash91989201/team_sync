@@ -1,6 +1,6 @@
 "use client";
 // CUSTOM COMPONENTS
-import NavLinks from "@/components/admin/side-nav/nav-links";
+import NavLinks from "@adminComponents/side-nav/nav-links";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function SideNav() {

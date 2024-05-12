@@ -11,8 +11,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
-import { DepartmentTable } from "@/components/admin/tables";
-import AdminMainWrapper from "@adminLayouts/admin-main-wrapper";
+import { DepartmentTable } from "@adminComponents/tables";
+import AdminMainWrapper from "@adminComponents/layouts/admin-main-wrapper";
 import CreateDepartmentForm from "@adminComponents/department/create-department-form";
 
 export default async function DepartmentsPage() {

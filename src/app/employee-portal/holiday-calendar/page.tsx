@@ -10,8 +10,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
-import HolidayCalendar from "@/components/shared/holiday-calendar";
-import EmployeeMainWrapper from "@/components/employee/employee-main-wrapper";
+import HolidayCalendar from "@sharedComponents/holiday-calendar";
+import EmployeeMainWrapper from "@empComponents/layouts/employee-main-wrapper";
 
 export default async function HolidayCalendarPage() {
   const apiHelper = await createApiHelper();

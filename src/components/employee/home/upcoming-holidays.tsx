@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@ui/skeleton";
 
-export default async function UpcomingHolidays() {
+export async function UpcomingHolidays() {
   const currentDate = new Date();
   const firstDayOfMonth = toUTC(startOfMonth(currentDate));
   const lastDayOfNextMonth = toUTC(endOfMonth(addMonths(currentDate, 1)));

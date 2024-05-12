@@ -8,7 +8,7 @@ import {
 // UI
 import { Skeleton } from "@/components/ui/skeleton";
 // CUSTOM COMPONENTS
-import AdminMainWrapper from "@/components/admin/layout/admin-main-wrapper";
+import AdminMainWrapper from "@adminComponents/layouts/admin-main-wrapper";
 
 export default function LoadingPage() {
   return (

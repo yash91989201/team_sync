@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 // UI
 import { ScrollArea } from "@/components/ui/scroll-area";
 // CUSTOM COMPONENTS
-import TopNav from "@/components/admin/top-nav";
-import SideNav from "@/components/admin/side-nav";
+import TopNav from "@adminComponents/top-nav";
+import SideNav from "@adminComponents/side-nav";
 
 export default async function AdminRootLayout({
   children,

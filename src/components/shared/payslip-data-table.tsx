@@ -28,7 +28,7 @@ import {
   NoPayslipDaysInfo,
   PayslipDaysInfo,
   PayslipDaysInfoSkeleton,
-} from "@/components/shared/payslip-days-info";
+} from "@sharedComponents/payslip-days-info";
 // ICONS
 import { Download, Eye, RefreshCw } from "lucide-react";
 

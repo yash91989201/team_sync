@@ -3,9 +3,9 @@ import { Suspense } from "react";
 import { Button } from "@ui/button";
 // CUSTOM COMPONENTS
 import LogoutButton from "@sharedComponents/log-out-button";
-import UserInfo from "@/components/employee/top-nav/user-info";
-import UserInfoSkeleton from "@/components/shared/user-info-skeleton";
-import NotificationDropdown from "@/components/employee/top-nav/notification-dropdown";
+import UserInfo from "@empComponents/top-nav/user-info";
+import UserInfoSkeleton from "@sharedComponents/user-info-skeleton";
+import NotificationDropdown from "@empComponents/top-nav/notification-dropdown";
 // ICONS
 import { Bolt } from "lucide-react";
 

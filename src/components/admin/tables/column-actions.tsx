@@ -11,10 +11,10 @@ import type { LeaveRequestSchemaType } from "@/lib/types";
 // UI
 import { Button } from "@ui/button";
 // CUSTOM COMPONENTS
-import UpdateDepartmentForm from "@/components/admin/department/update-department-form";
-import UpdateDesignationForm from "@/components/admin/designation/update-designation-form";
-import UpdateLeaveTypeForm from "@/components/admin/leave/update-leave-type-form";
-import DeleteLeaveTypeForm from "@/components/admin/leave/delete-leave-type-form";
+import UpdateDepartmentForm from "@adminComponents/department/update-department-form";
+import UpdateDesignationForm from "@adminComponents/designation/update-designation-form";
+import UpdateLeaveTypeForm from "@adminComponents/leave/update-leave-type-form";
+import DeleteLeaveTypeForm from "@adminComponents/leave/delete-leave-type-form";
 // ICONS
 import { Check, Loader2, Pencil, Trash, X } from "lucide-react";
 

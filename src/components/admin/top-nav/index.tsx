@@ -2,11 +2,11 @@ import { Suspense } from "react";
 // UI
 import { Button } from "@ui/button";
 // CUSTOM COMPONENTS
-import UserInfo from "@/components/admin/top-nav/user-info";
+import UserInfo from "@adminComponents/top-nav/user-info";
 import LogoutButton from "@sharedComponents/log-out-button";
-import UserInfoSkeleton from "@/components/shared/user-info-skeleton";
-import ModuleSearchBar from "@/components/admin/top-nav/module-search-bar";
-import NotificationDropdown from "@/components/admin/top-nav/notification-dropdown";
+import UserInfoSkeleton from "@sharedComponents/user-info-skeleton";
+import ModuleSearchBar from "@adminComponents/top-nav/module-search-bar";
+import NotificationDropdown from "@adminComponents/top-nav/notification-dropdown";
 // ICONS
 import { Bolt } from "lucide-react";
 

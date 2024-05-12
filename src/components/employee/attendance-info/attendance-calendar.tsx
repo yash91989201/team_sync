@@ -269,7 +269,7 @@ const AttendanceText = ({
   lastDayOfCurrentMonth: Date;
 }) => {
   const today = startOfToday();
-  console.debug(joiningDate);
+
   // isOutOfRange makes sure that day
   // lies between first day of month and day before today
   const isOutOfRange =

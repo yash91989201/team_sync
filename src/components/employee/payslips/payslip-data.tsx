@@ -93,9 +93,12 @@ export default function PayslipData({ empId }: { empId: string }) {
           <PayslipDataTableSkeleton />
         ) : currentMonthPayslip === undefined ? (
           <NoPayslipData />
-        ) : (
-          <PayslipDataTable payslip={currentMonthPayslip} />
-        )}
+        ) : currentMonthPayslip.status === "SUCCESS" ? (
+          <PayslipDataTable
+            payslip={currentMonthPayslip.data}
+            date={parseDate(currentMonth, "MMMM-yyyy")}
+          />
+        ) : null}
       </CardContent>
     </Card>
   );

@@ -11,9 +11,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
-import { LeaveTypeTable } from "@/components/admin/tables";
-import AdminMainWrapper from "@/components/admin/layout/admin-main-wrapper";
-import CreateLeaveTypeForm from "@/components/admin/leave/create-leave-type-form";
+import { LeaveTypeTable } from "@adminComponents/tables";
+import AdminMainWrapper from "@adminComponents/layouts/admin-main-wrapper";
+import CreateLeaveTypeForm from "@adminComponents/leave/create-leave-type-form";
 
 export default async function LeaveTypesPage() {
   await authPage("ADMIN");

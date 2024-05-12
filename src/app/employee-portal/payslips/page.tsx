@@ -1,8 +1,8 @@
 // UTILS
 import { authPage, getUser } from "@/server/helpers";
 //
-import EmployeeMainWrapper from "@/components/employee/employee-main-wrapper";
-import PayslipData from "@/components/employee/payslips/payslip-data";
+import EmployeeMainWrapper from "@empComponents/layouts/employee-main-wrapper";
+import PayslipData from "@empComponents/payslips/payslip-data";
 
 export default async function PaySlipsPage() {
   await authPage("EMPLOYEE");

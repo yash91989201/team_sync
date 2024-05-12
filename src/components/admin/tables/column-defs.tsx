@@ -27,8 +27,8 @@ import {
   LeaveTypeTableActions,
   SalariesTableActions,
 } from "./column-actions";
-import DocumentsPreview from "@/components/shared/documents-preview";
-import DeleteDocumentTypeForm from "@/components/admin/document-types/delete-document-type-form";
+import DocumentsPreview from "@sharedComponents/documents-preview";
+import DeleteDocumentTypeForm from "@adminComponents/document-types/delete-document-type-form";
 // CONSTANTS
 import { DOCUMENT_FILE_TYPES_DISPLAY } from "@/constants";
 // ICONS

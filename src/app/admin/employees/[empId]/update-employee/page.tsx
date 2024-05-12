@@ -10,8 +10,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
-import AdminMainWrapper from "@/components/admin/layout/admin-main-wrapper";
-import UpdateEmployeeForm from "@/components/admin/employee/update-employee-form";
+import AdminMainWrapper from "@adminComponents/layouts/admin-main-wrapper";
+import UpdateEmployeeForm from "@adminComponents/employee/update-employee-form";
 
 export default async function UpdateEmployeePage({
   params,

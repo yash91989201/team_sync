@@ -2,7 +2,7 @@
 // UTILS
 import { api } from "@/trpc/react";
 // UI
-import { DataTable } from "@/components/shared/data-table";
+import { DataTable } from "@sharedComponents/data-table";
 // CUSTOM COMPONENTS
 import {
   LEAVE_BALANCES_TABLE,

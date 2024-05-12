@@ -163,7 +163,6 @@ export const documentRouter = createTRPCRouter({
         message: "Deleted employee documents"
       }
     } catch (error) {
-      console.log(error)
       return {
         status: "FAILED",
         message: "Unable to delete employee documents"

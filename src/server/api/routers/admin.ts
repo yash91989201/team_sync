@@ -467,7 +467,6 @@ export const adminRouter = createTRPCRouter({
             message: "Employee added successfully"
           }
         } catch (error) {
-          console.log(error)
           tx.rollback()
           return {
             status: "FAILED",
@@ -628,7 +627,6 @@ export const adminRouter = createTRPCRouter({
             message: "Employee updated successfully"
           }
         } catch (error) {
-          console.log(error)
           return {
             status: "FAILED",
             message: "Unable to update employee, please try again"
@@ -699,7 +697,6 @@ export const adminRouter = createTRPCRouter({
         message: "Successfully removed employee and related resources."
       }
     } catch (e) {
-      console.log(e)
       return {
         status: "FAILED",
         message: "Unable to remove employee, try again."
@@ -828,7 +825,6 @@ export const adminRouter = createTRPCRouter({
         message: "Payslip generated and pdf stored successfully."
       }
     } catch (error) {
-      console.debug(error)
       return {
         status: "FAILED",
         message: "Unable to generate payslip"

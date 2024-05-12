@@ -1,10 +1,10 @@
-// CUSTOM COMPONENTS
-import TopNav from "@/components/employee/top-nav";
-import SideNav from "@/components/employee/side-nav";
 // TYPES
 import type { ReactNode } from "react";
+// CUSTOM COMPONENTS
+import TopNav from "@empComponents/top-nav";
+import SideNav from "@empComponents/side-nav";
 
-export default async function AdminRootLayout({
+export default async function EmployeeRootLayout({
   children,
 }: {
   children: ReactNode;

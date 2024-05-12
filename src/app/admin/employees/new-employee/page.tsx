@@ -1,8 +1,8 @@
 // UTILS
 import { authPage } from "@/server/helpers";
 // CUSTOM COMPONENTS
-import AdminMainWrapper from "@/components/admin/layout/admin-main-wrapper";
-import CreateEmployeeForm from "@/components/admin/employee/create-employee-form";
+import AdminMainWrapper from "@adminComponents/layouts/admin-main-wrapper";
+import CreateEmployeeForm from "@adminComponents/employee/create-employee-form";
 
 export default async function NewEmployee() {
   await authPage("ADMIN");

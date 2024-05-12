@@ -50,7 +50,7 @@ import { Input } from "@ui/input";
 import { Button } from "@ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
 // CUSTOM COMPONENTS
-import { DocumentInput } from "@/components/admin/employee-documents/document-input";
+import { DocumentInput } from "@adminComponents/employee-documents/document-input";
 // ICONS
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 // CONSTANTS

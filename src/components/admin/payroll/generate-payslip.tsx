@@ -38,8 +38,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 // CUSTOM COMPONENTS
 import GeneratePayslipForm from "./generate-payslip-form";
-import { PayslipDataTable } from "@/components/shared/payslip-data-table";
-import { PayslipDaysInfoSkeleton } from "@/components/shared/payslip-days-info";
+import { PayslipDataTable } from "@sharedComponents/payslip-data-table";
+import { PayslipDaysInfoSkeleton } from "@sharedComponents/payslip-days-info";
 
 export default function GeneratePayslip({ empId }: { empId: string }) {
   const today = new Date(startOfToday().setHours(8, 30, 0, 0));

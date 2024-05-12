@@ -11,8 +11,8 @@ import {
   CardTitle,
 } from "@ui/card";
 // CUSTOM COMPONENTS
-import { LeaveBalancesTable } from "@/components/employee/tables";
-import EmployeeMainWrapper from "@/components/employee/employee-main-wrapper";
+import { LeaveBalancesTable } from "@empComponents/tables";
+import EmployeeMainWrapper from "@empComponents/layouts/employee-main-wrapper";
 
 export default async function LeaveBalancesPage() {
   await authPage("EMPLOYEE");
