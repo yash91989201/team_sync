@@ -433,7 +433,9 @@ export const empPayslipTableRelations = relations(empPayslipTable, ({ one, many 
     fields: [empPayslipTable.empId],
     references: [userTable.id]
   }),
-  payslipComponents: many(empPayslipCompTable),
+  payslipComponents: many(empPayslipCompTable, {
+    relationName: "payslipComponents"
+  }),
   leaveEncashment: one(leaveEncashmentTable, {
     fields: [empPayslipTable.id],
     references: [leaveEncashmentTable.empPayslipId]
@@ -453,6 +455,14 @@ export const empPayslipCompTable = mysqlTable("emp_payslip_comp", {
     .notNull()
     .references(() => empPayslipTable.id),
 })
+
+export const empPayslipCompTableRelations = relations(empPayslipCompTable, ({ one }) => ({
+  payslip: one(empPayslipTable, {
+    fields: [empPayslipCompTable.empPayslipId],
+    references: [empPayslipTable.id],
+    relationName: "payslipComponents"
+  })
+}))
 
 export const leaveEncashmentTable = mysqlTable("leave_encashment", {
   amount: int("amount").notNull(),
