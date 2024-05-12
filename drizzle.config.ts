@@ -5,9 +5,9 @@ import { env } from "@/env";
 export default {
   schema: "./src/server/db/schema.ts",
   out: "./src/server/db/migrations",
-  driver: "mysql2",
+  dialect: "mysql",
   dbCredentials: {
-    uri: env.DATABASE_URL,
+    url: env.DATABASE_URL,
   },
   tablesFilter: ["team_sync_*"],
 } satisfies Config;
