@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { format } from "date-fns";
 // UTILS
 import { cn, getLeaveDateString } from "@/lib/utils";
@@ -33,7 +34,6 @@ import DeleteDocumentTypeForm from "@adminComponents/document-types/delete-docum
 import { DOCUMENT_FILE_TYPES_DISPLAY } from "@/constants";
 // ICONS
 import { ArrowUpDown, CornerUpRight } from "lucide-react";
-import Link from "next/link";
 
 export const DEPARTMENT_TABLE: ColumnDef<DepartmentTableProps>[] = [
   {
@@ -171,26 +171,26 @@ export const DOCUMENT_TYPE_TABLE: ColumnDef<DocumentTypeSchemaType>[] = [
 
 export const EMPLOYEES_TABLE: ColumnDef<EmployeesTableProps>[] = [
   {
+    accessorKey: "employeeImage",
+    header: "",
+    cell: ({ row }) => (
+      <Avatar className="h-14 w-14">
+        <AvatarImage src={row.original.imageUrl!} alt={row.original.name} />
+        <AvatarFallback>CN</AvatarFallback>
+      </Avatar>
+    ),
+  },
+  {
     accessorKey: "name",
     header: "Name",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-3">
-        <Avatar className="h-14 w-14">
-          <AvatarImage src={row.original.imageUrl!} alt={row.original.name} />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
-        <div className="flex flex-col gap-1.5">
-          <p>{row.original.name}</p>
-        </div>
-      </div>
-    ),
+    cell: ({ row }) => row.original.name,
   },
   {
     accessorKey: "code",
     header: "Code",
   },
   {
-    accessorKey: "employeeProfile",
+    accessorKey: "employeeDesignation",
     header: "Designation",
     cell: ({ row }) => {
       const employeeProfile = row.original.employeeProfile;
@@ -198,7 +198,7 @@ export const EMPLOYEES_TABLE: ColumnDef<EmployeesTableProps>[] = [
     },
   },
   {
-    accessorKey: "employeeProfile",
+    accessorKey: "employeeDepartment",
     header: "Department",
     cell: ({ row }) => {
       const employeeProfile = row.original.employeeProfile;
@@ -206,7 +206,7 @@ export const EMPLOYEES_TABLE: ColumnDef<EmployeesTableProps>[] = [
     },
   },
   {
-    accessorKey: "employeeProfile",
+    accessorKey: "joiningDate",
     header: "Joining date",
     cell: ({ row }) => {
       const employeeProfile = row.original.employeeProfile;
