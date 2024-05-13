@@ -1,7 +1,7 @@
 import { useFieldArray, useFormContext } from "react-hook-form";
 // UTILS
-import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
+import { cn, formatSalary } from "@/lib/utils";
 // TYPES
 import type { CreateEmployeeFormSchemaType } from "@/lib/types";
 // UI
@@ -127,7 +127,9 @@ export default function SalaryComponentsField() {
           <TableFooter>
             <TableRow>
               <TableCell>Total</TableCell>
-              <TableCell className="text-right">Rs.{totalSalary}</TableCell>
+              <TableCell className="text-right">
+                {formatSalary(totalSalary)}
+              </TableCell>
             </TableRow>
           </TableFooter>
           <TableCaption className="space-y-3">
