@@ -136,5 +136,20 @@ export const statsRouter = createTRPCRouter({
     return ctx.db.query.holidayTable.findMany({
       where: sql`MONTH(${holidayTable.date}) = MONTH(CURDATE())`
     })
+  }),
+  /**
+   * Returns all employees that are on leave today
+  */
+  onLeaveEmpCount: protectedProcedure.query(async ({ ctx }) => {
+    const approvedLeaveRequests = await ctx.db
+      .select({
+        count: count()
+      })
+      .from(leaveRequestTable)
+      .where(
+        sql`CURRENT_DATE() BETWEEN ${leaveRequestTable.fromDate} AND ${leaveRequestTable.toDate} AND ${leaveRequestTable.status} = 'approved'`
+      )
+
+    return approvedLeaveRequests[0]?.count ?? 0
   })
 });
