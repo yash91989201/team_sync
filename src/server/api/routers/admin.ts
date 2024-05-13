@@ -108,7 +108,13 @@ export const adminRouter = createTRPCRouter({
             ...getTableColumns(leaveTypeTable)
           })
           .from(leaveTypeTable)
-          .innerJoin(empLeaveTypeTable, eq(empLeaveTypeTable.leaveTypeId, leaveTypeTable.id))
+          .innerJoin(
+            empLeaveTypeTable,
+            and(
+              eq(empLeaveTypeTable.empId, empId),
+              eq(empLeaveTypeTable.leaveTypeId, leaveTypeTable.id),
+            )
+          );
 
         return {
           status: "SUCCESS",
