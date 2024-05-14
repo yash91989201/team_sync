@@ -264,18 +264,20 @@ export const adminRouter = createTRPCRouter({
         let totalDays = 0;
         const { fromDate, toDate, leaveDays, paidLeave } = approvedLeave
         if (leaveDays === 1) {
-          totalDays += 1;
+          totalDays = 1;
         }
-        else if (isSameMonth(fromDate, startDate)) {
-          totalDays += differenceInDays(fromDate, startDate) + 1
+        else if (isSameMonth(startDate, endDate)) {
+          totalDays = differenceInDays(toDate, fromDate) + 1
         }
-        else if (isSameMonth(toDate, endDate)) {
-          totalDays += differenceInDays(endDate, toDate) + 1
+        else if (isSameMonth(startDate, toDate)) {
+          totalDays = differenceInDays(toDate, startDate) + 1
+        }
+        else if (isSameMonth(fromDate, endDate)) {
+          totalDays = differenceInDays(endDate, fromDate) + 1
         }
 
         if (paidLeave) paidLeaveDays += totalDays;
         else unPaidLeaveDays += totalDays
-
       }
 
       // step 5: holidays

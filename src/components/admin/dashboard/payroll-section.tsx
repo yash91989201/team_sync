@@ -261,12 +261,13 @@ const InstantGeneratePayslip = ({
         <Button
           size="sm"
           variant="link"
-          className="h-fit w-fit px-0 text-xs text-blue-500 md:text-sm"
+          className="h-fit w-fit items-center gap-1.5 px-0 text-xs text-blue-500 md:text-sm"
         >
-          Instant Generate
+          {isPending ? <Loader2 className="size-4 animate-spin" /> : null}
+          <span>Instant Generate</span>
         </Button>
       </TooltipTrigger>
-      <TooltipContent className="w-[480px] p-3">
+      <TooltipContent className="min-w-[480px] p-3">
         {isFetching || createPayslipData === undefined ? (
           <PayslipTooltipSkeleton />
         ) : (
@@ -274,7 +275,7 @@ const InstantGeneratePayslip = ({
             <Table>
               <TableHeader className="bg-muted/50">
                 <TableRow className="h-6 ">
-                  <TableHead className="font-semibold ">Salary Comps</TableHead>
+                  <TableHead className="font-semibold ">Salary Comp.</TableHead>
                   <TableHead className="text-right font-semibold">
                     Comp. Master
                   </TableHead>
@@ -363,12 +364,12 @@ const PayslipTooltipSkeleton = () => {
       <Table>
         <TableHeader className="bg-muted/50">
           <TableRow className="h-6">
-            <TableHead className="font-semibold ">Salary Component</TableHead>
+            <TableHead className="font-semibold ">Salary Comp.</TableHead>
             <TableHead className="text-right font-semibold ">
-              Component Master
+              Comp. Master
             </TableHead>
             <TableHead className="text-right font-semibold ">
-              Amount Paid
+              Amt. Paid
             </TableHead>
           </TableRow>
         </TableHeader>

@@ -1,4 +1,4 @@
-import { and, eq, sql } from "drizzle-orm";
+import { and, asc, eq, sql } from "drizzle-orm";
 // UTILS
 import { db } from "@/server/db";
 // DB TABLES
@@ -44,4 +44,5 @@ export const missingEmpPayslipQuery = db
       sql`MONTH(${empPayslipTable.date}) = MONTH(${sql.placeholder("month")})`
     )
   )
+  .orderBy(asc(empPayslipTable.id))
   .prepare()
