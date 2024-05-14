@@ -11,15 +11,22 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 // CUSTOM COMPONENTS
-import { LeaveRequestsTable } from "@adminComponents/tables";
 import AdminMainWrapper from "@adminComponents/layouts/admin-main-wrapper";
+import LeaveRequestsTable from "@adminComponents/leave/leave-requests-table";
 
 export default async function LeaveRequestsPage() {
   await authPage("ADMIN");
 
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+
   const apiHelper = await createApiHelper();
-  await apiHelper.leaveRouter.getLeaveRequests.prefetch();
-  const allLeaveRequests = dehydrate(apiHelper.queryClient);
+  await apiHelper.leaveRouter.getLeaveRequests.prefetch({
+    month: date,
+    status: undefined,
+    employeeName: undefined,
+  });
+  const leaveRequests = dehydrate(apiHelper.queryClient);
 
   return (
     <AdminMainWrapper>
@@ -33,7 +40,7 @@ export default async function LeaveRequestsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <HydrationBoundary state={allLeaveRequests}>
+          <HydrationBoundary state={leaveRequests}>
             <LeaveRequestsTable />
           </HydrationBoundary>
         </CardContent>

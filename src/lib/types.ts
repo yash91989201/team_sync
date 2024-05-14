@@ -272,3 +272,5 @@ export type LeaveApplicationType = LeaveRequestSchemaType & {
   leaveType: LeaveTypeSchemaType;
   reviewer: UserType;
 };
+
+export type LeaveReqStatusType = LeaveRequestSchemaType["status"]

@@ -1,0 +1,327 @@
+"use client";
+import { useState } from "react";
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { eachMonthOfInterval, format, startOfDay, startOfYear } from "date-fns";
+// UTILS
+import { cn } from "@/lib/utils";
+import { api } from "@/trpc/react";
+import { parseDate } from "@/lib/date-time-utils";
+// TYPES
+import type { LeaveReqStatusType } from "@/lib/types";
+import type { VisibilityState } from "@tanstack/react-table";
+// UI
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
+} from "@ui/dropdown-menu";
+import { Input } from "@ui/input";
+import { Button } from "@ui/button";
+import { Skeleton } from "@ui/skeleton";
+// ICONS
+import { MixerHorizontalIcon } from "@radix-ui/react-icons";
+import { CircleX, FilterX, RotateCcw, Search } from "lucide-react";
+// CONSTANTS
+import { LEAVE_REQUESTS_TABLE } from "@adminComponents/tables/column-defs";
+
+const leaveStatus = ["pending", "approved", "rejected", "withdrawn"];
+
+export default function LeaveRequestsTable() {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  const today = startOfDay(date);
+
+  const [qDate, setQDate] = useState(date);
+  const [currentMonth, setCurrentMonth] = useState(format(today, "MMMM-yyyy"));
+  const [status, setStatus] = useState<LeaveReqStatusType | undefined>(
+    undefined,
+  );
+  const [employeeName, setEmployeeName] = useState<string | undefined>(
+    undefined,
+  );
+
+  const months = eachMonthOfInterval({
+    start: startOfYear(new Date()),
+    end: today,
+  }).map((month) => format(month, "MMMM-yyyy"));
+
+  const isFilterUnset =
+    qDate.getTime() === today.getTime() &&
+    status === undefined &&
+    employeeName === undefined;
+
+  const handleMonthChange = (month: string) => {
+    const monthDate = parseDate(month, "MMMM-yyyy");
+    setCurrentMonth(month);
+    setQDate(monthDate);
+  };
+
+  const resetFilters = () => {
+    setQDate(today);
+    setStatus(undefined);
+    setEmployeeName(undefined);
+    setCurrentMonth(format(today, "MMMM-yyyy"));
+  };
+
+  const {
+    data = [],
+    isLoading,
+    isFetching,
+    refetch: refetchGetLeaveRequests,
+  } = api.leaveRouter.getLeaveRequests.useQuery(
+    {
+      month: qDate,
+      status,
+      employeeName,
+    },
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    },
+  );
+
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+
+  const table = useReactTable({
+    columns: LEAVE_REQUESTS_TABLE,
+    data,
+    getCoreRowModel: getCoreRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    state: {
+      columnVisibility,
+    },
+  });
+
+  const resetTableColumns = () => {
+    table.getAllColumns().forEach((column) => column.toggleVisibility(true));
+  };
+
+  if (isLoading) {
+    return <LeaveRequestsTableSkeleton />;
+  }
+
+  return (
+    <div className="space-y-3">
+      {/* query header */}
+      <div className="flex items-center gap-3">
+        <div className="flex flex-1 items-center gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-600" />
+            <Input
+              className="w-80 pl-10"
+              placeholder="Employee name"
+              value={employeeName}
+              onChange={(e) => setEmployeeName(e.target.value)}
+            />
+            <Button
+              size="icon"
+              variant="link"
+              className="absolute right-3 top-1/2 -translate-y-1/2 hover:no-underline"
+              disabled={employeeName === undefined}
+              onClick={() => setEmployeeName(undefined)}
+            >
+              <CircleX className="size-4 text-gray-600" />
+            </Button>
+          </div>
+          <Select value={currentMonth} onValueChange={handleMonthChange}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Select month" />
+            </SelectTrigger>
+            <SelectContent>
+              {months.map((month) => (
+                <SelectItem key={month} value={month}>
+                  {month}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={status}
+            onValueChange={(status) => setStatus(status as LeaveReqStatusType)}
+          >
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              {leaveStatus.map((status) => (
+                <SelectItem key={status} value={status}>
+                  {status}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            variant="outline"
+            className="gap-1"
+            disabled={isFilterUnset}
+            onClick={resetFilters}
+          >
+            <FilterX className="size-4" />
+            <span>Reset Filters</span>
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="rounded-xl"
+            onClick={() => refetchGetLeaveRequests()}
+          >
+            <RotateCcw className="size-4" />
+          </Button>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            className="ml-auto hidden h-8 lg:flex"
+            disabled={table
+              .getAllColumns()
+              .every((column) => column.getIsVisible() === true)}
+            onClick={resetTableColumns}
+          >
+            <FilterX className="size-4" />
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="w-20">
+                <MixerHorizontalIcon className="mr-2 size-4" />
+                View
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+      <Table className="border-separate border-spacing-y-3">
+        <TableHeader className="overflow-hidden rounded-lg bg-primary-foreground">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id} className="border-none p-4">
+              {headerGroup.headers.map((header) => {
+                return (
+                  <TableHead
+                    key={header.id}
+                    className="p-2 text-base font-semibold text-gray-700 lg:p-4"
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </TableHead>
+                );
+              })}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+                className={cn(isFetching ? "animate-pulse" : "")}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id} className="p-2 lg:p-4">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell
+                colSpan={LEAVE_REQUESTS_TABLE.length}
+                className="h-24 text-center"
+              >
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
+export function LeaveRequestsTableSkeleton() {
+  return (
+    <div className="space-y-3">
+      {/* query header */}
+      <div className="flex items-center gap-3">
+        <div className="flex flex-1 items-center gap-3">
+          <Skeleton className="h-9 w-80" />
+          <Skeleton className="h-9 w-40" />
+          <Skeleton className="h-9 w-32" />
+          <Skeleton className="h-9 w-32" />
+          <Skeleton className="h-9 w-9 rounded-xl" />
+        </div>
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-9 w-9 rounded-xl" />
+          <Skeleton className="h-9 w-20" />
+        </div>
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Applied by</TableHead>
+            <TableHead>Leave days</TableHead>
+            <TableHead>Leave date</TableHead>
+            <TableHead>Leave type</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Applied on</TableHead>
+            <TableHead>Reason</TableHead>
+            <TableHead>Accept / Reject</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {[1, 2, 3, 4, 5].map((item) => (
+            <TableRow key={item}>
+              <TableCell colSpan={8}>
+                <Skeleton className="h-10" />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}

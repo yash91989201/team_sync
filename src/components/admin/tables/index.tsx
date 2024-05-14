@@ -10,7 +10,6 @@ import {
   DOCUMENT_TYPE_TABLE,
   EMPLOYEES_DOCUMENTS_TABLE,
   EMPLOYEES_TABLE,
-  LEAVE_REQUESTS_TABLE,
   LEAVE_TYPE_TABLE,
   SALARIES_TABLE,
 } from "./column-defs";
@@ -43,12 +42,6 @@ export function EmployeesTable() {
   const { data = [] } = api.employeeRouter.getAll.useQuery();
 
   return <DataTable columns={EMPLOYEES_TABLE} data={data} />;
-}
-
-export function LeaveRequestsTable() {
-  const { data = [] } = api.leaveRouter.getLeaveRequests.useQuery();
-
-  return <DataTable columns={LEAVE_REQUESTS_TABLE} data={data} />;
 }
 
 export function EmployeesDocumentsTable() {
