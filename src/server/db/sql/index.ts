@@ -22,9 +22,10 @@ export const missingEmpPayslipQuery = db
     id: userTable.id,
     name: userTable.name,
     imageUrl: userTable.imageUrl,
+    salary: empProfileTable.salary,
     payslip: {
       id: empPayslipTable.id,
-      pdfUrl: empPayslipTable.pdfUrl
+      pdfUrl: empPayslipTable.pdfUrl,
     }
   })
   .from(userTable)

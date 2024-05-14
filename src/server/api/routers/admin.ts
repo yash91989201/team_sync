@@ -338,11 +338,11 @@ export const adminRouter = createTRPCRouter({
 
       return {
         leaveEncashmentDays,
-        leaveEncashmentData,
+        leaveEncashment: leaveEncashmentData,
         presentDays,
         paidLeaveDays,
         daysPayable,
-        empPayslipComponents,
+        payslipComponents: empPayslipComponents,
         totalSalary,
         calendarDays,
         lopDays,
@@ -740,7 +740,6 @@ export const adminRouter = createTRPCRouter({
     const {
       empId,
       date,
-      createdAt,
       calendarDays,
       lopDays,
       daysPayable,
@@ -761,7 +760,7 @@ export const adminRouter = createTRPCRouter({
       await ctx.db.insert(empPayslipTable).values({
         id: empPayslipId,
         date,
-        createdAt,
+        createdAt: new Date(),
         calendarDays,
         lopDays,
         daysPayable,

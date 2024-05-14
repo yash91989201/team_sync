@@ -1,13 +1,34 @@
 "use client";
+import {
+  eachMonthOfInterval,
+  endOfMonth,
+  format,
+  startOfDay,
+  startOfYear,
+} from "date-fns";
 import Link from "next/link";
+import { toast } from "sonner";
 import { useState } from "react";
-import { eachMonthOfInterval, format, startOfDay, startOfYear } from "date-fns";
 // UTILS
-import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
 import { buttonVariants } from "@ui/button";
+import { cn, formatSalary } from "@/lib/utils";
 import { parseDate } from "@/lib/date-time-utils";
+// TYPES
+import type { EmpPayslipCardProps } from "@/lib/types";
+// CUSTOM HOOKS
+import useToggle from "@/hooks/use-toggle";
 // UI
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@ui/table";
 import {
   Select,
   SelectContent,
@@ -15,12 +36,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Button } from "@ui/button";
 import { Skeleton } from "@ui/skeleton";
 import { Separator } from "@ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@ui/avatar";
 // ICONS
-import { HandCoins, RotateCcw } from "lucide-react";
+import { HandCoins, Loader2, RotateCcw } from "lucide-react";
 
 export function PayrollSection() {
   const date = new Date();
@@ -106,63 +133,276 @@ export function PayrollSection() {
       ) : (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-3">
           {employeesPayslip.map((emp) => (
-            <div
+            <EmpPayslipCard
               key={emp.id}
-              className="flex items-center gap-3 rounded-xl border p-3"
-            >
-              <Avatar className="size-12">
-                <AvatarImage src={emp.imageUrl!} alt={emp.name} />
-                <AvatarFallback>{emp.name}</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col gap-1 text-sm font-semibold text-gray-600">
-                <p className="text-base">{emp.name}</p>
-                {emp.payslip === null ? (
-                  <div className="flex items-center gap-3">
-                    <Link
-                      className={cn(
-                        buttonVariants({
-                          variant: "link",
-                        }),
-                        "h-fit w-fit p-0 text-xs text-green-500 md:text-sm",
-                      )}
-                      href={`/admin/payroll/salary-info/${emp.id}/generate-payslip`}
-                    >
-                      Generate Now
-                    </Link>
-                    <Link
-                      className={cn(
-                        buttonVariants({
-                          variant: "link",
-                        }),
-                        "h-fit w-fit p-0 text-xs text-red-500 md:text-sm",
-                      )}
-                      href={`/admin/payroll/salary-info/${emp.id}/generate-payslip`}
-                    >
-                      Instant Generate
-                    </Link>
-                  </div>
-                ) : (
-                  <Link
-                    className={cn(
-                      buttonVariants({
-                        variant: "link",
-                      }),
-                      "h-fit w-fit p-0 text-xs text-blue-500 md:text-sm",
-                    )}
-                    target="_blank"
-                    href={emp.payslip.pdfUrl}
-                  >
-                    View Payslip
-                  </Link>
-                )}
-              </div>
-            </div>
+              {...emp}
+              selectedMonth={currentMonth}
+            />
           ))}
         </div>
       )}
     </div>
   );
 }
+
+const EmpPayslipCard = (emp: EmpPayslipCardProps) => {
+  return (
+    <div key={emp.id} className="flex items-center gap-3 rounded-xl border p-3">
+      <Avatar className="size-12">
+        <AvatarImage src={emp.imageUrl!} alt={emp.name} />
+        <AvatarFallback>{emp.name}</AvatarFallback>
+      </Avatar>
+      <div className="flex flex-col gap-1">
+        <p className="text-base">{emp.name}</p>
+        <p className="text-sm font-semibold">
+          Salary: {formatSalary(emp.salary, { notation: "compact" })}
+        </p>
+        {emp.payslip === null ? (
+          <div className="flex items-center gap-3">
+            <Link
+              className={cn(
+                buttonVariants({
+                  variant: "link",
+                }),
+                "h-fit w-fit p-0 text-xs text-green-500 md:text-sm",
+              )}
+              href={`/admin/payroll/salary-info/${emp.id}/generate-payslip`}
+            >
+              Generate
+            </Link>
+            <TooltipProvider delayDuration={150}>
+              <InstantGeneratePayslip
+                empId={emp.id}
+                selectedMonth={emp.selectedMonth}
+              />
+            </TooltipProvider>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3">
+            <Link
+              className={cn(
+                buttonVariants({
+                  variant: "link",
+                }),
+                "h-fit w-fit p-0 text-xs text-green-500 md:text-sm",
+              )}
+              href={`/admin/payroll/salary-info/${emp.id}/generate-payslip`}
+            >
+              Payslip Info
+            </Link>
+            <Link
+              className={cn(
+                buttonVariants({
+                  variant: "link",
+                }),
+                "h-fit w-fit p-0 text-xs text-blue-500 md:text-sm",
+              )}
+              target="_blank"
+              href={emp.payslip.pdfUrl}
+            >
+              View Payslip
+            </Link>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const InstantGeneratePayslip = ({
+  empId,
+  selectedMonth,
+}: {
+  empId: string;
+  selectedMonth: string;
+}) => {
+  const tooltip = useToggle(false);
+  const apiUtils = api.useUtils();
+  const firstDayOfCurrentMonth = parseDate(selectedMonth, "MMMM-yyyy");
+  const lastDayOfCurrentMonth = endOfMonth(firstDayOfCurrentMonth);
+
+  const { data: createPayslipData, isFetching } =
+    api.adminRouter.getCreatePayslipData.useQuery(
+      {
+        empId,
+        startDate: new Date(firstDayOfCurrentMonth.setHours(15, 30, 0, 0)),
+        endDate: new Date(lastDayOfCurrentMonth.setHours(15, 30, 0, 0)),
+      },
+      {
+        enabled: tooltip.isShowing,
+        refetchOnReconnect: false,
+        refetchOnWindowFocus: false,
+        staleTime: 60 * 60 * 1000,
+      },
+    );
+
+  const { mutateAsync: createEmpPayslip, isPending } =
+    api.adminRouter.createEmpPayslip.useMutation();
+
+  const instantPayslipAction = async () => {
+    if (createPayslipData === undefined) return;
+    const actionResponse = await createEmpPayslip({
+      empId,
+      date: lastDayOfCurrentMonth,
+      ...createPayslipData,
+    });
+    tooltip.hide();
+    if (actionResponse.status === "SUCCESS") {
+      toast.success(actionResponse.message);
+      await apiUtils.statsRouter.employeesPayslip.invalidate();
+    } else {
+      toast.error(actionResponse.message);
+    }
+  };
+
+  return (
+    <Tooltip onOpenChange={tooltip.toggle} open={tooltip.isShowing}>
+      <TooltipTrigger asChild>
+        <Button
+          size="sm"
+          variant="link"
+          className="h-fit w-fit px-0 text-xs text-blue-500 md:text-sm"
+        >
+          Instant Generate
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent className="w-[480px] p-3">
+        {isFetching || createPayslipData === undefined ? (
+          <PayslipTooltipSkeleton />
+        ) : (
+          <div className="overflow-hidden rounded-md bg-white text-gray-700">
+            <Table>
+              <TableHeader className="bg-muted/50">
+                <TableRow className="h-6 ">
+                  <TableHead className="font-semibold ">Salary Comps</TableHead>
+                  <TableHead className="text-right font-semibold">
+                    Comp. Master
+                  </TableHead>
+                  <TableHead className="text-right font-semibold">
+                    Amt. Paid
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {createPayslipData.payslipComponents.map(
+                  (payslipComp, index) => (
+                    <TableRow key={index} className="h-6">
+                      <TableCell className="font-semibold">
+                        {payslipComp.name}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {payslipComp.amount}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {payslipComp.amountPaid}
+                      </TableCell>
+                    </TableRow>
+                  ),
+                )}
+                <TableRow className="h-6">
+                  <TableCell className="font-semibold">
+                    Leave Encashment
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {createPayslipData.leaveEncashment.amount}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {createPayslipData.leaveEncashment.amountPaid}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+              <TableFooter>
+                <TableRow className="h-6">
+                  <TableCell colSpan={2} className="font-semibold">
+                    Total Earnings
+                  </TableCell>
+                  <TableCell className="text-right font-semibold">
+                    {formatSalary(createPayslipData.totalSalary)}
+                  </TableCell>
+                </TableRow>
+              </TableFooter>
+              <TableCaption className="mt-0 text-gray-700">
+                <div className="flex flex-col items-end gap-3 p-2">
+                  <div className="flex w-full items-center justify-between">
+                    <p>Days payable: {createPayslipData.daysPayable}</p>
+                    <p>Paid leaves: {createPayslipData.paidLeaveDays}</p>
+                    <p>Un-paid Leaves: {createPayslipData.unPaidLeaveDays}</p>
+                    <p>LOP Days: {createPayslipData.lopDays}</p>
+                  </div>
+                  <Separator />
+                  <div className="flex w-full items-center justify-between">
+                    <p>No adjustments/arrears will be applied</p>
+                    <Button
+                      size="sm"
+                      className="gap-1.5 rounded-full"
+                      disabled={isPending}
+                      onClick={instantPayslipAction}
+                    >
+                      {isPending ? (
+                        <Loader2 className="size-4 animate-spin" />
+                      ) : null}
+                      <span className="font-semibold">Generate</span>
+                    </Button>
+                  </div>
+                </div>
+              </TableCaption>
+            </Table>
+          </div>
+        )}
+      </TooltipContent>
+    </Tooltip>
+  );
+};
+
+const PayslipTooltipSkeleton = () => {
+  return (
+    <div className="overflow-hidden rounded-lg bg-white text-xs text-gray-700">
+      <Table>
+        <TableHeader className="bg-muted/50">
+          <TableRow className="h-6">
+            <TableHead className="font-semibold ">Salary Component</TableHead>
+            <TableHead className="text-right font-semibold ">
+              Component Master
+            </TableHead>
+            <TableHead className="text-right font-semibold ">
+              Amount Paid
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {[1, 2, 3, 4].map((item) => (
+            <TableRow key={item} className="h-6">
+              <TableCell colSpan={5}>
+                <Skeleton className="h-5 w-full" />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+        <TableFooter>
+          <TableRow className="h-6">
+            <TableCell colSpan={4} className="font-semibold">
+              Total Earnings
+            </TableCell>
+            <TableCell className="font-semibold">
+              <Skeleton className="h-6 w-24" />
+            </TableCell>
+          </TableRow>
+        </TableFooter>
+        <TableCaption className="mt-0">
+          <div className="flex flex-col items-end gap-3 pb-2">
+            <div className="flex w-full items-center justify-between gap-3 border-b p-3 px-2">
+              <Skeleton className="h-6 w-full" />
+              <Skeleton className="h-6 w-full" />
+              <Skeleton className="h-6 w-full" />
+              <Skeleton className="h-6 w-full" />
+            </div>
+            <Skeleton className="mr-2 h-8 w-16 rounded-full" />
+          </div>
+        </TableCaption>
+      </Table>
+    </div>
+  );
+};
 
 export function PayrollSectionSkeleton() {
   return (

@@ -60,9 +60,6 @@ export default function GeneratePayslipForm({
     defaultValues: {
       date,
       empId,
-      createdAt: new Date(),
-      leaveEncashment: payslipData.leaveEncashmentData,
-      payslipComponents: payslipData.empPayslipComponents,
       ...payslipData,
     },
   });
@@ -76,7 +73,7 @@ export default function GeneratePayslipForm({
   const leaveEncashmentAmountPaid =
     leaveEncashmentAdjustment +
     leaveEncashmentArrear +
-    payslipData.leaveEncashmentData.amount;
+    payslipData.leaveEncashment.amount;
 
   const totalSalary =
     componentsData.reduce(
@@ -153,7 +150,7 @@ export default function GeneratePayslipForm({
             <SalaryComponentsField />
             <TableRow className="hover:bg-white">
               <TableCell>Leave encashment</TableCell>
-              <TableCell>{payslipData.leaveEncashmentData.amount}</TableCell>
+              <TableCell>{payslipData.leaveEncashment.amount}</TableCell>
               <TableCell>
                 <FormField
                   control={control}

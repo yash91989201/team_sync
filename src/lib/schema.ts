@@ -386,7 +386,6 @@ export const DeleteHolidaySchema = z.object({
 export const GeneratePayslipSchema = z.object({
   empId: z.string(),
   date: z.date(),
-  createdAt: z.date(),
   calendarDays: z.number(),
   lopDays: z.number(),
   daysPayable: z.number(),

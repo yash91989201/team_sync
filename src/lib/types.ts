@@ -274,3 +274,15 @@ export type LeaveApplicationType = LeaveRequestSchemaType & {
 };
 
 export type LeaveReqStatusType = LeaveRequestSchemaType["status"]
+
+export type EmpPayslipCardProps = {
+  id: string;
+  name: string;
+  imageUrl: string | null;
+  salary: number;
+  payslip: {
+    id: string;
+    pdfUrl: string;
+  } | null;
+  selectedMonth: string;
+};
