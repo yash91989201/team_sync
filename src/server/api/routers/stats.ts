@@ -166,7 +166,7 @@ export const statsRouter = createTRPCRouter({
     return ctx.db.query.leaveRequestTable.findMany({
       where: and(
         eq(leaveRequestTable.status, "pending"),
-        sql`MONTH(${leaveRequestTable.appliedOn}) = MONTH(CURRENT_DATE())`
+        sql`MONTH(CURRENT_DATE()) BETWEEN MONTH(${leaveRequestTable.fromDate}) AND MONTH(${leaveRequestTable.toDate})`
       ),
       columns: {
         id: true,

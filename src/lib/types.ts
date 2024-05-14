@@ -152,16 +152,14 @@ export type DesignationTableProps = DesignationSchemaType & {
 };
 
 export type LeaveRequestTableProps = LeaveRequestSchemaType & {
-  employee: UserType;
+  employee: Pick<UserType, "name">;
   leaveType: LeaveTypeSchemaType
 }
 
 export type SalariesTableProps = GetEmployeesSalariesOutputType
 
 export type EmpShiftTableProps = EmployeeAttendanceType & {
-  employee: {
-    name: string;
-  }
+  employee: Pick<UserType, "name">
 }
 
 // EMPLOYEE DATA TABLE TYPES

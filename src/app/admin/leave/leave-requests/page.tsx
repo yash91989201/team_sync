@@ -18,7 +18,7 @@ export default async function LeaveRequestsPage() {
   await authPage("ADMIN");
 
   const apiHelper = await createApiHelper();
-  await apiHelper.leaveRouter.getAllLeaveRequests.prefetch();
+  await apiHelper.leaveRouter.getLeaveRequests.prefetch();
   const allLeaveRequests = dehydrate(apiHelper.queryClient);
 
   return (

@@ -11,7 +11,12 @@ import { Skeleton } from "@ui/skeleton";
 import { Separator } from "@ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@ui/avatar";
 // ICONS
-import { Loader2, RotateCcw, TentTree, TreePalm } from "lucide-react";
+import {
+  Loader2,
+  RotateCcw,
+  GitPullRequestDraft,
+  TreePalm,
+} from "lucide-react";
 
 export function EmpLeaveSection() {
   const { mutateAsync: approveLeave, isPending: isApprovingLeaveRequest } =
@@ -140,7 +145,7 @@ export function EmpLeaveSection() {
       <div className="flex flex-col gap-3 rounded-2xl bg-card p-3 shadow">
         <div className="flex items-center gap-3">
           <div className="flex size-14 items-center justify-center rounded-xl bg-amber-100 text-lg">
-            <TentTree className="size-8 text-amber-500" />
+            <GitPullRequestDraft className="size-8 text-amber-500" />
           </div>
           <p className="flex-1 text-lg font-semibold text-amber-500">
             {pendingLeaves.length} pending leave&nbsp;
@@ -269,7 +274,7 @@ export function EmpLeavesSectionSkeleton() {
       <div className="flex flex-col gap-3 rounded-2xl bg-card p-3 shadow">
         <div className="flex items-center gap-3">
           <div className="flex size-14 items-center justify-center rounded-xl bg-amber-100 text-lg">
-            <TentTree className="size-8 text-amber-500" />
+            <GitPullRequestDraft className="size-8 text-amber-500" />
           </div>
           <div className="flex-1">
             <Skeleton className="h-5 w-1/2" />

@@ -83,7 +83,7 @@ export function LeaveRequestsTableActions({
   status: LeaveRequestSchemaType["status"];
 }) {
   const { refetch: refetchAllLeaveRequests } =
-    api.leaveRouter.getAllLeaveRequests.useQuery();
+    api.leaveRouter.getLeaveRequests.useQuery();
 
   const { mutate: rejectLeave, isPending: isRejectingLeave } =
     api.leaveRouter.rejectLeave.useMutation({

@@ -46,7 +46,7 @@ export function EmployeesTable() {
 }
 
 export function LeaveRequestsTable() {
-  const { data = [] } = api.leaveRouter.getAllLeaveRequests.useQuery();
+  const { data = [] } = api.leaveRouter.getLeaveRequests.useQuery();
 
   return <DataTable columns={LEAVE_REQUESTS_TABLE} data={data} />;
 }

@@ -350,6 +350,12 @@ export const RejectLeaveSchema = z.object({
   leaveRequestId: z.string(),
 });
 
+export const GetLeaveRequestsInput = z.object({
+  month: z.date().optional(),
+  status: z.enum(["pending", "approved", "rejected", "withdrawn"]),
+  employeeName: z.string().optional(),
+}).optional()
+
 // DEPARTMENT SCHEMAS
 export const CreateSalaryComponentSchema = z.object({
   name: z
