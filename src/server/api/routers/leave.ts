@@ -138,63 +138,70 @@ export const leaveRouter = createTRPCRouter({
       }): Promise<ProcedureStatusType> => {
         const { leaveRequestId } = input;
 
-        const leaveRequest = await ctx.db.query.leaveRequestTable.findFirst({
-          where: eq(leaveRequestTable.id, leaveRequestId),
-          with: {
-            leaveType: true,
-          },
-        });
-        if (leaveRequest === undefined) {
-          return {
-            status: "FAILED",
-            message:
-              "This leave request doesnot exists, or maybe employee has deleted it.",
-          };
-        }
+        try {
+          const leaveRequest = await ctx.db.query.leaveRequestTable.findFirst({
+            where: eq(leaveRequestTable.id, leaveRequestId),
+            with: {
+              leaveType: true,
+            },
+          });
+          if (leaveRequest === undefined) {
+            return {
+              status: "FAILED",
+              message:
+                "This leave request doesnot exists, or maybe employee has deleted it.",
+            };
+          }
 
-        const { fromDate, toDate, leaveType } = leaveRequest;
-        const { id: leaveTypeId, renewPeriod, renewPeriodCount } = leaveType;
+          const { fromDate, toDate, leaveType } = leaveRequest;
+          const { id: leaveTypeId, renewPeriod, renewPeriodCount } = leaveType;
 
-        const leaveDateRange = getDateRangeByRenewPeriod({
-          leaveDate: { from: fromDate, to: toDate },
-          renewPeriod,
-          renewPeriodCount,
-        });
-
-        const existingLeaveBalances =
-          await ctx.db.query.leaveBalanceTable.findMany({
-            where: and(
-              eq(leaveBalanceTable.empId, leaveRequest.empId),
-              eq(leaveBalanceTable.leaveTypeId, leaveTypeId),
-            ),
+          const leaveDateRange = getDateRangeByRenewPeriod({
+            leaveDate: { from: fromDate, to: toDate },
+            renewPeriod,
+            renewPeriodCount,
           });
 
-        await Promise.all(
-          leaveDateRange.map(async (leaveDate) => {
-            const { startDate, days } = leaveDate;
-            const { id: leaveBalanceId, balance: currentBalance } =
-              existingLeaveBalances.find(({ createdAt }) =>
-                isSameDay(createdAt, startDate),
-              )!;
+          const existingLeaveBalances =
+            await ctx.db.query.leaveBalanceTable.findMany({
+              where: and(
+                eq(leaveBalanceTable.empId, leaveRequest.empId),
+                eq(leaveBalanceTable.leaveTypeId, leaveTypeId),
+              ),
+            });
 
-            await ctx.db
-              .update(leaveBalanceTable)
-              .set({
-                balance: currentBalance + days,
-              })
-              .where(eq(leaveBalanceTable.id, leaveBalanceId));
-          }),
-        );
+          await Promise.all(
+            leaveDateRange.map(async (leaveDate) => {
+              const { startDate, days } = leaveDate;
+              const { id: leaveBalanceId, balance: currentBalance } =
+                existingLeaveBalances.find(({ createdAt }) =>
+                  isSameDay(createdAt, startDate),
+                )!;
 
-        await ctx.db
-          .update(leaveRequestTable)
-          .set({ status: "rejected" })
-          .where(eq(leaveRequestTable.id, leaveRequestId));
+              await ctx.db
+                .update(leaveBalanceTable)
+                .set({
+                  balance: currentBalance + days,
+                })
+                .where(eq(leaveBalanceTable.id, leaveBalanceId));
+            }),
+          );
 
-        return {
-          status: "SUCCESS",
-          message: "Leave request rejected.",
-        };
+          await ctx.db
+            .update(leaveRequestTable)
+            .set({ status: "rejected" })
+            .where(eq(leaveRequestTable.id, leaveRequestId));
+
+          return {
+            status: "SUCCESS",
+            message: "Leave request rejected.",
+          };
+        } catch (error) {
+          return {
+            status: "FAILED",
+            message: "Unable to reject leave request.",
+          };
+        }
       },
     ),
   /**
