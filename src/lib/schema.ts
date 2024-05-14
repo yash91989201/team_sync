@@ -354,6 +354,7 @@ export const GetLeaveRequestsInput = z.object({
   month: z.date().optional(),
   status: z.enum(["pending", "approved", "rejected", "withdrawn"]).optional(),
   employeeName: z.string().optional(),
+  isPaid: z.boolean().optional()
 }).optional()
 
 // DEPARTMENT SCHEMAS

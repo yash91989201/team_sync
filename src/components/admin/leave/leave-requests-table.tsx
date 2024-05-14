@@ -46,6 +46,7 @@ import { CircleX, FilterX, RotateCcw, Search } from "lucide-react";
 // CONSTANTS
 import { LEAVE_STATUS } from "@/constants";
 import { LEAVE_REQUESTS_TABLE } from "@adminComponents/tables/column-defs";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function LeaveRequestsTable() {
   const router = useRouter();
@@ -53,18 +54,22 @@ export default function LeaveRequestsTable() {
   const paramDate = searchParams.get("month") ?? undefined;
   const paramStatus = searchParams.get("status") ?? undefined;
   const paramEmployee = searchParams.get("employee") ?? undefined;
+  const paramIsPaid = searchParams.get("paid") ?? undefined;
 
   const initialDate =
     paramDate !== undefined ? parseDate(paramDate) : undefined;
   const initialStatus = LEAVE_STATUS.find((status) => status === paramStatus);
   const initialEmployee = paramEmployee;
+  const initialIsPaid =
+    paramIsPaid === undefined ? undefined : paramIsPaid === "true";
 
   const date = new Date();
   date.setHours(0, 0, 0, 0);
   const today = startOfDay(date);
 
   const [qDate, setQDate] = useState(initialDate ?? date);
-  const [currentMonth, setCurrentMonth] = useState(format(today, "MMMM-yyyy"));
+  const [currentMonth, setCurrentMonth] = useState(format(today, "MMMM"));
+  const [isPaid, setIsPaid] = useState<boolean | undefined>(initialIsPaid);
   const [status, setStatus] = useState<LeaveReqStatusType | undefined>(
     initialStatus !== undefined
       ? (initialStatus as LeaveReqStatusType)
@@ -80,11 +85,12 @@ export default function LeaveRequestsTable() {
   const months = eachMonthOfInterval({
     start: startOfYear(new Date()),
     end: today,
-  }).map((month) => format(month, "MMMM-yyyy"));
+  }).map((month) => format(month, "MMMM"));
 
   const isFilterUnset =
     qDate.getTime() === today.getTime() &&
     status === undefined &&
+    isPaid === undefined &&
     (debouncedEmpName === undefined || debouncedEmpName?.length === 0);
 
   const {
@@ -96,6 +102,7 @@ export default function LeaveRequestsTable() {
     {
       month: qDate,
       status,
+      isPaid,
       employeeName: debouncedEmpName,
     },
     {
@@ -118,7 +125,7 @@ export default function LeaveRequestsTable() {
   });
 
   const handleMonthChange = (month: string) => {
-    const monthDate = parseDate(month, "MMMM-yyyy");
+    const monthDate = parseDate(month, "MMMM");
     setCurrentMonth(month);
     setQDate(monthDate);
   };
@@ -134,7 +141,8 @@ export default function LeaveRequestsTable() {
     setQDate(today);
     setStatus(undefined);
     resetEmpNameQuery();
-    setCurrentMonth(format(today, "MMMM-yyyy"));
+    setIsPaid(undefined);
+    setCurrentMonth(format(today, "MMMM"));
     router.replace(`${window.location.origin}${window.location.pathname}`);
   };
 
@@ -148,9 +156,9 @@ export default function LeaveRequestsTable() {
       <div className="flex items-center gap-3">
         <div className="flex flex-1 items-center gap-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-600" />
+            <Search className="absolute left-2 top-1/2 size-4 -translate-y-1/2 text-gray-600" />
             <Input
-              className="w-80 pl-10"
+              className="w-72 pl-8"
               placeholder="Employee name"
               ref={empNameInputRef}
               onChange={(e) => setDebounceEmpName(e.target.value)}
@@ -158,7 +166,7 @@ export default function LeaveRequestsTable() {
             <Button
               size="icon"
               variant="link"
-              className="absolute right-3 top-1/2 -translate-y-1/2 hover:no-underline"
+              className="absolute right-2 top-1/2 -translate-y-1/2 hover:no-underline"
               disabled={
                 debouncedEmpName === undefined || debouncedEmpName?.length === 0
               }
@@ -167,26 +175,21 @@ export default function LeaveRequestsTable() {
               <CircleX className="size-4 text-gray-600" />
             </Button>
           </div>
-          <Select value={currentMonth} onValueChange={handleMonthChange}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="Select month" />
-            </SelectTrigger>
-            <SelectContent>
-              {months.map((month) => (
-                <SelectItem key={month} value={month}>
-                  {month}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-1.5">
+            <Checkbox
+              checked={isPaid ?? false}
+              onCheckedChange={(value) => setIsPaid(value as boolean)}
+            />
+            <span className="text-sm">Paid leave</span>
+          </div>
           <Select
             value={status}
             onValueChange={(status) => setStatus(status as LeaveReqStatusType)}
           >
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-28">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="min-w-28">
               {LEAVE_STATUS.map((status) => (
                 <SelectItem key={status} value={status}>
                   {status}
@@ -194,9 +197,21 @@ export default function LeaveRequestsTable() {
               ))}
             </SelectContent>
           </Select>
+          <Select value={currentMonth} onValueChange={handleMonthChange}>
+            <SelectTrigger className="w-28">
+              <SelectValue placeholder="Month" />
+            </SelectTrigger>
+            <SelectContent className="min-w-28">
+              {months.map((month) => (
+                <SelectItem key={month} value={month}>
+                  {month}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Button
             variant="outline"
-            className="gap-1"
+            className="gap-1.5"
             disabled={isFilterUnset}
             onClick={resetFilters}
           >
@@ -320,9 +335,10 @@ export function LeaveRequestsTableSkeleton() {
       {/* query header */}
       <div className="flex items-center gap-3">
         <div className="flex flex-1 items-center gap-3">
-          <Skeleton className="h-9 w-80" />
-          <Skeleton className="h-9 w-40" />
-          <Skeleton className="h-9 w-32" />
+          <Skeleton className="h-9 w-72" />
+          <Skeleton className="h-6 w-[5.25rem]" />
+          <Skeleton className="h-9 w-28" />
+          <Skeleton className="h-9 w-28" />
           <Skeleton className="h-9 w-32" />
           <Skeleton className="h-9 w-9 rounded-xl" />
         </div>

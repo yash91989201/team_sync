@@ -66,8 +66,9 @@ export const leaveRouter = createTRPCRouter({
             input.month !== undefined ?
               sql`MONTH(${input.month}) BETWEEN MONTH(${leaveRequestTable.fromDate}) AND MONTH(${leaveRequestTable.toDate})`
               : undefined,
-            input.employeeName !== undefined ? like(userTable.name, `%${input.employeeName}%`) : undefined,
             input.status !== undefined ? eq(leaveRequestTable.status, input.status) : undefined,
+            input.isPaid !== undefined ? eq(leaveTypeTable.paidLeave, input.isPaid) : undefined,
+            input.employeeName !== undefined ? like(userTable.name, `%${input.employeeName}%`) : undefined,
           )
         )
     }
