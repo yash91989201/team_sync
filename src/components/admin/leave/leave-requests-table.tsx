@@ -5,7 +5,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { eachMonthOfInterval, format, startOfDay, startOfYear } from "date-fns";
 // UTILS
 import { cn } from "@/lib/utils";
@@ -47,6 +47,7 @@ import { LEAVE_STATUS } from "@/constants";
 import { LEAVE_REQUESTS_TABLE } from "@adminComponents/tables/column-defs";
 
 export default function LeaveRequestsTable() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const paramDate = searchParams.get("month") ?? undefined;
   const paramStatus = searchParams.get("status") ?? undefined;
@@ -82,19 +83,6 @@ export default function LeaveRequestsTable() {
     status === undefined &&
     employeeName === undefined;
 
-  const handleMonthChange = (month: string) => {
-    const monthDate = parseDate(month, "MMMM-yyyy");
-    setCurrentMonth(month);
-    setQDate(monthDate);
-  };
-
-  const resetFilters = () => {
-    setQDate(today);
-    setStatus(undefined);
-    setEmployeeName(undefined);
-    setCurrentMonth(format(today, "MMMM-yyyy"));
-  };
-
   const {
     data = [],
     isLoading,
@@ -107,8 +95,9 @@ export default function LeaveRequestsTable() {
       employeeName,
     },
     {
-      refetchOnWindowFocus: false,
+      refetchOnMount: false,
       refetchOnReconnect: false,
+      staleTime: 5 * 60 * 1000,
     },
   );
 
@@ -124,13 +113,23 @@ export default function LeaveRequestsTable() {
     },
   });
 
+  const handleMonthChange = (month: string) => {
+    const monthDate = parseDate(month, "MMMM-yyyy");
+    setCurrentMonth(month);
+    setQDate(monthDate);
+  };
+
+  const resetFilters = () => {
+    setQDate(today);
+    setStatus(undefined);
+    setEmployeeName("");
+    setCurrentMonth(format(today, "MMMM-yyyy"));
+    router.replace(`${window.location.origin}${window.location.pathname}`);
+  };
+
   const resetTableColumns = () => {
     table.getAllColumns().forEach((column) => column.toggleVisibility(true));
   };
-
-  if (isLoading) {
-    return <LeaveRequestsTableSkeleton />;
-  }
 
   return (
     <div className="space-y-3">
@@ -150,7 +149,7 @@ export default function LeaveRequestsTable() {
               variant="link"
               className="absolute right-3 top-1/2 -translate-y-1/2 hover:no-underline"
               disabled={employeeName === undefined}
-              onClick={() => setEmployeeName(undefined)}
+              onClick={() => setEmployeeName("")}
             >
               <CircleX className="size-4 text-gray-600" />
             </Button>
@@ -241,55 +240,85 @@ export default function LeaveRequestsTable() {
           </DropdownMenu>
         </div>
       </div>
-      <Table className="border-separate border-spacing-y-3">
-        <TableHeader className="overflow-hidden rounded-lg bg-primary-foreground">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className="border-none p-4">
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead
-                    key={header.id}
-                    className="p-2 text-base font-semibold text-gray-700 lg:p-4"
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-                className={cn(isFetching ? "animate-pulse" : "")}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="p-2 lg:p-4">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
+
+      {isLoading ? (
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell
-                colSpan={LEAVE_REQUESTS_TABLE.length}
-                className="h-24 text-center"
-              >
-                No results.
-              </TableCell>
+              <TableHead>Applied by</TableHead>
+              <TableHead>Leave days</TableHead>
+              <TableHead>Leave date</TableHead>
+              <TableHead>Leave type</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Applied on</TableHead>
+              <TableHead>Reason</TableHead>
+              <TableHead>Accept / Reject</TableHead>
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {[1, 2, 3, 4, 5].map((item) => (
+              <TableRow key={item}>
+                <TableCell colSpan={8}>
+                  <Skeleton className="h-10" />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      ) : (
+        <Table className="border-separate border-spacing-y-3">
+          <TableHeader className="overflow-hidden rounded-lg bg-primary-foreground">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id} className="border-none p-4">
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead
+                      key={header.id}
+                      className="p-2 text-base font-semibold text-gray-700 lg:p-4"
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className={cn(isFetching ? "animate-pulse" : "")}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} className="p-2 lg:p-4">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={LEAVE_REQUESTS_TABLE.length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      )}
     </div>
   );
 }

@@ -130,7 +130,7 @@ export function EmpLeaveSection() {
               ))}
               {empsOnLeave?.length > 5 ? (
                 <Link
-                  href="/admin/leave/leave-requests"
+                  href={`/admin/leave/leave-requests?status=approved&date=${formatDate()}`}
                   className="flex items-center justify-center rounded-xl border p-1.5 text-xl font-semibold text-gray-400 hover:border-blue-500 hover:text-blue-500"
                 >
                   <span>+ {empsOnLeave.length - 5} more</span>
@@ -225,7 +225,7 @@ export function EmpLeaveSection() {
             ))}
             {pendingLeaves?.length > 3 ? (
               <Link
-                href="/admin/leave/leave-requests"
+                href={`/admin/leave/leave-requests?status=pending&date=${formatDate()}`}
                 className="flex items-center justify-center rounded-xl border p-1.5 text-xl font-semibold text-gray-400 hover:border-blue-500 hover:text-blue-500"
               >
                 <span>+ {pendingLeaves?.length - 3} more</span>
