@@ -19,11 +19,17 @@ import {
 } from "lucide-react";
 
 export function EmpLeaveSection() {
-  const { mutateAsync: approveLeave, isPending: isApprovingLeaveRequest } =
-    api.leaveRouter.approveLeave.useMutation();
+  const {
+    mutateAsync: approveLeave,
+    isPending: isApproveLeavePending,
+    variables: approveLeaveVariables,
+  } = api.leaveRouter.approveLeave.useMutation();
 
-  const { mutateAsync: rejectLeave, isPending: isRejectingLeaveRequest } =
-    api.leaveRouter.rejectLeave.useMutation();
+  const {
+    mutateAsync: rejectLeave,
+    isPending: isRejectLeavePending,
+    variables: rejectLeaveVariables,
+  } = api.leaveRouter.rejectLeave.useMutation();
 
   const {
     data: empsOnLeave = [],
@@ -65,6 +71,16 @@ export function EmpLeaveSection() {
     } else {
       toast.error(actionResponse.message);
     }
+  };
+
+  const isApproving = (leaveRequestId: string) => {
+    if (approveLeaveVariables === undefined) return false;
+    return approveLeaveVariables.leaveRequestId === leaveRequestId;
+  };
+
+  const isRejecting = (leaveRequestId: string) => {
+    if (rejectLeaveVariables === undefined) return false;
+    return rejectLeaveVariables.leaveRequestId === leaveRequestId;
   };
 
   if (isOnLeaveEmpsLoading || isPendingLeaveLoading) {
@@ -114,7 +130,7 @@ export function EmpLeaveSection() {
                   </Avatar>
                   <div className="flex flex-col gap-1.5 text-sm font-semibold text-gray-600">
                     <p>{leave.employee.name}</p>
-                    <p className="font-bold">
+                    <p className="font-semibold">
                       {leave.leaveDays === 1
                         ? formatDate(leave.fromDate, "dd/MM")
                         : `
@@ -168,27 +184,27 @@ export function EmpLeaveSection() {
           </p>
         ) : (
           <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-3">
-            {pendingLeaves.slice(0, 3).map((leave) => (
+            {pendingLeaves.slice(0, 3).map((leaveRequest) => (
               <div
-                key={leave.id}
+                key={leaveRequest.id}
                 className="flex items-center gap-3 rounded-xl border p-1.5"
               >
                 <Avatar className="size-10">
                   <AvatarImage
-                    src={leave.employee.imageUrl!}
-                    alt={leave.employee.name}
+                    src={leaveRequest.employee.imageUrl!}
+                    alt={leaveRequest.employee.name}
                   />
-                  <AvatarFallback>{leave.employee.name}</AvatarFallback>
+                  <AvatarFallback>{leaveRequest.employee.name}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col gap-1.5 text-sm font-semibold text-gray-600">
-                  <p>{leave.employee.name}</p>
-                  <p className="space-x-1.5 font-bold">
-                    <span>{leave.leaveType.type}</span>
+                  <p>{leaveRequest.employee.name}</p>
+                  <p className="space-x-1.5 text-sm font-semibold">
+                    <span>{leaveRequest.leaveType.type}</span>
                     <span>
                       (
-                      {leave.leaveDays === 1
-                        ? formatDate(leave.fromDate, "dd/MM")
-                        : `${formatDate(leave.fromDate, "dd/MM")} to ${formatDate(leave.toDate, "dd/MM")}`}
+                      {leaveRequest.leaveDays === 1
+                        ? formatDate(leaveRequest.fromDate, "dd/MM")
+                        : `${formatDate(leaveRequest.fromDate, "dd/MM")} to ${formatDate(leaveRequest.toDate, "dd/MM")}`}
                       )
                     </span>
                   </p>
@@ -197,11 +213,11 @@ export function EmpLeaveSection() {
                       variant="link"
                       className="h-fit w-fit gap-1.5 p-0 px-0 text-green-500"
                       disabled={
-                        isApprovingLeaveRequest || isRejectingLeaveRequest
+                        isApproving(leaveRequest.id) && isApproveLeavePending
                       }
-                      onClick={() => approveLeaveAction(leave.id)}
+                      onClick={() => approveLeaveAction(leaveRequest.id)}
                     >
-                      {isApprovingLeaveRequest || isRejectingLeaveRequest ? (
+                      {isApproving(leaveRequest.id) && isApproveLeavePending ? (
                         <Loader2 className="size-3 animate-spin" />
                       ) : null}
                       <span>Accept</span>
@@ -210,11 +226,11 @@ export function EmpLeaveSection() {
                       variant="link"
                       className="h-fit w-fit gap-1.5 p-0 px-0 text-red-500"
                       disabled={
-                        isApprovingLeaveRequest || isRejectingLeaveRequest
+                        isRejecting(leaveRequest.id) && isRejectLeavePending
                       }
-                      onClick={() => rejectLeaveAction(leave.id)}
+                      onClick={() => rejectLeaveAction(leaveRequest.id)}
                     >
-                      {isApprovingLeaveRequest || isRejectingLeaveRequest ? (
+                      {isRejecting(leaveRequest.id) && isRejectLeavePending ? (
                         <Loader2 className="size-3 animate-spin" />
                       ) : null}
                       <span>Reject</span>
