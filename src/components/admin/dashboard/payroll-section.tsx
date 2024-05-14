@@ -47,7 +47,7 @@ import { Skeleton } from "@ui/skeleton";
 import { Separator } from "@ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@ui/avatar";
 // ICONS
-import { HandCoins, Loader2, RotateCcw } from "lucide-react";
+import { Asterisk, HandCoins, Loader2, RotateCcw } from "lucide-react";
 
 export function PayrollSection() {
   const date = new Date();
@@ -313,10 +313,10 @@ const InstantGeneratePayslip = ({
               </TableBody>
               <TableFooter>
                 <TableRow className="h-6">
-                  <TableCell colSpan={2} className="font-semibold">
+                  <TableCell colSpan={2} className="text-base font-semibold">
                     Total Earnings
                   </TableCell>
-                  <TableCell className="text-right font-semibold">
+                  <TableCell className="text-right text-base font-semibold">
                     {formatSalary(createPayslipData.totalSalary)}
                   </TableCell>
                 </TableRow>
@@ -331,7 +331,10 @@ const InstantGeneratePayslip = ({
                   </div>
                   <Separator />
                   <div className="flex w-full items-center justify-between">
-                    <p>No adjustments/arrears will be applied</p>
+                    <p className="flex items-center gap-1 font-semibold">
+                      <Asterisk className="size-4 text-red-500" />
+                      No adjustments/arrears will be applied.
+                    </p>
                     <Button
                       size="sm"
                       className="gap-1.5 rounded-full"
@@ -380,25 +383,28 @@ const PayslipTooltipSkeleton = () => {
         </TableBody>
         <TableFooter>
           <TableRow className="h-6">
-            <TableCell colSpan={2} className="font-semibold">
+            <TableCell colSpan={2} className="text-base font-semibold">
               Total Earnings
             </TableCell>
-            <TableCell className="font-semibold">
-              <Skeleton className="h-6 w-full" />
+            <TableCell>
+              <Skeleton className="h-4 w-full" />
             </TableCell>
           </TableRow>
         </TableFooter>
         <TableCaption className="mt-0 text-gray-700">
           <div className="flex flex-col items-end gap-3 p-2">
             <div className="flex w-full items-center justify-between gap-3">
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-6 w-full" />
+              <Skeleton className="h-5 w-full" />
+              <Skeleton className="h-5 w-full" />
+              <Skeleton className="h-5 w-full" />
+              <Skeleton className="h-5 w-full" />
             </div>
             <Separator />
             <div className="flex w-full items-center justify-between">
-              <p>No adjustments/arrears will be applied</p>
+              <p className="flex items-center gap-1 font-semibold">
+                <Asterisk className="size-4 text-red-500" />
+                Note: No adjustments/arrears will be applied.
+              </p>
               <Skeleton className="mr-2 h-8 w-16 rounded-full" />
             </div>
           </div>
