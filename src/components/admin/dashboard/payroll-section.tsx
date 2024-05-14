@@ -63,7 +63,7 @@ export function PayrollSection() {
   }).map((month) => format(month, "MMMM-yyyy"));
 
   const handleMonthChange = (month: string) => {
-    const monthDate = parseDate(month);
+    const monthDate = parseDate(month, "MMMM-yyyy");
     setCurrentMonth(month);
     setQDate(monthDate);
   };
