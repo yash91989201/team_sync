@@ -5,6 +5,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useSearchParams } from "next/navigation";
 import { eachMonthOfInterval, format, startOfDay, startOfYear } from "date-fns";
 // UTILS
 import { cn } from "@/lib/utils";
@@ -42,22 +43,33 @@ import { Skeleton } from "@ui/skeleton";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { CircleX, FilterX, RotateCcw, Search } from "lucide-react";
 // CONSTANTS
+import { LEAVE_STATUS } from "@/constants";
 import { LEAVE_REQUESTS_TABLE } from "@adminComponents/tables/column-defs";
 
-const leaveStatus = ["pending", "approved", "rejected", "withdrawn"];
-
 export default function LeaveRequestsTable() {
+  const searchParams = useSearchParams();
+  const paramDate = searchParams.get("month") ?? undefined;
+  const paramStatus = searchParams.get("status") ?? undefined;
+  const paramEmployee = searchParams.get("employee") ?? undefined;
+
+  const initialDate =
+    paramDate !== undefined ? parseDate(paramDate) : undefined;
+  const initialStatus = LEAVE_STATUS.find((status) => status === paramStatus);
+  const initialEmployee = paramEmployee;
+
   const date = new Date();
   date.setHours(0, 0, 0, 0);
   const today = startOfDay(date);
 
-  const [qDate, setQDate] = useState(date);
+  const [qDate, setQDate] = useState(initialDate ?? date);
   const [currentMonth, setCurrentMonth] = useState(format(today, "MMMM-yyyy"));
   const [status, setStatus] = useState<LeaveReqStatusType | undefined>(
-    undefined,
+    initialStatus !== undefined
+      ? (initialStatus as LeaveReqStatusType)
+      : undefined,
   );
   const [employeeName, setEmployeeName] = useState<string | undefined>(
-    undefined,
+    initialEmployee,
   );
 
   const months = eachMonthOfInterval({
@@ -163,7 +175,7 @@ export default function LeaveRequestsTable() {
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              {leaveStatus.map((status) => (
+              {LEAVE_STATUS.map((status) => (
                 <SelectItem key={status} value={status}>
                   {status}
                 </SelectItem>

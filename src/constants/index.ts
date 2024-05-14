@@ -21,4 +21,6 @@ export const EMPLOYEE_UPDATE_SECTIONS = [
   "salary_detail",
   "leave_detail",
   "additional_detail",
-] 
+]
+
+export const LEAVE_STATUS = ["pending", "approved", "rejected", "withdrawn"];
