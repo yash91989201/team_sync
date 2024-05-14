@@ -66,11 +66,22 @@ export const leaveRouter = createTRPCRouter({
 
   approveLeave: protectedProcedure
     .input(ApproveLeaveSchema)
-    .mutation(async ({ ctx, input }) => {
-      await ctx.db
-        .update(leaveRequestTable)
-        .set({ status: "approved" })
-        .where(eq(leaveRequestTable.id, input.leaveRequestId));
+    .mutation(async ({ ctx, input }): Promise<ProcedureStatusType> => {
+      try {
+        await ctx.db
+          .update(leaveRequestTable)
+          .set({ status: "approved" })
+          .where(eq(leaveRequestTable.id, input.leaveRequestId));
+        return {
+          status: "SUCCESS",
+          message: "Leave approved"
+        }
+      } catch (error) {
+        return {
+          status: "FAILED",
+          message: "Unable to approve leave, try again"
+        }
+      }
     }),
 
   rejectLeave: protectedProcedure
@@ -80,7 +91,7 @@ export const leaveRouter = createTRPCRouter({
         ctx,
         input,
       }): Promise<ProcedureStatusType> => {
-        const { leaveRequestId, empId } = input;
+        const { leaveRequestId } = input;
 
         const leaveRequest = await ctx.db.query.leaveRequestTable.findFirst({
           where: eq(leaveRequestTable.id, leaveRequestId),
@@ -108,7 +119,7 @@ export const leaveRouter = createTRPCRouter({
         const existingLeaveBalances =
           await ctx.db.query.leaveBalanceTable.findMany({
             where: and(
-              eq(leaveBalanceTable.empId, empId),
+              eq(leaveBalanceTable.empId, leaveRequest.empId),
               eq(leaveBalanceTable.leaveTypeId, leaveTypeId),
             ),
           });

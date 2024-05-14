@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { format } from "date-fns";
 // UTILS
-import { cn, getLeaveDateString } from "@/lib/utils";
+import { cn, getLeaveDateString, getShiftTimeString } from "@/lib/utils";
 // TYPES
 import type {
   DepartmentTableProps,
   DesignationTableProps,
   DocumentTypeSchemaType,
+  EmpShiftTableProps,
   EmployeesDocumentsTableProps,
   EmployeesTableProps,
   LeaveRequestTableProps,
@@ -190,6 +191,10 @@ export const EMPLOYEES_TABLE: ColumnDef<EmployeesTableProps>[] = [
     header: "Code",
   },
   {
+    accessorKey: "email",
+    header: "Email",
+  },
+  {
     accessorKey: "employeeDesignation",
     header: "Designation",
     cell: ({ row }) => {
@@ -323,7 +328,6 @@ export const LEAVE_REQUESTS_TABLE: ColumnDef<LeaveRequestTableProps>[] = [
     cell: ({ row }) => (
       <LeaveRequestsTableActions
         status={row.original.status}
-        empId={row.original.employee.id}
         leaveRequestId={row.original.id}
       />
     ),
@@ -365,5 +369,38 @@ export const SALARIES_TABLE: ColumnDef<SalariesTableProps>[] = [
         <CornerUpRight className="size-4" />
       </Link>
     ),
+  },
+];
+
+export const EMP_SHIFT_TABLE: ColumnDef<EmpShiftTableProps>[] = [
+  {
+    accessorKey: "employeeName",
+    header: "Employee",
+    cell: ({ row }) => row.original.employee.name,
+  },
+  {
+    accessorKey: "punchIn",
+    header: "Punch in time",
+    cell: ({ row }) => getShiftTimeString(row.original.punchIn),
+  },
+  {
+    accessorKey: "punchOut",
+    header: "Punch out time",
+    cell: ({ row }) => {
+      return row.original.punchOut === null
+        ? "N/A"
+        : getShiftTimeString(row.original.punchOut);
+    },
+  },
+
+  {
+    accessorKey: "shift",
+    header: "Shift",
+    cell: ({ row }) => row.original.shift ?? "N/A",
+  },
+  {
+    accessorKey: "hours",
+    header: "Hours",
+    cell: ({ row }) => row.original.hours ?? "N/A",
   },
 ];

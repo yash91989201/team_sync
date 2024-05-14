@@ -158,6 +158,10 @@ export type LeaveRequestTableProps = LeaveRequestSchemaType & {
 
 export type SalariesTableProps = GetEmployeesSalariesOutputType
 
+export type EmpShiftTableProps = EmployeeAttendanceType & {
+  employee: UserType;
+}
+
 // EMPLOYEE DATA TABLE TYPES
 export type EmployeesTableProps = UserType & {
   employeeProfile: EmployeeProfileType & {

@@ -1,8 +1,8 @@
-import { and, eq, isNull, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 // UTILS
 import { db } from "@/server/db";
 // DB TABLES
-import { documentTypeTable, empDocumentTable, empPayslipTable, userTable } from "@/server/db/schema";
+import { documentTypeTable, empDocumentTable, empPayslipTable, empProfileTable, userTable } from "@/server/db/schema";
 
 export const missingEmpDocsQuery = db
   .select({
@@ -21,20 +21,26 @@ export const missingEmpPayslipQuery = db
   .select({
     id: userTable.id,
     name: userTable.name,
-    imageUrl: userTable.imageUrl
+    imageUrl: userTable.imageUrl,
+    payslip: {
+      id: empPayslipTable.id,
+      pdfUrl: empPayslipTable.pdfUrl
+    }
   })
-  .from(empPayslipTable)
-  .rightJoin(
-    userTable,
+  .from(userTable)
+  .innerJoin(
+    empProfileTable,
     and(
-      eq(empPayslipTable.empId, userTable.id),
-      sql`MONTH(${empPayslipTable.date}) = MONTH(CURDATE())`
+      eq(userTable.role, "EMPLOYEE"),
+      eq(userTable.id, empProfileTable.empId),
+      sql`MONTH(${empProfileTable.joiningDate}) <= MONTH(${sql.placeholder("month")})`,
     )
   )
-  .where(
+  .leftJoin(
+    empPayslipTable,
     and(
-      isNull(empPayslipTable.empId),
-      eq(userTable.role, "EMPLOYEE"),
+      eq(empPayslipTable.empId, userTable.id),
+      sql`MONTH(${empPayslipTable.date}) = MONTH(${sql.placeholder("month")})`
     )
   )
   .prepare()

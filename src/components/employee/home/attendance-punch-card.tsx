@@ -5,7 +5,6 @@ import { api } from "@/trpc/react";
 import { getShiftTimeString } from "@/lib/utils";
 import { formatDate } from "@/lib/date-time-utils";
 // UI
-import { Button } from "@ui/button";
 import {
   Card,
   CardContent,
@@ -14,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@ui/card";
+import { Button } from "@ui/button";
 import { Skeleton } from "@ui/skeleton";
 // ICONS
 import { Loader2 } from "lucide-react";
@@ -80,11 +80,13 @@ export default function AttendancePunchCard() {
           <p className="text-sm">Not Signed In yet.</p>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button onClick={punchInAction} disabled={isPunchingIn}>
+          <Button
+            className="gap-1"
+            onClick={punchInAction}
+            disabled={isPunchingIn}
+          >
+            {isPunchingIn && <Loader2 className="size-4 animate-spin" />}
             <span>Sign In</span>
-            {isPunchingOut && (
-              <Loader2 className="animate-spin [&>svg]:size-4" />
-            )}
           </Button>
         </CardFooter>
       </Card>

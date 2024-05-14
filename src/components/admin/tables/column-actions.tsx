@@ -2,19 +2,18 @@ import Link from "next/link";
 import { toast } from "sonner";
 // UITLS
 import { cn } from "@/lib/utils";
-import { deleteEmployeeDocumentFiles } from "@/lib/pb-utils";
 import { api } from "@/trpc/react";
 import { buttonVariants } from "@ui/button";
+import { deleteEmployeeDocumentFiles } from "@/lib/pb-utils";
 // TYPES
 import type { LeaveRequestSchemaType } from "@/lib/types";
-// CUSTOM HOOKS
 // UI
 import { Button } from "@ui/button";
 // CUSTOM COMPONENTS
-import UpdateDepartmentForm from "@adminComponents/department/update-department-form";
-import UpdateDesignationForm from "@adminComponents/designation/update-designation-form";
 import UpdateLeaveTypeForm from "@adminComponents/leave/update-leave-type-form";
 import DeleteLeaveTypeForm from "@adminComponents/leave/delete-leave-type-form";
+import UpdateDepartmentForm from "@adminComponents/department/update-department-form";
+import UpdateDesignationForm from "@adminComponents/designation/update-designation-form";
 // ICONS
 import { Check, Loader2, Pencil, Trash, X } from "lucide-react";
 
@@ -77,7 +76,6 @@ export function LeaveTypeTableActions(initialData: {
 }
 
 export function LeaveRequestsTableActions({
-  empId,
   status,
   leaveRequestId,
 }: {
@@ -119,7 +117,7 @@ export function LeaveRequestsTableActions({
         size="icon"
         variant="outline"
         className="rounded-xl border-red-500  text-red-500 hover:bg-white hover:text-red-500 [&>svg]:size-4"
-        onClick={() => rejectLeave({ empId, leaveRequestId })}
+        onClick={() => rejectLeave({ leaveRequestId })}
         disabled={isRejectingLeave || isApprovingLeave}
       >
         {isRejectingLeave ? <Loader2 className="animate-spin" /> : <X />}

@@ -10,5 +10,5 @@ export default function AdminMainWrapper({
   children: ReactNode;
   className?: string;
 }) {
-  return <main className={cn(" p-6", className)}>{children}</main>;
+  return <main className={cn("p-6", className)}>{children}</main>;
 }

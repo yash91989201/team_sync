@@ -1,4 +1,4 @@
-import { count, eq, sql } from "drizzle-orm";
+import { and, count, eq, getTableColumns, sql } from "drizzle-orm";
 // UTILS
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { missingEmpDocsQuery, missingEmpPayslipQuery } from "@/server/db/sql";
@@ -11,6 +11,8 @@ import {
   leaveRequestTable,
   empAttendanceTable,
 } from "@/server/db/schema";
+import { GetAttendanceByDateInput, GetAttendanceInput, GetEmployeeCountByJoinDateInput, GetMissingEmpPayslipByMonthInput } from "@/lib/schema";
+import { formatDate } from "@/lib/date-time-utils";
 
 export const statsRouter = createTRPCRouter({
   /**
@@ -21,6 +23,23 @@ export const statsRouter = createTRPCRouter({
       .select({ count: count() })
       .from(userTable)
       .where(eq(userTable.role, "EMPLOYEE"))
+    const empCount = employees[0]?.count ?? 0
+    return empCount
+  }),
+  /**
+  * Returns total employee count
+  */
+  empCountByJoinDate: protectedProcedure.input(GetEmployeeCountByJoinDateInput).query(async ({ ctx, input }) => {
+    const employees = await ctx.db
+      .select({ count: count() })
+      .from(userTable)
+      .innerJoin(empProfileTable, eq(userTable.id, empProfileTable.empId))
+      .where(
+        and(
+          eq(userTable.role, "EMPLOYEE"),
+          sql`DATE(${empProfileTable.joiningDate}) <= DATE(${formatDate(input.date)})`,
+        )
+      )
     const empCount = employees[0]?.count ?? 0
     return empCount
   }),
@@ -62,12 +81,12 @@ export const statsRouter = createTRPCRouter({
   * Returns total employee attendance , employee present, total employees with late login
   * on current date
   */
-  attendance: protectedProcedure.query(async ({ ctx }) => {
+  attendance: protectedProcedure.input(GetAttendanceInput).query(async ({ ctx, input }) => {
     const todaysAttendanceSq = ctx.db
       .select()
       .from(empAttendanceTable)
       .where(
-        sql`DATE(${empAttendanceTable.date}) = CURDATE()`
+        sql`DATE(${empAttendanceTable.date}) = DATE(${formatDate(input.date)})`
       )
       .as("todays_attendance")
 
@@ -102,12 +121,53 @@ export const statsRouter = createTRPCRouter({
     }
   }),
   /**
+ * Returns employee attendance by given date
+ */
+  attendanceByDate: protectedProcedure.input(GetAttendanceByDateInput).query(async ({ ctx, input }) => {
+    const query = input.query;
+
+    const empAttendanceDynamicQuery = ctx.db
+      .select({
+        ...getTableColumns(empAttendanceTable),
+        employee: {
+          ...getTableColumns(userTable),
+        }
+      })
+      .from(empAttendanceTable)
+      .innerJoin(
+        userTable,
+        eq(empAttendanceTable.empId, userTable.id)
+      )
+      .where(
+        sql`DATE(${empAttendanceTable.date}) = DATE(${formatDate(input.date)})`
+      )
+      .$dynamic()
+
+    if (query !== undefined) {
+      if (query.shift !== undefined) {
+        await empAttendanceDynamicQuery
+          .where(
+            and(
+              sql`DATE(${empAttendanceTable.date}) = DATE(${formatDate(input.date)})`,
+              eq(empAttendanceTable.shift, query.shift)
+            )
+          )
+      }
+    }
+
+    const attendance = await empAttendanceDynamicQuery
+    return attendance;
+  }),
+  /**
   * Returns pending leave requests 
   * that are applied in current month
   */
   pendingLeaveRequests: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.leaveRequestTable.findMany({
-      where: sql`MONTH(${leaveRequestTable.appliedOn}) = MONTH(CURDATE())`,
+      where: and(
+        eq(leaveRequestTable.status, "pending"),
+        sql`MONTH(${leaveRequestTable.appliedOn}) = MONTH(CURRENT_DATE())`
+      ),
       with: {
         employee: true,
         leaveType: true,
@@ -123,33 +183,36 @@ export const statsRouter = createTRPCRouter({
     return missingEmpDocsQuery.execute()
   }),
   /**
-   * Returns all employees 
-   * whose payslip has not been generated for this month
+   * Returns all employees payslip by given month
   */
-  missingEmpPayslip: protectedProcedure.query(() => {
-    return missingEmpPayslipQuery.execute()
+  employeesPayslip: protectedProcedure.input(GetMissingEmpPayslipByMonthInput).query(({ input }) => {
+    return missingEmpPayslipQuery.execute({ month: formatDate(input.month) })
   }),
   /**
    * Returns all holidays of current month
   */
-  currentMonthHolidays: protectedProcedure.query(({ ctx }) => {
+  monthHolidays: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.holidayTable.findMany({
-      where: sql`MONTH(${holidayTable.date}) = MONTH(CURDATE())`
+      where: sql`MONTH(${holidayTable.date}) = MONTH(CURRENT_DATE())`
     })
   }),
   /**
    * Returns all employees that are on leave today
   */
-  onLeaveEmpCount: protectedProcedure.query(async ({ ctx }) => {
-    const approvedLeaveRequests = await ctx.db
-      .select({
-        count: count()
-      })
-      .from(leaveRequestTable)
-      .where(
-        sql`CURRENT_DATE() BETWEEN ${leaveRequestTable.fromDate} AND ${leaveRequestTable.toDate} AND ${leaveRequestTable.status} = 'approved'`
-      )
-
-    return approvedLeaveRequests[0]?.count ?? 0
+  onLeaveEmps: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.query.leaveRequestTable.findMany({
+      where: and(
+        eq(leaveRequestTable.status, "approved"),
+        sql`CURRENT_DATE() BETWEEN DATE(${leaveRequestTable.fromDate}) AND DATE(${leaveRequestTable.toDate})`
+      ),
+      with: {
+        employee: {
+          columns: {
+            password: false
+          }
+        },
+        leaveType: true
+      }
+    })
   })
 });

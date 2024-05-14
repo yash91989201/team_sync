@@ -5,7 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function SideNav() {
   return (
-    <aside className="hidden h-screen w-72 flex-col border-r md:flex">
+    <aside className="hidden h-screen w-72 flex-col border-r lg:flex">
       <div className="z-50 flex h-20 items-center justify-center border-b bg-white p-3">
         <h1 className="text-4xl font-bold text-primary">TEAM SYNC</h1>
       </div>

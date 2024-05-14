@@ -24,7 +24,7 @@ import { twMerge } from "tailwind-merge";
 import { parseTime, toUTC } from "./date-time-utils";
 // TYPES
 import type { ClassValue } from "clsx";
-import type { FunctionComponent } from "react";
+import type { FunctionComponent, ReactElement } from "react";
 import type { ShiftType, } from "@/lib/types";
 
 export function cn(...inputs: ClassValue[]) {
@@ -108,10 +108,6 @@ export function getShiftTimeString(time: string) {
 
 export function getShiftTimeDate(time: string): Date {
   return parse(time, "HH:mm:ss", new Date())
-}
-
-export function getCurrentTimeDate() {
-  return format(new Date(), "HH:mm a")
 }
 
 export function getRenewPeriodRange({
@@ -309,8 +305,10 @@ export function formatFileSize(bytes?: number) {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
 
-export function renderOnClient<T>(Component: FunctionComponent<T>) {
-  return dynamic(() => Promise.resolve(Component), { ssr: false });
+export function renderOnClient<T>(Component: FunctionComponent<T>, Loading: ReactElement | null) {
+  return dynamic(() => Promise.resolve(Component), {
+    ssr: false, loading: () => Loading
+  });
 }
 
 export function formatSalary(

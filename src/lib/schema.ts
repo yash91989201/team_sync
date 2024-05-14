@@ -283,6 +283,21 @@ export const PunchOutInputSchema = z.object({
   date: z.date()
 })
 
+export const GetAttendanceInput = z.object({
+  date: z.date()
+})
+
+export const GetAttendanceByDateInput = z.object({
+  date: z.date(),
+  query: z.object({
+    shift: z.enum(["0.5", "0.75", "1"]).optional(),
+  }).optional()
+})
+
+export const GetEmployeeCountByJoinDateInput = z.object({
+  date: z.date()
+})
+
 // EMPLOYEE LEAVE SCHEMAS
 export const CreateLeaveTypeSchema = z.object({
   type: z
@@ -333,7 +348,6 @@ export const ApproveLeaveSchema = z.object({
 
 export const RejectLeaveSchema = z.object({
   leaveRequestId: z.string(),
-  empId: z.string(),
 });
 
 // DEPARTMENT SCHEMAS
@@ -395,4 +409,8 @@ export const GetCreatePayslipDataInput = z.object({
   empId: z.string(),
   startDate: z.date(),
   endDate: z.date(),
+})
+
+export const GetMissingEmpPayslipByMonthInput = z.object({
+  month: z.date()
 })

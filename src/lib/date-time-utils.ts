@@ -5,6 +5,10 @@ export function toUTC(date: Date) {
   return fromZonedTime(date, "UTC");
 }
 
+export function toIST(date: Date) {
+  return fromZonedTime(date, "IST");
+}
+
 /**
  * input date as string in format 'yyyy-MM-dd'
  * get Date type

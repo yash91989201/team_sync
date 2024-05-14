@@ -6,7 +6,7 @@ import {
   calculateShift,
   getDateRangeByRenewPeriod
 } from "@/lib/utils";
-import { formatTime, parseTime, } from "@/lib/date-time-utils";
+import { formatTime, parseTime, toUTC, } from "@/lib/date-time-utils";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // DB TABLES
 import {
@@ -152,7 +152,7 @@ export const employeeRouter = createTRPCRouter({
       await ctx.db.query.empAttendanceTable.findFirst({
         where: and(
           eq(empAttendanceTable.empId, id),
-          sql`DATE(${empAttendanceTable.date}) = CURDATE()`,
+          sql`DATE(${empAttendanceTable.date}) = CURRENT_DATE()`,
         ),
       });
 
@@ -183,8 +183,15 @@ export const employeeRouter = createTRPCRouter({
             throw new Error("Employee shift timming not defined.")
           }
 
-          const empShiftStart = parseTime(empShift.shiftStart)
-          const isLateLogin = date.getTime() <= (empShiftStart.getTime() * (10 * 60 * 1000))
+          const empShiftStart = toUTC(parseTime(empShift.shiftStart))
+          const shiftStart = toUTC(new Date())
+          shiftStart.setHours(
+            empShiftStart.getHours(),
+            empShiftStart.getMinutes(),
+            empShiftStart.getSeconds()
+          )
+
+          const isLateLogin = toUTC(date).getTime() > shiftStart.getTime()
 
           await ctx.db
             .insert(empAttendanceTable)
@@ -226,10 +233,7 @@ export const employeeRouter = createTRPCRouter({
       try {
         const attendanceData =
           await ctx.db.query.empAttendanceTable.findFirst({
-            where: and(
-              eq(empAttendanceTable.empId, id),
-              eq(empAttendanceTable.date, date),
-            ),
+            where: eq(empAttendanceTable.empId, id)
           });
 
         if (attendanceData === undefined) {
