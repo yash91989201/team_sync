@@ -323,7 +323,7 @@ const InstantGeneratePayslip = ({
               </TableFooter>
               <TableCaption className="mt-0 text-gray-700">
                 <div className="flex flex-col items-end gap-3 p-2">
-                  <div className="flex w-full items-center justify-between">
+                  <div className="flex w-full items-center justify-between gap-3">
                     <p>Days payable: {createPayslipData.daysPayable}</p>
                     <p>Paid leaves: {createPayslipData.paidLeaveDays}</p>
                     <p>Un-paid Leaves: {createPayslipData.unPaidLeaveDays}</p>
@@ -372,7 +372,7 @@ const PayslipTooltipSkeleton = () => {
         <TableBody>
           {[1, 2, 3, 4].map((item) => (
             <TableRow key={item} className="h-6">
-              <TableCell colSpan={5}>
+              <TableCell colSpan={3}>
                 <Skeleton className="h-5 w-full" />
               </TableCell>
             </TableRow>
@@ -380,23 +380,27 @@ const PayslipTooltipSkeleton = () => {
         </TableBody>
         <TableFooter>
           <TableRow className="h-6">
-            <TableCell colSpan={4} className="font-semibold">
+            <TableCell colSpan={2} className="font-semibold">
               Total Earnings
             </TableCell>
             <TableCell className="font-semibold">
-              <Skeleton className="h-6 w-24" />
+              <Skeleton className="h-6 w-full" />
             </TableCell>
           </TableRow>
         </TableFooter>
-        <TableCaption className="mt-0">
-          <div className="flex flex-col items-end gap-3 pb-2">
-            <div className="flex w-full items-center justify-between gap-3 border-b p-3 px-2">
+        <TableCaption className="mt-0 text-gray-700">
+          <div className="flex flex-col items-end gap-3 p-2">
+            <div className="flex w-full items-center justify-between gap-3">
               <Skeleton className="h-6 w-full" />
               <Skeleton className="h-6 w-full" />
               <Skeleton className="h-6 w-full" />
               <Skeleton className="h-6 w-full" />
             </div>
-            <Skeleton className="mr-2 h-8 w-16 rounded-full" />
+            <Separator />
+            <div className="flex w-full items-center justify-between">
+              <p>No adjustments/arrears will be applied</p>
+              <Skeleton className="mr-2 h-8 w-16 rounded-full" />
+            </div>
           </div>
         </TableCaption>
       </Table>
