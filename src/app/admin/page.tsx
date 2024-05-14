@@ -27,7 +27,7 @@ export default async function AdminPage() {
 
   // attendance section
   const attendanceSectionHelper = await createApiHelper();
-  await attendanceSectionHelper.statsRouter.empCountByJoinDate.prefetch({
+  await attendanceSectionHelper.statsRouter.empCountByJoiningDate.prefetch({
     date: date,
   });
   await attendanceSectionHelper.statsRouter.attendance.prefetch({

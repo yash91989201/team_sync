@@ -79,7 +79,6 @@ export function LeaveRequestsTableActions({
   status,
   leaveRequestId,
 }: {
-  empId: string;
   leaveRequestId: string;
   status: LeaveRequestSchemaType["status"];
 }) {

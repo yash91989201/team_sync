@@ -32,7 +32,7 @@ export function AttendanceSection() {
     data: empCount = 0,
     isFetching: isEmpCountLoading,
     refetch: refetchEmpCount,
-  } = api.statsRouter.empCountByJoinDate.useQuery(
+  } = api.statsRouter.empCountByJoiningDate.useQuery(
     {
       date: selectedDay,
     },

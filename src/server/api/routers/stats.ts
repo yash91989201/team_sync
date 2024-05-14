@@ -29,7 +29,7 @@ export const statsRouter = createTRPCRouter({
   /**
   * Returns total employee count
   */
-  empCountByJoinDate: protectedProcedure.input(GetEmployeeCountByJoinDateInput).query(async ({ ctx, input }) => {
+  empCountByJoiningDate: protectedProcedure.input(GetEmployeeCountByJoinDateInput).query(async ({ ctx, input }) => {
     const employees = await ctx.db
       .select({ count: count() })
       .from(userTable)
@@ -130,7 +130,7 @@ export const statsRouter = createTRPCRouter({
       .select({
         ...getTableColumns(empAttendanceTable),
         employee: {
-          ...getTableColumns(userTable),
+          name: userTable.name
         }
       })
       .from(empAttendanceTable)
@@ -168,10 +168,24 @@ export const statsRouter = createTRPCRouter({
         eq(leaveRequestTable.status, "pending"),
         sql`MONTH(${leaveRequestTable.appliedOn}) = MONTH(CURRENT_DATE())`
       ),
+      columns: {
+        id: true,
+        leaveDays: true,
+        fromDate: true,
+        toDate: true,
+      },
       with: {
-        employee: true,
-        leaveType: true,
-        reviewer: true
+        employee: {
+          columns: {
+            name: true,
+            imageUrl: true,
+          }
+        },
+        leaveType: {
+          columns: {
+            type: true,
+          }
+        },
       }
     })
   }),
@@ -193,7 +207,7 @@ export const statsRouter = createTRPCRouter({
   */
   monthHolidays: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.holidayTable.findMany({
-      where: sql`MONTH(${holidayTable.date}) = MONTH(CURRENT_DATE())`
+      where: sql`MONTH(${holidayTable.date}) = MONTH(CURRENT_DATE())`,
     })
   }),
   /**
@@ -205,13 +219,24 @@ export const statsRouter = createTRPCRouter({
         eq(leaveRequestTable.status, "approved"),
         sql`CURRENT_DATE() BETWEEN DATE(${leaveRequestTable.fromDate}) AND DATE(${leaveRequestTable.toDate})`
       ),
+      columns: {
+        id: true,
+        fromDate: true,
+        toDate: true,
+        leaveDays: true,
+      },
       with: {
         employee: {
           columns: {
-            password: false
+            name: true,
+            imageUrl: true
           }
         },
-        leaveType: true
+        leaveType: {
+          columns: {
+            type: true,
+          }
+        }
       }
     })
   })
