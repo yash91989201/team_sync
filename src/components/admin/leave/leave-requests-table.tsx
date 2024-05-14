@@ -1,10 +1,11 @@
 "use client";
-import { useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useRef, useState } from "react";
+import { useDebounceValue } from "usehooks-ts";
 import { useRouter, useSearchParams } from "next/navigation";
 import { eachMonthOfInterval, format, startOfDay, startOfYear } from "date-fns";
 // UTILS
@@ -69,8 +70,11 @@ export default function LeaveRequestsTable() {
       ? (initialStatus as LeaveReqStatusType)
       : undefined,
   );
-  const [employeeName, setEmployeeName] = useState<string | undefined>(
+
+  const empNameInputRef = useRef<HTMLInputElement>(null);
+  const [debouncedEmpName, setDebounceEmpName] = useDebounceValue(
     initialEmployee,
+    750,
   );
 
   const months = eachMonthOfInterval({
@@ -81,7 +85,7 @@ export default function LeaveRequestsTable() {
   const isFilterUnset =
     qDate.getTime() === today.getTime() &&
     status === undefined &&
-    employeeName === undefined;
+    (debouncedEmpName === undefined || debouncedEmpName?.length === 0);
 
   const {
     data = [],
@@ -92,7 +96,7 @@ export default function LeaveRequestsTable() {
     {
       month: qDate,
       status,
-      employeeName,
+      employeeName: debouncedEmpName,
     },
     {
       refetchOnMount: false,
@@ -119,10 +123,17 @@ export default function LeaveRequestsTable() {
     setQDate(monthDate);
   };
 
+  const resetEmpNameQuery = () => {
+    if (empNameInputRef.current) {
+      setDebounceEmpName(undefined);
+      empNameInputRef.current.value = "";
+    }
+  };
+
   const resetFilters = () => {
     setQDate(today);
     setStatus(undefined);
-    setEmployeeName("");
+    resetEmpNameQuery();
     setCurrentMonth(format(today, "MMMM-yyyy"));
     router.replace(`${window.location.origin}${window.location.pathname}`);
   };
@@ -141,15 +152,17 @@ export default function LeaveRequestsTable() {
             <Input
               className="w-80 pl-10"
               placeholder="Employee name"
-              value={employeeName}
-              onChange={(e) => setEmployeeName(e.target.value)}
+              ref={empNameInputRef}
+              onChange={(e) => setDebounceEmpName(e.target.value)}
             />
             <Button
               size="icon"
               variant="link"
               className="absolute right-3 top-1/2 -translate-y-1/2 hover:no-underline"
-              disabled={employeeName === undefined}
-              onClick={() => setEmployeeName("")}
+              disabled={
+                debouncedEmpName === undefined || debouncedEmpName?.length === 0
+              }
+              onClick={resetEmpNameQuery}
             >
               <CircleX className="size-4 text-gray-600" />
             </Button>
@@ -242,29 +255,7 @@ export default function LeaveRequestsTable() {
       </div>
 
       {isLoading ? (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Applied by</TableHead>
-              <TableHead>Leave days</TableHead>
-              <TableHead>Leave date</TableHead>
-              <TableHead>Leave type</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Applied on</TableHead>
-              <TableHead>Reason</TableHead>
-              <TableHead>Accept / Reject</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {[1, 2, 3, 4, 5].map((item) => (
-              <TableRow key={item}>
-                <TableCell colSpan={8}>
-                  <Skeleton className="h-10" />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <TableSkeleton />
       ) : (
         <Table className="border-separate border-spacing-y-3">
           <TableHeader className="overflow-hidden rounded-lg bg-primary-foreground">
@@ -340,29 +331,35 @@ export function LeaveRequestsTableSkeleton() {
           <Skeleton className="h-9 w-20" />
         </div>
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Applied by</TableHead>
-            <TableHead>Leave days</TableHead>
-            <TableHead>Leave date</TableHead>
-            <TableHead>Leave type</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Applied on</TableHead>
-            <TableHead>Reason</TableHead>
-            <TableHead>Accept / Reject</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {[1, 2, 3, 4, 5].map((item) => (
-            <TableRow key={item}>
-              <TableCell colSpan={8}>
-                <Skeleton className="h-10" />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <TableSkeleton />
     </div>
   );
 }
+
+const TableSkeleton = () => {
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Applied by</TableHead>
+          <TableHead>Leave days</TableHead>
+          <TableHead>Leave date</TableHead>
+          <TableHead>Leave type</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Applied on</TableHead>
+          <TableHead>Reason</TableHead>
+          <TableHead>Accept / Reject</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {[1, 2, 3, 4, 5].map((item) => (
+          <TableRow key={item}>
+            <TableCell colSpan={8}>
+              <Skeleton className="h-10" />
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+};
