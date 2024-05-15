@@ -10,6 +10,7 @@ import type {
   EmpShiftTableProps,
   EmployeesDocumentsTableProps,
   EmployeesTableProps,
+  EmpsAttendanceStatType,
   LeaveRequestTableProps,
   LeaveTypeSchemaType,
   SalariesTableProps,
@@ -402,5 +403,44 @@ export const EMP_SHIFT_TABLE: ColumnDef<EmpShiftTableProps>[] = [
     accessorKey: "hours",
     header: "Hours",
     cell: ({ row }) => row.original.hours ?? "N/A",
+  },
+];
+
+export const EMP_ATTENDANCE_STAT_TABLE: ColumnDef<EmpsAttendanceStatType>[] = [
+  {
+    accessorKey: "name",
+    header: "Employee",
+  },
+  {
+    accessorKey: "department",
+    header: "Department",
+  },
+  {
+    accessorKey: "workHours",
+    header: "Total work hours",
+  },
+  {
+    accessorKey: "workDays",
+    header: "Working Days",
+  },
+  {
+    accessorKey: "holidays",
+    header: "Holidays",
+  },
+  {
+    accessorKey: "approvedLeaves",
+    header: "Approved Leaves",
+  },
+  {
+    accessorKey: "rejectedLeaves",
+    header: "Rejected Leaves",
+  },
+  {
+    accessorKey: "paidLeaves",
+    header: "Paid Leaves",
+  },
+  {
+    accessorKey: "unPaidLeaves",
+    header: "Un-paid Leaves",
   },
 ];

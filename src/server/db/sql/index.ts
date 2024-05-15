@@ -1,8 +1,16 @@
-import { and, asc, eq, sql } from "drizzle-orm";
+import { and, asc, eq, isNotNull, sql } from "drizzle-orm";
 // UTILS
 import { db } from "@/server/db";
 // DB TABLES
-import { documentTypeTable, empDocumentTable, empPayslipTable, empProfileTable, userTable } from "@/server/db/schema";
+import {
+  userTable,
+  empProfileTable,
+  empPayslipTable,
+  empDocumentTable,
+  documentTypeTable,
+  leaveRequestTable,
+  empAttendanceTable,
+} from "@/server/db/schema";
 
 export const missingEmpDocsQuery = db
   .select({
@@ -46,3 +54,55 @@ export const missingEmpPayslipQuery = db
   )
   .orderBy(asc(empPayslipTable.id))
   .prepare()
+
+export const empsAttendanceQuery = db.query.userTable.findMany({
+  where: and(
+    eq(userTable.role, "EMPLOYEE"),
+    sql`LOWER(${userTable.name}) LIKE ${sql.placeholder('name')}`
+  ),
+  columns: {
+    id: true,
+    name: true,
+    code: true,
+    email: true,
+  },
+  with: {
+    employeeAttendance: {
+      where: and(
+        isNotNull(empAttendanceTable.hours),
+        sql`MONTH(${empAttendanceTable.date}) = MONTH(${sql.placeholder("month")})`
+      ),
+      columns: {
+        hours: true,
+      },
+    },
+    employeeLeaveRequest: {
+      where: and(
+        eq(leaveRequestTable.status, "approved"),
+        sql`MONTH(${sql.placeholder("month")}) BETWEEN MONTH(${leaveRequestTable.fromDate}) AND MONTH(${leaveRequestTable.toDate})`,
+      ),
+      columns: {
+        status: true,
+      },
+      with: {
+        leaveType: {
+          columns: {
+            paidLeave: true
+          }
+        }
+      },
+    },
+    employeeProfile: {
+      columns: {
+        joiningDate: true
+      },
+      with: {
+        department: {
+          columns: {
+            name: true
+          }
+        }
+      },
+    }
+  }
+}).prepare()

@@ -32,8 +32,8 @@ export function formatDate(date = new Date(), formatStr = "yyyy-MM-dd"): string 
  * get Date type 
  * format time
 */
-export function parseTime(date: string): Date {
-  return parse(date, "HH:mm:ss", new Date())
+export function parseTime(date: string, formatStr = "HH:mm:ss"): Date {
+  return parse(date, formatStr, new Date())
 }
 
 /**
@@ -43,4 +43,25 @@ export function parseTime(date: string): Date {
 */
 export function formatTime(date = new Date(), formatStr = "HH:mm:ss"): string {
   return format(date, formatStr)
+}
+
+/**
+ * input Date and formatStr
+ * get date in passed format 
+ * default format is 'HH:mm:ss'
+*/
+export function getWorkHours(hours: { hours: string | null }[]) {
+  const workHours = hours.reduce((total, { hours }) => {
+    if (hours === null) return total;
+
+    const correctedHours = hours.split(".")[0]!;
+    const time = parseTime(correctedHours);
+    // Extract hours, minutes, and seconds from the parsed time
+    const workHours = time.getHours();
+    const workMinutes = time.getMinutes() / 60;
+    const workSeconds = time.getSeconds() / 3600;
+
+    return total + (workHours + workMinutes + workSeconds)
+  }, 0)
+  return Number(workHours.toFixed(2))
 }

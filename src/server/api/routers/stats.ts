@@ -1,7 +1,10 @@
 import { and, count, eq, getTableColumns, sql } from "drizzle-orm";
 // UTILS
+import { formatDate, getWorkHours } from "@/lib/date-time-utils";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { missingEmpDocsQuery, missingEmpPayslipQuery } from "@/server/db/sql";
+import { empsAttendanceQuery, missingEmpDocsQuery, missingEmpPayslipQuery } from "@/server/db/sql";
+// TYPES
+import type { EmpsAttendanceStatType } from "@/lib/types";
 // DB TABLES
 import {
   userTable,
@@ -11,8 +14,13 @@ import {
   leaveRequestTable,
   empAttendanceTable,
 } from "@/server/db/schema";
-import { GetAttendanceByDateInput, GetAttendanceInput, GetEmployeeCountByJoinDateInput, GetMissingEmpPayslipByMonthInput } from "@/lib/schema";
-import { formatDate } from "@/lib/date-time-utils";
+import {
+  GetAttendanceInput,
+  GetAttendanceByDateInput,
+  GetEmpsMonthlyAttendanceInput,
+  GetEmployeeCountByJoinDateInput,
+  GetMissingEmpPayslipByMonthInput
+} from "@/lib/schema";
 
 export const statsRouter = createTRPCRouter({
   /**
@@ -121,8 +129,8 @@ export const statsRouter = createTRPCRouter({
     }
   }),
   /**
- * Returns employee attendance by given date
- */
+  * Returns employee attendance by given date
+  */
   attendanceByDate: protectedProcedure.input(GetAttendanceByDateInput).query(async ({ ctx, input }) => {
     const query = input.query;
 
@@ -157,6 +165,67 @@ export const statsRouter = createTRPCRouter({
 
     const attendance = await empAttendanceDynamicQuery
     return attendance;
+  }),
+  /**
+  * Returns aggregated attendance data 
+  * of all employee by given month
+  */
+  attendanceByMonth: protectedProcedure.input(GetEmpsMonthlyAttendanceInput).query(async ({ ctx, input }) => {
+    const empsAttendanceData = empsAttendanceQuery
+      .iterator({
+        month: formatDate(input.month),
+        name: `%${input.name.toLowerCase()}%`
+      })
+
+    const monthHolidays = await ctx.db
+      .select({
+        count: count()
+      })
+      .from(holidayTable)
+      .where(
+        sql`MONTH(${holidayTable.date}) = MONTH(${formatDate(input.month)})`
+      )
+    const holidays = monthHolidays[0]?.count ?? 0
+
+    // aggredate all employees attendances into stats
+    const empsAttendanceStat: EmpsAttendanceStatType[] = [];
+    for await (const employee of empsAttendanceData) {
+      const { employeeAttendance, employeeLeaveRequest, employeeProfile, ...employeeData } = employee
+
+      let approvedLeaves = 0;
+      let rejectedLeaves = 0;
+      let paidLeaves = 0;
+      let unPaidLeaves = 0;
+      for (const leaveRequest of employeeLeaveRequest) {
+        const { status, leaveType } = leaveRequest
+        // count by leave status
+        if (status === "approved")
+          approvedLeaves++;
+        else if (status === "rejected")
+          rejectedLeaves++;
+
+        // count paid/unpaid leaves
+        if (leaveType.paidLeave)
+          paidLeaves++;
+        else
+          unPaidLeaves++;
+      }
+
+      const empAttendanceStat: EmpsAttendanceStatType = {
+        ...employeeData,
+        workHours: getWorkHours(employeeAttendance),
+        workDays: employeeAttendance.length,
+        holidays,
+        approvedLeaves,
+        rejectedLeaves,
+        paidLeaves,
+        unPaidLeaves,
+        department: employeeProfile?.department.name ?? ""
+      }
+      empsAttendanceStat.push(empAttendanceStat)
+    }
+
+    return empsAttendanceStat;
   }),
   /**
   * Returns pending leave requests 

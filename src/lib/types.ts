@@ -286,3 +286,18 @@ export type EmpPayslipCardProps = {
   } | null;
   selectedMonth: string;
 };
+
+export type EmpsAttendanceStatType = {
+  id: string;
+  code: string;
+  name: string;
+  email: string;
+  workHours: number;
+  workDays: number;
+  holidays: number;
+  approvedLeaves: number;
+  rejectedLeaves: number;
+  paidLeaves: number;
+  unPaidLeaves: number;
+  department: string;
+}

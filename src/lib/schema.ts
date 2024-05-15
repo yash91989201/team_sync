@@ -298,6 +298,11 @@ export const GetEmployeeCountByJoinDateInput = z.object({
   date: z.date()
 })
 
+export const GetEmpsMonthlyAttendanceInput = z.object({
+  name: z.string(),
+  month: z.date()
+})
+
 // EMPLOYEE LEAVE SCHEMAS
 export const CreateLeaveTypeSchema = z.object({
   type: z

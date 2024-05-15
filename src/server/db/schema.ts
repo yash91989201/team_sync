@@ -163,9 +163,9 @@ export const empShiftTableRelations = relations(
 export const empAttendanceTable = mysqlTable("emp_attendance", {
   id: varchar("id", { length: 24 }).primaryKey(),
   date: date("date", { mode: "date" }).notNull(),
-  punchIn: time("punch_in").notNull(),
-  punchOut: time("punch_out"),
-  hours: time("hours"),
+  punchIn: time("punch_in", { fsp: 0 }).notNull(),
+  punchOut: time("punch_out", { fsp: 0 }),
+  hours: time("hours", { fsp: 0 }),
   shift: mysqlEnum("shift", ["0", "0.5", "0.75", "1"]),
   // FOREIGN KEY RELATIONS
   empId: varchar("emp_id", { length: 24 })
