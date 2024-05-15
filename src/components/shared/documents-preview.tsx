@@ -50,7 +50,6 @@ export default function DocumentsPreview({
       </article>
     );
   }
-  console.log(files);
 
   return (
     <picture className="flex flex-wrap gap-3">
@@ -74,7 +73,7 @@ export default function DocumentsPreview({
             </DialogTitle>
             <div className="relative mx-auto h-72 w-72">
               <Image
-                src={file.fileUrl.slice(21)}
+                src={`/api/employee-documents/${file.id}`}
                 alt={file.empDocumentId}
                 fill
               />
