@@ -89,6 +89,7 @@ export const leaveRouter = createTRPCRouter({
   */
   getLeaveBalances: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.leaveBalanceTable.findMany({
+      where: eq(leaveBalanceTable.empId, ctx.session.user.id),
       with: {
         leaveType: true,
       },
