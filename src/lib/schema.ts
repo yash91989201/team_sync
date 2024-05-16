@@ -291,6 +291,7 @@ export const GetAttendanceByDateInput = z.object({
   date: z.date(),
   query: z.object({
     shift: z.enum(["0.5", "0.75", "1"]).optional(),
+    employeeName: z.string().optional()
   }).optional()
 })
 

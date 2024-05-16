@@ -381,19 +381,18 @@ export const EMP_SHIFT_TABLE: ColumnDef<EmpShiftTableProps>[] = [
   },
   {
     accessorKey: "punchIn",
-    header: "Punch in time",
+    header: "Punch-in time",
     cell: ({ row }) => getShiftTimeString(row.original.punchIn),
   },
   {
     accessorKey: "punchOut",
-    header: "Punch out time",
+    header: "Punch-out time",
     cell: ({ row }) => {
       return row.original.punchOut === null
         ? "N/A"
         : getShiftTimeString(row.original.punchOut);
     },
   },
-
   {
     accessorKey: "shift",
     header: "Shift",
@@ -401,7 +400,7 @@ export const EMP_SHIFT_TABLE: ColumnDef<EmpShiftTableProps>[] = [
   },
   {
     accessorKey: "hours",
-    header: "Hours",
+    header: "Working hours",
     cell: ({ row }) => row.original.hours ?? "N/A",
   },
 ];

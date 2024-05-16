@@ -1,3 +1,7 @@
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
+// UTILS
+import { startOfMonth } from "date-fns";
+import { createApiHelper } from "@/trpc/server";
 // UI
 import {
   Card,
@@ -11,25 +15,34 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AdminMainWrapper from "@adminLayouts/admin-main-wrapper";
 import DailyAttendanceTable from "@adminComponents/employee/attendance/daily-attendance-table";
 import MonthlyAttendanceTable from "@adminComponents/employee/attendance/monthly-attendance-table";
-import { createApiHelper } from "@/trpc/server";
-import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 
-export default async function AttendancePage() {
+export default async function AttendancePage({
+  searchParams,
+}: {
+  // eslint-disable-next-line
+  searchParams: { [key: string]: string | undefined };
+}) {
   const date = new Date();
   date.setHours(0, 0, 0, 0);
+  const paramPeriod = searchParams?.period ?? "";
 
   const attendanceHelper = await createApiHelper();
   await attendanceHelper.statsRouter.attendanceByDate.prefetch({
     date,
     query: {
       shift: undefined,
+      employeeName: undefined,
     },
   });
   await attendanceHelper.statsRouter.attendanceByMonth.prefetch({
-    month: date,
+    month: startOfMonth(date),
     name: "",
   });
   const attendanceState = dehydrate(attendanceHelper.queryClient);
+
+  const defaultTab = ["month", "day"].includes(paramPeriod)
+    ? paramPeriod
+    : "month";
 
   return (
     <AdminMainWrapper>
@@ -44,7 +57,7 @@ export default async function AttendancePage() {
         </CardHeader>
         <CardContent>
           <HydrationBoundary state={attendanceState}>
-            <Tabs defaultValue="month">
+            <Tabs defaultValue={defaultTab}>
               <TabsList>
                 <TabsTrigger value="month">Monthly</TabsTrigger>
                 <TabsTrigger value="day">Daily</TabsTrigger>

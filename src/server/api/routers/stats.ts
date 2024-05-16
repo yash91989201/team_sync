@@ -1,4 +1,4 @@
-import { and, count, eq, getTableColumns, sql } from "drizzle-orm";
+import { and, count, eq, getTableColumns, sql, like } from "drizzle-orm";
 // UTILS
 import { formatDate, getWorkHours } from "@/lib/date-time-utils";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
@@ -152,15 +152,14 @@ export const statsRouter = createTRPCRouter({
       .$dynamic()
 
     if (query !== undefined) {
-      if (query.shift !== undefined) {
-        await empAttendanceDynamicQuery
-          .where(
-            and(
-              sql`DATE(${empAttendanceTable.date}) = DATE(${formatDate(input.date)})`,
-              eq(empAttendanceTable.shift, query.shift)
-            )
+      await empAttendanceDynamicQuery
+        .where(
+          and(
+            sql`DATE(${empAttendanceTable.date}) = DATE(${formatDate(input.date)})`,
+            query.shift !== undefined ? eq(empAttendanceTable.shift, query.shift) : undefined,
+            query.employeeName !== undefined ? like(userTable.name, `%${query.employeeName}%`) : undefined,
           )
-      }
+        )
     }
 
     const attendance = await empAttendanceDynamicQuery

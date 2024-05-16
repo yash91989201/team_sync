@@ -6,7 +6,12 @@ import {
 } from "@tanstack/react-table";
 import { useRef, useState } from "react";
 import { useDebounceValue } from "usehooks-ts";
-import { eachMonthOfInterval, format, startOfDay, startOfYear } from "date-fns";
+import {
+  format,
+  startOfYear,
+  startOfMonth,
+  eachMonthOfInterval,
+} from "date-fns";
 // UTILS
 import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
@@ -45,18 +50,21 @@ import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { CircleX, FilterX, RotateCcw, Search } from "lucide-react";
 
 export default function MonthlyAttendanceTable() {
-  const date = new Date();
-  date.setHours(0, 0, 0, 0);
-  const today = startOfDay(date);
-
-  const empNameInputRef = useRef<HTMLInputElement>(null);
+  const today = startOfMonth(new Date());
 
   const [currentMonth, setCurrentMonth] = useState(format(today, "MMMM"));
   const [debouncedEmpName, setDebounceEmpName] = useDebounceValue("", 750);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+
+  const empNameInputRef = useRef<HTMLInputElement>(null);
 
   const isFilterUnset =
-    format(today, "MMMM") === currentMonth &&
-    (debouncedEmpName === undefined || debouncedEmpName?.length === 0);
+    format(today, "MMMM") === currentMonth && debouncedEmpName.length === 0;
+
+  const months = eachMonthOfInterval({
+    start: startOfYear(new Date()),
+    end: today,
+  }).map((month) => format(month, "MMMM"));
 
   const {
     data = [],
@@ -75,13 +83,6 @@ export default function MonthlyAttendanceTable() {
     },
   );
 
-  const months = eachMonthOfInterval({
-    start: startOfYear(new Date()),
-    end: today,
-  }).map((month) => format(month, "MMMM"));
-
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-
   const table = useReactTable({
     columns: EMP_ATTENDANCE_STAT_TABLE,
     data,
@@ -91,6 +92,10 @@ export default function MonthlyAttendanceTable() {
       columnVisibility,
     },
   });
+
+  const resetTableColumns = () => {
+    table.getAllColumns().forEach((column) => column.toggleVisibility(true));
+  };
 
   const resetEmpName = () => {
     if (empNameInputRef.current) {
@@ -102,10 +107,6 @@ export default function MonthlyAttendanceTable() {
   const resetFilters = () => {
     resetEmpName();
     setCurrentMonth(format(today, "MMMM"));
-  };
-
-  const resetTableColumns = () => {
-    table.getAllColumns().forEach((column) => column.toggleVisibility(true));
   };
 
   return (
@@ -263,7 +264,7 @@ export default function MonthlyAttendanceTable() {
   );
 }
 
-export function EmpShiftSectionSkeleton() {
+export function MonthlyAttendanceTableSkeleton() {
   return (
     <div className="my-6 space-y-3">
       <div className="flex items-center gap-3">
