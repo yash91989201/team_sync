@@ -13,6 +13,7 @@ import {
   date,
   unique,
   primaryKey,
+  index,
 } from "drizzle-orm/mysql-core";
 
 export const createTable = mysqlTableCreator((name) => name);
@@ -171,7 +172,9 @@ export const empAttendanceTable = mysqlTable("emp_attendance", {
   empId: varchar("emp_id", { length: 24 })
     .notNull()
     .references(() => userTable.id),
-});
+}, (table) => ({
+  dateIdx: index("date_idx").on(table.date),
+}));
 
 export const empAttendanceTableRelations = relations(
   empAttendanceTable,
@@ -242,7 +245,10 @@ export const leaveRequestTable = mysqlTable("leave_request", {
   reviewerId: varchar("reviewer_id", { length: 24 })
     .notNull()
     .references(() => userTable.id),
-});
+}, (table) => ({
+  fromDateIdx: index("from_date_idx").on(table.fromDate),
+  toDateIdx: index("to_date_idx").on(table.toDate),
+}));
 
 export const leaveRequestTableRelations = relations(
   leaveRequestTable,
@@ -277,7 +283,9 @@ export const leaveBalanceTable = mysqlTable("leave_balance", {
   leaveTypeId: varchar("leave_type_id", { length: 24 })
     .notNull()
     .references(() => leaveTypeTable.id),
-});
+}, (table) => ({
+  createdAtIdx: index("created_at_idx").on(table.createdAt)
+}));
 
 export const leaveBalanceTableRelations = relations(
   leaveBalanceTable,
@@ -426,7 +434,9 @@ export const empPayslipTable = mysqlTable("emp_payslip", {
   })
     .notNull()
     .references(() => userTable.id),
-})
+}, (table) => ({
+  dateIdx: index("date_idx").on(table.date)
+}))
 
 export const empPayslipTableRelations = relations(empPayslipTable, ({ one, many }) => ({
   employee: one(userTable, {
@@ -483,7 +493,9 @@ export const holidayTable = mysqlTable("holiday", {
   }).primaryKey(),
   name: varchar("name", { length: 256 }).notNull(),
   date: date("date", { mode: "date" }).notNull(),
-})
+}, (table) => ({
+  dateIdx: index("date_idx").on(table.date)
+}))
 
 export const sessionTable = mysqlTable("session", {
   id: varchar("id", {

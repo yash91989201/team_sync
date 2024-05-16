@@ -57,6 +57,20 @@
       "when": 1715792699040,
       "tag": "0007_lame_korg",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1715829273041,
+      "tag": "0008_goofy_zzzax",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1715829612412,
+      "tag": "0009_black_sunspot",
+      "breakpoints": true
     }
   ]
 }
