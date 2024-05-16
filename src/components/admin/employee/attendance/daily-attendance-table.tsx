@@ -61,6 +61,7 @@ export default function DailyAttendanceTable() {
   const today = startOfDay(date);
   const [selectedDay, setSelectedDay] = useState(today);
   const [shift, setShift] = useState<ShiftType>(undefined);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [debouncedEmpName, setDebounceEmpName] = useDebounceValue<
     string | undefined
   >(undefined, 750);
@@ -92,8 +93,6 @@ export default function DailyAttendanceTable() {
     },
   );
 
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-
   const table = useReactTable({
     columns: EMP_SHIFT_TABLE,
     data,
@@ -103,6 +102,10 @@ export default function DailyAttendanceTable() {
       columnVisibility,
     },
   });
+
+  const resetTableColumns = () => {
+    table.getAllColumns().forEach((column) => column.toggleVisibility(true));
+  };
 
   const resetEmpName = () => {
     if (empNameInputRef.current) {
@@ -115,10 +118,6 @@ export default function DailyAttendanceTable() {
     resetEmpName();
     setShift(undefined);
     setSelectedDay(today);
-  };
-
-  const resetTableColumns = () => {
-    table.getAllColumns().forEach((column) => column.toggleVisibility(true));
   };
 
   return (
