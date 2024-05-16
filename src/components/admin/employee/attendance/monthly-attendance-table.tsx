@@ -2,6 +2,7 @@
 import {
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { useRef, useState } from "react";
@@ -17,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
 import { parseDate } from "@/lib/date-time-utils";
 // TYPES
-import type { VisibilityState } from "@tanstack/react-table";
+import type { SortingState, VisibilityState } from "@tanstack/react-table";
 // UI
 import {
   Table,
@@ -54,6 +55,7 @@ export default function MonthlyAttendanceTable() {
 
   const [currentMonth, setCurrentMonth] = useState(format(today, "MMMM"));
   const [debouncedEmpName, setDebounceEmpName] = useDebounceValue("", 750);
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   const empNameInputRef = useRef<HTMLInputElement>(null);
@@ -87,8 +89,11 @@ export default function MonthlyAttendanceTable() {
     columns: EMP_ATTENDANCE_STAT_TABLE,
     data,
     getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     state: {
+      sorting,
       columnVisibility,
     },
   });

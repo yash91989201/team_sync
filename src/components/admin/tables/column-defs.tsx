@@ -33,7 +33,7 @@ import {
 import DocumentsPreview from "@sharedComponents/documents-preview";
 import DeleteDocumentTypeForm from "@adminComponents/document-types/delete-document-type-form";
 // CONSTANTS
-import { DOCUMENT_FILE_TYPES_DISPLAY } from "@/constants";
+import { DOCUMENT_FILE_TYPES_DISPLAY, SHIFT_DISPLAY } from "@/constants";
 // ICONS
 import { ArrowUpDown, CornerUpRight } from "lucide-react";
 
@@ -396,11 +396,12 @@ export const EMP_SHIFT_TABLE: ColumnDef<EmpShiftTableProps>[] = [
   {
     accessorKey: "shift",
     header: "Shift",
-    cell: ({ row }) => row.original.shift ?? "N/A",
+    cell: ({ row }) =>
+      row.original.shift === null ? "N/A" : SHIFT_DISPLAY[row.original.shift],
   },
   {
     accessorKey: "hours",
-    header: "Working hours",
+    header: "Hours",
     cell: ({ row }) => row.original.hours ?? "N/A",
   },
 ];
@@ -416,11 +417,22 @@ export const EMP_ATTENDANCE_STAT_TABLE: ColumnDef<EmpsAttendanceStatType>[] = [
   },
   {
     accessorKey: "workHours",
-    header: "Total work hours",
+    header: "Hours",
   },
   {
     accessorKey: "workDays",
-    header: "Working Days",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="p-0 text-base font-semibold text-gray-700 hover:bg-transparent"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Total days
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
   },
   {
     accessorKey: "holidays",
@@ -436,10 +448,32 @@ export const EMP_ATTENDANCE_STAT_TABLE: ColumnDef<EmpsAttendanceStatType>[] = [
   },
   {
     accessorKey: "paidLeaves",
-    header: "Paid Leaves",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="p-0 text-base font-semibold text-gray-700 hover:bg-transparent"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Paid leaves
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
   },
   {
     accessorKey: "unPaidLeaves",
-    header: "Un-paid Leaves",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="p-0 text-base font-semibold text-gray-700 hover:bg-transparent"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Un-paid leaves
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
   },
 ];

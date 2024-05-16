@@ -24,3 +24,10 @@ export const EMPLOYEE_UPDATE_SECTIONS = [
 ]
 
 export const LEAVE_STATUS = ["pending", "approved", "rejected", "withdrawn"];
+
+export const SHIFT_DISPLAY = {
+  "0": "Absent",
+  "0.5": "Half Day",
+  "0.75": "Late Login",
+  "1": "Full Day",
+}

@@ -7,6 +7,7 @@ import {
 import { useRef, useState } from "react";
 import { useDebounceValue } from "usehooks-ts";
 // UTILS
+import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
 import { format, startOfDay } from "date-fns";
 // TYPES
@@ -50,7 +51,6 @@ import {
   CircleX,
 } from "lucide-react";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
-import { cn } from "@/lib/utils";
 
 type ShiftType = "0.5" | "0.75" | undefined;
 
@@ -337,7 +337,7 @@ function TableSkeleton() {
             Shift
           </TableHead>
           <TableHead className="p-2 text-base font-semibold text-gray-700 lg:p-4">
-            Working hours
+            Hours
           </TableHead>
         </TableRow>
       </TableHeader>
