@@ -1,10 +1,11 @@
 "use client";
 import {
-  eachMonthOfInterval,
-  endOfMonth,
   format,
-  startOfDay,
+  endOfMonth,
+  isSameYear,
   startOfYear,
+  startOfToday,
+  eachMonthOfInterval,
 } from "date-fns";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -13,7 +14,7 @@ import { useState } from "react";
 import { api } from "@/trpc/react";
 import { buttonVariants } from "@ui/button";
 import { cn, formatSalary } from "@/lib/utils";
-import { parseDate } from "@/lib/date-time-utils";
+import { convertDateFormat, parseDate } from "@/lib/date-time-utils";
 // TYPES
 import type { EmpPayslipCardProps } from "@/lib/types";
 // CUSTOM HOOKS
@@ -41,7 +42,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@ui/tooltip";
 import { Button } from "@ui/button";
 import { Skeleton } from "@ui/skeleton";
 import { Separator } from "@ui/separator";
@@ -50,23 +51,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@ui/avatar";
 import { Asterisk, HandCoins, Loader2, RotateCcw } from "lucide-react";
 
 export function PayrollSection() {
-  const date = new Date();
-  date.setHours(0, 0, 0, 0);
-
-  const today = startOfDay(date);
-  const [qDate, setQDate] = useState(date);
-  const [currentMonth, setCurrentMonth] = useState(format(today, "MMMM-yyyy"));
+  const today = startOfToday();
+  const [month, setMonth] = useState(format(today, "MMMM-yyyy"));
 
   const months = eachMonthOfInterval({
     start: startOfYear(new Date()),
     end: today,
   }).map((month) => format(month, "MMMM-yyyy"));
-
-  const handleMonthChange = (month: string) => {
-    const monthDate = parseDate(month, "MMMM-yyyy");
-    setCurrentMonth(month);
-    setQDate(monthDate);
-  };
 
   const {
     data: employeesPayslip = [],
@@ -74,7 +65,7 @@ export function PayrollSection() {
     refetch: refetchEmpPayslip,
   } = api.statsRouter.employeesPayslip.useQuery(
     {
-      month: qDate,
+      month: parseDate(month, "MMMM-yyyy"),
     },
     {
       refetchOnMount: false,
@@ -87,7 +78,7 @@ export function PayrollSection() {
     return <PayrollSectionSkeleton />;
   }
 
-  const empPayslipNotGeneratedCount = employeesPayslip.filter(
+  const missingPayslipCount = employeesPayslip.filter(
     (emp) => emp.payslip === null,
   ).length;
 
@@ -100,11 +91,11 @@ export function PayrollSection() {
         <div className="flex flex-1 flex-col gap-1.5 self-start font-semibold">
           <p className="text-xl text-pink-500">Employees Payroll</p>
           <p className="text-sm text-gray-500">
-            {empPayslipNotGeneratedCount}
+            {missingPayslipCount}
             &nbsp;employees payslip has not been generated
           </p>
         </div>
-        <Select value={currentMonth} onValueChange={handleMonthChange}>
+        <Select value={month} onValueChange={setMonth}>
           <SelectTrigger className="w-40">
             <SelectValue placeholder="Select month" />
           </SelectTrigger>
@@ -133,11 +124,7 @@ export function PayrollSection() {
       ) : (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-3">
           {employeesPayslip.map((emp) => (
-            <EmpPayslipCard
-              key={emp.id}
-              {...emp}
-              selectedMonth={currentMonth}
-            />
+            <EmpPayslipCard key={emp.id} {...emp} selectedMonth={month} />
           ))}
         </div>
       )}
@@ -146,6 +133,12 @@ export function PayrollSection() {
 }
 
 const EmpPayslipCard = (emp: EmpPayslipCardProps) => {
+  const existingPayslipDate = convertDateFormat({
+    date: emp.selectedMonth,
+    from: "MMMM-yyyy",
+    to: "yyyy-MM-dd",
+  });
+
   return (
     <div key={emp.id} className="flex items-center gap-3 rounded-xl border p-3">
       <Avatar className="size-12">
@@ -173,6 +166,7 @@ const EmpPayslipCard = (emp: EmpPayslipCardProps) => {
             <TooltipProvider delayDuration={150}>
               <InstantGeneratePayslip
                 empId={emp.id}
+                joiningDate={emp.joiningDate}
                 selectedMonth={emp.selectedMonth}
               />
             </TooltipProvider>
@@ -186,7 +180,7 @@ const EmpPayslipCard = (emp: EmpPayslipCardProps) => {
                 }),
                 "h-fit w-fit p-0 text-xs text-green-500 md:text-sm",
               )}
-              href={`/admin/payroll/salary-info/${emp.id}/generate-payslip`}
+              href={`/admin/payroll/salary-info/${emp.id}/generate-payslip?date=${existingPayslipDate}`}
             >
               Payslip Info
             </Link>
@@ -212,21 +206,27 @@ const EmpPayslipCard = (emp: EmpPayslipCardProps) => {
 const InstantGeneratePayslip = ({
   empId,
   selectedMonth,
+  joiningDate,
 }: {
   empId: string;
   selectedMonth: string;
+  joiningDate: Date;
 }) => {
   const tooltip = useToggle(false);
   const apiUtils = api.useUtils();
   const firstDayOfCurrentMonth = parseDate(selectedMonth, "MMMM-yyyy");
   const lastDayOfCurrentMonth = endOfMonth(firstDayOfCurrentMonth);
 
+  const payslipStartDate = isSameYear(joiningDate, firstDayOfCurrentMonth)
+    ? joiningDate
+    : firstDayOfCurrentMonth;
+
   const { data: createPayslipData, isFetching } =
     api.adminRouter.getCreatePayslipData.useQuery(
       {
         empId,
-        startDate: new Date(firstDayOfCurrentMonth.setHours(15, 30, 0, 0)),
-        endDate: new Date(lastDayOfCurrentMonth.setHours(15, 30, 0, 0)),
+        startDate: payslipStartDate,
+        endDate: lastDayOfCurrentMonth,
       },
       {
         enabled: tooltip.isShowing,

@@ -50,6 +50,16 @@ export function formatTime(date = new Date(), formatStr = "HH:mm:ss"): string {
  * get date in passed format 
  * default format is 'HH:mm:ss'
 */
+export function convertDateFormat({ date, from, to }: { date: string, from: string, to: string }) {
+  const parsedDate = parseDate(date, from)
+  return formatDate(parsedDate, to)
+}
+
+/**
+ * input Date and formatStr
+ * get date in passed format 
+ * default format is 'HH:mm:ss'
+*/
 export function getWorkHours(hours: { hours: string | null }[]) {
   const workHours = hours.reduce((total, { hours }) => {
     if (hours === null) return total;

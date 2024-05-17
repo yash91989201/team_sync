@@ -12,13 +12,19 @@ import {
 // CUSTOM COMPONENTS
 import AdminMainWrapper from "@adminComponents/layouts/admin-main-wrapper";
 import GeneratePayslip from "@adminComponents/payroll/generate-payslip";
+import { parseDate } from "@/lib/date-time-utils";
 
 export default async function GeneratePayslipPage({
   params,
+  searchParams,
 }: {
   params: { empId: string };
+  // eslint-disable-next-line
+  searchParams: { [key: string]: string | undefined };
 }) {
   await authPage("ADMIN");
+  const date = searchParams?.date;
+  const payslipDate = date !== undefined ? parseDate(date) : undefined;
 
   const employeeData = await api.adminRouter.getUpdateEmpData({
     empId: params.empId,
@@ -28,7 +34,12 @@ export default async function GeneratePayslipPage({
     return (
       <AdminMainWrapper>
         <div className="mx-auto max-w-7xl">
-          <GeneratePayslip empId={params.empId} />
+          <GeneratePayslip
+            empId={params.empId}
+            initialDate={payslipDate}
+            employeeName={employeeData.data.name}
+            joiningDate={employeeData.data.joiningDate}
+          />
         </div>
       </AdminMainWrapper>
     );

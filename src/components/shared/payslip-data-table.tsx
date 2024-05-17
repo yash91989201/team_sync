@@ -30,14 +30,14 @@ import {
   PayslipDaysInfoSkeleton,
 } from "@sharedComponents/payslip-days-info";
 // ICONS
-import { Download, Eye, RefreshCw } from "lucide-react";
+import { Download, Eye, Trash2 } from "lucide-react";
 
 export function PayslipDataTable({
-  payslip,
   date,
+  payslip,
 }: {
-  payslip: EmpPayslipType;
   date: Date;
+  payslip: EmpPayslipType;
 }) {
   const { isAdmin } = useUser();
   const apiUtils = api.useUtils();
@@ -50,6 +50,7 @@ export function PayslipDataTable({
       {
         refetchOnReconnect: false,
         refetchOnWindowFocus: false,
+        staleTime: Infinity,
       },
     );
 
@@ -60,6 +61,7 @@ export function PayslipDataTable({
     const actionResponse = await deleteEmpPayslip({ payslipId });
     if (actionResponse.status === "SUCCESS") {
       toast.success(actionResponse.message);
+
       await apiUtils.payslipRouter.getMonthPayslip.invalidate({
         empId: payslip.empId,
         month: date,
@@ -185,8 +187,8 @@ export function PayslipDataTable({
             className="w-fit gap-1.5"
             onClick={() => deleteEmpPayslipAction(payslip.id)}
           >
-            <RefreshCw className={cn("size-4", isPending && "animate-spin")} />
-            <span>Re-generate Payslip</span>
+            <Trash2 className={cn("size-4", isPending && "animate-bounce")} />
+            <span>Delete Payslip</span>
           </Button>
         </div>
       ) : null}
@@ -236,7 +238,7 @@ export const PayslipDataTableSkeleton = () => {
       {isAdmin ? (
         <div className="flex flex-col gap-3">
           <Separator />
-          <Skeleton className="h-10 w-56" />
+          <Skeleton className="h-10 w-48" />
         </div>
       ) : null}
     </div>

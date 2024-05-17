@@ -22,7 +22,7 @@ export const payslipRouter = createTRPCRouter({
     const empMonthPayslip = await ctx.db.query.empPayslipTable.findFirst({
       where: and(
         eq(empPayslipTable.empId, input.empId),
-        sql`MONTH(${empPayslipTable.date}) = ${input.month.getMonth() + 1}`
+        sql`MONTH(${empPayslipTable.date}) = ${input.month.getMonth() + 1} AND YEAR(${empPayslipTable.date}) = ${input.month.getFullYear()}`
       )
     })
     if (empMonthPayslip === undefined) {

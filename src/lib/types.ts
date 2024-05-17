@@ -280,6 +280,7 @@ export type EmpPayslipCardProps = {
   name: string;
   imageUrl: string | null;
   salary: number;
+  joiningDate: Date,
   payslip: {
     id: string;
     pdfUrl: string;

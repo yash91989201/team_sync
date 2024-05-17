@@ -31,6 +31,7 @@ export const missingEmpPayslipQuery = db
     name: userTable.name,
     imageUrl: userTable.imageUrl,
     salary: empProfileTable.salary,
+    joiningDate: empProfileTable.joiningDate,
     payslip: {
       id: empPayslipTable.id,
       pdfUrl: empPayslipTable.pdfUrl,

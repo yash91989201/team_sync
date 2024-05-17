@@ -10,6 +10,7 @@ import { EmpShiftSection } from "@/components/admin/dashboard/emp-shift-section"
 import { MissingDocsSection } from "@/components/admin/dashboard/missing-docs-section";
 import { PayrollSection } from "@/components/admin/dashboard/payroll-section";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
+import { startOfMonth } from "date-fns";
 
 export default async function AdminPage() {
   await authPage("ADMIN");
@@ -61,7 +62,7 @@ export default async function AdminPage() {
   // payroll section
   const payrollSectionHelper = await createApiHelper();
   await payrollSectionHelper.statsRouter.employeesPayslip.prefetch({
-    month: date,
+    month: startOfMonth(date),
   });
   const payrollSectionState = dehydrate(payrollSectionHelper.queryClient);
 
