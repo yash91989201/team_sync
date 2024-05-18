@@ -53,10 +53,10 @@ jobs:
 
       - name: Increase swap space
         run: |
-                sudo sshpass -p 'linux_u$er' sudo fallocate -l 8G /swapfile
-                sudo sshpass -p 'linux_u$er' sudo chmod 600 /swapfile
-                sudo sshpass -p 'linux_u$er' sudo mkswap /swapfile
-                sudo sshpass -p 'linux_u$er' sudo swapon /swapfile
+                echo 'linux_u$er' | sudo -S fallocate -l 4G /swapfile
+                echo 'linux_u$er' | sudo -S chmod 600 /swapfile
+                echo 'linux_u$er' | sudo -S mkswap /swapfile
+                echo 'linux_u$er' | sudo -S swapon /swapfile
 
       - name: Build team_sync app
         run:  bun run build
@@ -64,8 +64,8 @@ jobs:
       - name: Cleanup swap space
         if: always()
         run: |
-                sudo sshpass -p 'linux_u$er'sudo swapoff /swapfile
-                sudo sshpass -p 'linux_u$er'sudo rm /swapfile
+                sudo "linux_u$er" | sudo -S swapoff /swapfile
+                sudo "linux_u$er" | sudo -S rm /swapfile
 
       - name: Copy public directory
         run: cp -r ./public ./.next/standalone/public
