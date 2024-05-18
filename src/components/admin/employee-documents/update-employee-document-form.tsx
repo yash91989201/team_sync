@@ -23,10 +23,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
+import { Input } from "@ui/input";
+import { Button } from "@ui/button";
+import { Checkbox } from "@ui/checkbox";
 // CUSTOM COMPONENTS
 import { UpdateDocumentInput } from "./update-document-input";
 // ICONS
@@ -70,86 +69,82 @@ export default function UpdateEmployeeDocumentForm({
     }
   };
 
-  // TODO: enhance ui update employee document form
-
   return (
-    <div>
-      <div>
-        {documentFiles.map((documentFile, index) => (
-          <UpdateDocumentInput
-            key={documentFile.id}
-            fileUrl={documentFile.fileUrl}
-            fileType={documentType.fileType}
-            fileIndex={index + 1}
-            dropzoneOptions={{
-              maxSize: MAX_FILE_SIZE.PROFILE_IMG,
-              accept: {
-                [`${documentType.fileType}`]: [],
-              },
-            }}
-            onChange={async (file) => {
-              const actionResponse = await updateEmployeeDocumentFile({
-                fileId: documentFile.id,
-                file,
-              });
+    <Form {...updateEmployeeDocumentForm}>
+      <form
+        onSubmit={handleSubmit(updateEmployeeDocumentAction)}
+        className="space-y-3"
+      >
+        <div className="grid w-full grid-cols-1 gap-3 2xl:grid-cols-3">
+          {documentFiles.map((documentFile, index) => (
+            <UpdateDocumentInput
+              key={documentFile.id}
+              fileId={documentFile.id}
+              fileUrl={documentFile.fileUrl}
+              fileType={documentType.fileType}
+              fileIndex={index + 1}
+              dropzoneOptions={{
+                maxSize: MAX_FILE_SIZE.PROFILE_IMG,
+                accept: {
+                  [`${documentType.fileType}`]: [],
+                },
+              }}
+              onChange={async (file) => {
+                const actionResponse = await updateEmployeeDocumentFile({
+                  fileId: documentFile.id,
+                  file,
+                });
 
-              if (actionResponse.status === "SUCCESS") {
-                toast.success(actionResponse.message);
-                router.refresh();
-              } else {
-                toast.error(actionResponse.message);
-              }
-            }}
-          />
-        ))}
-        <Separator />
-      </div>
+                if (actionResponse.status === "SUCCESS") {
+                  toast.success(actionResponse.message);
+                  router.refresh();
+                } else {
+                  toast.error(actionResponse.message);
+                }
+              }}
+            />
+          ))}
+        </div>
+        <FormField
+          control={control}
+          name="uniqueDocumentId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Unique Document id</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  className="w-64"
+                  placeholder="For ex. Aadhar Card no. (optional)"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={control}
+          name="verified"
+          render={({ field }) => (
+            <FormItem className="flex items-center gap-3 space-y-0">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <FormLabel className="text-sm font-normal">
+                Are documents verified ?
+              </FormLabel>
+            </FormItem>
+          )}
+        />
 
-      <Form {...updateEmployeeDocumentForm}>
-        <form
-          onSubmit={handleSubmit(updateEmployeeDocumentAction)}
-          className="space-y-3"
-        >
-          <FormField
-            control={control}
-            name="uniqueDocumentId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Unique Document id</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    placeholder="For ex. Aadhar Card no. (optional)"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={control}
-            name="verified"
-            render={({ field }) => (
-              <FormItem className="flex items-center gap-3 space-y-0">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <FormLabel className="text-sm font-normal">
-                  Are documents verified ?
-                </FormLabel>
-              </FormItem>
-            )}
-          />
-
-          <Button disabled={formState.isSubmitting} className="gap-1">
-            {formState.isSubmitting && <Loader2 className="animate-spin" />}
-            <span>Update document data</span>
-          </Button>
-        </form>
-      </Form>
-    </div>
+        <Button disabled={formState.isSubmitting} className="gap-1">
+          {formState.isSubmitting && <Loader2 className="animate-spin" />}
+          <span>Update document data</span>
+        </Button>
+      </form>
+    </Form>
   );
 }
