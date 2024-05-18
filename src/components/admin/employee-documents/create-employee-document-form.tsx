@@ -7,14 +7,16 @@ import { useForm } from "react-hook-form";
 import { useDebounceValue } from "usehooks-ts";
 import { zodResolver } from "@hookform/resolvers/zod";
 // UTILS
-import { api } from "@/trpc/react";
 import { cn } from "@/lib/utils";
+import { api } from "@/trpc/react";
 import { uploadEmployeeDocumentFiles } from "@/lib/pb-utils";
 // SCHEMAS
 import { CreateEmployeeDocumentFormSchema } from "@/lib/schema";
 // TYPES
 import type { SubmitHandler } from "react-hook-form";
 import type { CreateEmployeeDocumentFormSchemaType } from "@/lib/types";
+// CUSTOM HOOKS
+import useToggle from "@/hooks/use-toggle";
 // UI
 import {
   Form,
@@ -49,6 +51,7 @@ import { Input } from "@ui/input";
 import { Badge } from "@ui/badge";
 import { Button } from "@ui/button";
 import { Checkbox } from "@ui/checkbox";
+import { ScrollArea } from "@ui/scroll-area";
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
 // CUSTOM COMPONENTS
 import { DocumentInput } from "@adminComponents/employee-documents/document-input";
@@ -59,6 +62,7 @@ import { Check, ChevronsUpDown, CircleX, Loader2 } from "lucide-react";
 import { MAX_FILE_SIZE } from "@/constants";
 
 export default function CreateEmployeeDocumentForm() {
+  const empSelect = useToggle(false);
   const empNameInputRef = useRef<HTMLInputElement>(null);
   const [debouncedEmpName, setDebounceEmpName] = useDebounceValue<
     string | undefined
@@ -155,7 +159,10 @@ export default function CreateEmployeeDocumentForm() {
               render={({ field }) => (
                 <FormItem className="flex flex-col gap-1">
                   <FormLabel>Select Employee</FormLabel>
-                  <Popover modal={true}>
+                  <Popover
+                    open={empSelect.isOpen}
+                    onOpenChange={empSelect.toggle}
+                  >
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
@@ -170,54 +177,59 @@ export default function CreateEmployeeDocumentForm() {
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-72 p-0" align="start">
+                    <PopoverContent className="w-80 p-0" align="start">
                       <Command>
-                        <div className="flex items-center border-b px-3">
-                          <MagnifyingGlassIcon className="mr-2 size-4 shrink-0 opacity-50" />
+                        <div className="flex items-center gap-3 border-b px-3 py-1.5">
+                          <MagnifyingGlassIcon className="size-4" />
                           <input
-                            className="flex h-9 w-full border-none bg-transparent px-3 py-1 text-sm outline-none  placeholder:text-muted-foreground focus-visible:outline-none"
+                            className="flex h-9 w-full border-none bg-transparent  py-1 text-sm outline-none  placeholder:text-muted-foreground focus-visible:outline-none"
                             placeholder="Employee name or code"
                             ref={empNameInputRef}
                             onChange={(e) => setDebounceEmpName(e.target.value)}
                           />
                           <CircleX
-                            className="ml-2 size-4 text-gray-600 opacity-50"
+                            className="size-4"
                             onClick={resetEmpNameQuery}
                           />
                         </div>
                         <CommandList>
                           {isEmployeesLoading ? (
-                            <CommandLoading className="py-6 text-center text-sm text-muted-foreground">
+                            <CommandLoading className="py-3 text-center text-sm text-muted-foreground">
                               Searching Employees...
                             </CommandLoading>
                           ) : (
                             <CommandEmpty>No employee found.</CommandEmpty>
                           )}
-                          <CommandGroup className="max-h-64 overflow-auto">
-                            {employees.map((employee) => (
-                              <CommandItem
-                                className="flex items-center justify-start gap-3"
-                                key={employee.id}
-                                value={employee.id}
-                                onSelect={field.onChange}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    selectedEmployee?.id === employee.id
-                                      ? "opacity-100"
-                                      : "opacity-0",
-                                  )}
-                                />
-                                <p className="flex-1">{employee.name}</p>
-                                <Badge
-                                  className="rounded-full"
-                                  variant="secondary"
+                          <CommandGroup className="p-0">
+                            <ScrollArea className="h-60 px-3 py-1.5">
+                              {employees.map((employee) => (
+                                <CommandItem
+                                  className="my-1.5 flex items-center justify-start gap-3"
+                                  key={employee.id}
+                                  value={employee.id}
+                                  onSelect={(empId) => {
+                                    field.onChange(empId);
+                                    empSelect.close();
+                                  }}
                                 >
-                                  {employee.code}
-                                </Badge>
-                              </CommandItem>
-                            ))}
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      selectedEmployee?.id === employee.id
+                                        ? "opacity-100"
+                                        : "opacity-0",
+                                    )}
+                                  />
+                                  <p className="flex-1">{employee.name}</p>
+                                  <Badge
+                                    className="rounded-full"
+                                    variant="secondary"
+                                  >
+                                    {employee.code}
+                                  </Badge>
+                                </CommandItem>
+                              ))}
+                            </ScrollArea>
                           </CommandGroup>
                         </CommandList>
                       </Command>
