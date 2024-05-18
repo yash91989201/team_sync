@@ -50,7 +50,7 @@ jobs:
                 bun run db:migrate
 
       - name: Build team_sync app
-        run: bun run build
+        run: node --max-old-space-size=3685 bun run build
 
       - name: Copy public directory
         run: cp -r ./public ./.next/standalone/public
