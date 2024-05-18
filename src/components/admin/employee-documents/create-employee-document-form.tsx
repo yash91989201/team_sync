@@ -1,10 +1,11 @@
 "use client";
+import { useRef } from "react";
 import { toast } from "sonner";
-import { useState } from "react";
 import { generateId } from "lucia";
 import { CommandLoading } from "cmdk";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useDebounceValue } from "usehooks-ts";
+import { zodResolver } from "@hookform/resolvers/zod";
 // UTILS
 import { api } from "@/trpc/react";
 import { cn } from "@/lib/utils";
@@ -16,13 +17,6 @@ import type { SubmitHandler } from "react-hook-form";
 import type { CreateEmployeeDocumentFormSchemaType } from "@/lib/types";
 // UI
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@ui/select";
-import {
   Form,
   FormControl,
   FormField,
@@ -31,10 +25,16 @@ import {
   FormMessage,
 } from "@ui/form";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@ui/select";
+import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
 } from "@ui/command";
@@ -45,20 +45,31 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@ui/badge";
 import { Input } from "@ui/input";
+import { Badge } from "@ui/badge";
 import { Button } from "@ui/button";
+import { Checkbox } from "@ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
 // CUSTOM COMPONENTS
 import { DocumentInput } from "@adminComponents/employee-documents/document-input";
 // ICONS
-import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { Check, ChevronsUpDown, CircleX, Loader2 } from "lucide-react";
 // CONSTANTS
 import { MAX_FILE_SIZE } from "@/constants";
-import { Checkbox } from "@/components/ui/checkbox";
 
 export default function CreateEmployeeDocumentForm() {
-  const [employeeSearchQuery, setEmployeeSearchQuery] = useState("");
+  const empNameInputRef = useRef<HTMLInputElement>(null);
+  const [debouncedEmpName, setDebounceEmpName] = useDebounceValue<
+    string | undefined
+  >(undefined, 750);
+
+  const resetEmpNameQuery = () => {
+    if (empNameInputRef.current) {
+      setDebounceEmpName(undefined);
+      empNameInputRef.current.value = "";
+    }
+  };
 
   const createDocumentTypeForm = useForm<CreateEmployeeDocumentFormSchemaType>({
     resolver: zodResolver(CreateEmployeeDocumentFormSchema),
@@ -79,18 +90,24 @@ export default function CreateEmployeeDocumentForm() {
   } = createDocumentTypeForm;
 
   const selectedDocumentType = getValues("documentType");
-  const { requiredFiles = 1, fileType } = selectedDocumentType ?? {};
 
   const { refetch: refetchEmployeesDocuments } =
     api.documentRouter.getEmployeesDocuments.useQuery();
 
   const { data: employees = [], isLoading: isEmployeesLoading } =
-    api.employeeRouter.getByCodeOrName.useQuery({
-      query: employeeSearchQuery,
-    });
+    api.employeeRouter.getByCodeOrName.useQuery(
+      {
+        query: debouncedEmpName ?? "",
+      },
+      {
+        staleTime: Infinity,
+      },
+    );
 
   const { data: documentTypes = [], isLoading: isDocumentTypesLoading } =
-    api.documentRouter.getTypes.useQuery();
+    api.documentRouter.getTypes.useQuery(undefined, {
+      staleTime: Infinity,
+    });
 
   const { mutateAsync: createEmployeeDocument } =
     api.documentRouter.createEmployeeDocument.useMutation();
@@ -144,7 +161,7 @@ export default function CreateEmployeeDocumentForm() {
                         <Button
                           role="combobox"
                           variant="outline"
-                          className={cn("justify-between")}
+                          className="justify-between"
                         >
                           {selectedEmployee === undefined
                             ? "Select Employee"
@@ -155,11 +172,19 @@ export default function CreateEmployeeDocumentForm() {
                     </PopoverTrigger>
                     <PopoverContent className="w-72 p-0" align="start">
                       <Command>
-                        <CommandInput
-                          placeholder="Search by employee name or code"
-                          value={employeeSearchQuery}
-                          onValueChange={setEmployeeSearchQuery}
-                        />
+                        <div className="flex items-center border-b px-3">
+                          <MagnifyingGlassIcon className="mr-2 size-4 shrink-0 opacity-50" />
+                          <input
+                            className="flex h-9 w-full border-none bg-transparent px-3 py-1 text-sm outline-none  placeholder:text-muted-foreground focus-visible:outline-none"
+                            placeholder="Employee name or code"
+                            ref={empNameInputRef}
+                            onChange={(e) => setDebounceEmpName(e.target.value)}
+                          />
+                          <CircleX
+                            className="ml-2 size-4 text-gray-600 opacity-50"
+                            onClick={resetEmpNameQuery}
+                          />
+                        </div>
                         <CommandList>
                           {isEmployeesLoading ? (
                             <CommandLoading className="py-6 text-center text-sm text-muted-foreground">
@@ -270,6 +295,7 @@ export default function CreateEmployeeDocumentForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
+                        {selectedDocumentType.requiredFiles}&nbsp;
                         {selectedDocumentType.type} images/files
                       </FormLabel>
                       <FormControl>
@@ -279,9 +305,9 @@ export default function CreateEmployeeDocumentForm() {
                           dropzoneOptions={{
                             maxSize: MAX_FILE_SIZE.PROFILE_IMG,
                             accept: {
-                              [`${fileType}`]: [],
+                              [`${selectedDocumentType.fileType}`]: [],
                             },
-                            maxFiles: requiredFiles,
+                            maxFiles: selectedDocumentType.requiredFiles,
                           }}
                         />
                       </FormControl>

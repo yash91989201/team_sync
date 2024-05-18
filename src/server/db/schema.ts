@@ -307,6 +307,7 @@ export const documentTypeTable = mysqlTable("document_type", {
   }).primaryKey(),
   type: varchar("type", { length: 256 }).notNull(),
   fileType: mysqlEnum("file_type", [
+    "image/*",
     "image/jpg",
     "image/jpeg",
     "image/png",

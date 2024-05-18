@@ -71,6 +71,13 @@
       "when": 1715829612412,
       "tag": "0009_black_sunspot",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1716046436834,
+      "tag": "0010_shocking_pixie",
+      "breakpoints": true
     }
   ]
 }

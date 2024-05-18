@@ -43,7 +43,7 @@ export default function CreateDocumentTypeForm() {
     resolver: zodResolver(CreateDocumentTypeSchema),
     defaultValues: {
       id: generateId(15),
-      fileType: "image/jpg",
+      fileType: "image/*",
       requiredFiles: 1,
     },
   });
@@ -63,7 +63,7 @@ export default function CreateDocumentTypeForm() {
     reset({
       id: generateId(15),
       type: "",
-      fileType: "image/jpg",
+      fileType: "image/*",
       requiredFiles: 1,
     });
   };
@@ -107,16 +107,17 @@ export default function CreateDocumentTypeForm() {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="w-24">
+                        <SelectTrigger className="w-40">
                           <SelectValue placeholder="Select an employee band" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="w-24">
+                      <SelectContent>
+                        <SelectItem value="image/*">Any Image Type</SelectItem>
+                        <SelectItem value="application/pdf">PDF</SelectItem>
                         <SelectItem value="image/jpeg">JPEG</SelectItem>
                         <SelectItem value="image/jpg">JPG</SelectItem>
                         <SelectItem value="image/png">PNG</SelectItem>
                         <SelectItem value="image/webp">WEBP</SelectItem>
-                        <SelectItem value="application/pdf">PDF</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

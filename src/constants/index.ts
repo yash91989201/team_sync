@@ -7,6 +7,7 @@ export const ACCEPTED_FILE_MIME_TYPES = {
 };
 
 export const DOCUMENT_FILE_TYPES_DISPLAY = {
+  "image/*": "Image",
   "image/webp": "WEBP",
   "image/jpg": "JPG",
   "image/jpeg": "JPEG",

@@ -31,11 +31,11 @@ import {
   SalariesTableActions,
 } from "./column-actions";
 import DocumentsPreview from "@sharedComponents/documents-preview";
-import DeleteDocumentTypeForm from "@adminComponents/document-types/delete-document-type-form";
-// CONSTANTS
-import { DOCUMENT_FILE_TYPES_DISPLAY, SHIFT_DISPLAY } from "@/constants";
+import DeleteDocumentTypeForm from "@adminComponents/documents/delete-document-type-form";
 // ICONS
 import { ArrowUpDown, CornerUpRight } from "lucide-react";
+// CONSTANTS
+import { DOCUMENT_FILE_TYPES_DISPLAY, SHIFT_DISPLAY } from "@/constants";
 
 export const DEPARTMENT_TABLE: ColumnDef<DepartmentTableProps>[] = [
   {

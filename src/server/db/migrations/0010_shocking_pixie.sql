@@ -1,0 +1,1 @@
+ALTER TABLE `document_type` MODIFY COLUMN `file_type` enum('image/*','image/jpg','image/jpeg','image/png','image/webp','application/pdf') NOT NULL;

@@ -13,7 +13,7 @@ import {
 // CUSTOM COMPONENTS
 import { DocumentTypeTable } from "@adminComponents/tables";
 import AdminMainWrapper from "@adminComponents/layouts/admin-main-wrapper";
-import CreateDocumentTypeForm from "@adminComponents/document-types/create-document-type-form";
+import CreateDocumentTypeForm from "@adminComponents/documents/create-document-type-form";
 
 export default async function DocumentTypesPage() {
   await authPage("ADMIN");

@@ -56,8 +56,8 @@ export const employeeRouter = createTRPCRouter({
         where: and(
           eq(userTable.role, "EMPLOYEE"),
           or(
-            like(userTable.name, `%${input.query.toLowerCase()}%`),
-            like(userTable.code, `%${input.query.toLowerCase()}%`),
+            like(userTable.name, `%${input.query}%`),
+            like(userTable.code, `%${input.query}%`),
           ),
         ),
       });

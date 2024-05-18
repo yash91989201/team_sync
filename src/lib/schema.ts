@@ -134,6 +134,14 @@ export const DeleteDesignationSchema = z.object({
 // DOCUMENT SCHEMAS
 export const CreateDocumentTypeSchema = DocumentTypeSchema.extend({
   type: z.string({ required_error: "Document type is required." }).min(4, { message: "Min. required length is 4" }),
+  fileType: z.enum([
+    "image/*",
+    "image/jpg",
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "application/pdf",
+  ])
 });
 
 export const DeleteDocumentTypeSchema = z.object({
@@ -158,7 +166,13 @@ export const CreateEmployeeDocumentFormSchema = z.object({
   verified: z.boolean(),
   // files
   files: z.array(z.instanceof(File))
-})
+}).refine(
+  (schema) => schema.documentType.requiredFiles === schema.files.length,
+  (schema) => ({
+    message: `Min. ${schema.documentType.requiredFiles} files required.`,
+    path: ["files"]
+  })
+)
 
 export const CreateEmployeeDocumentInputSchema = z.object({
   id: z.string(),
