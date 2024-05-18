@@ -7,6 +7,7 @@ import {
   endOfMonth,
   startOfToday,
   eachMonthOfInterval,
+  isSameMonth,
 } from "date-fns";
 // UTILS
 import { api } from "@/trpc/react";
@@ -60,12 +61,11 @@ export default function GeneratePayslip({
   const firstDayOfMonth = parse(month, "MMMM-yyyy", new Date());
   const lastDayOfMonth = endOfMonth(firstDayOfMonth);
 
-  const payslipStartDate = isSameYear(
-    joiningDate,
-    parseDate(month, "MMMM-yyyy"),
-  )
-    ? joiningDate
-    : firstDayOfMonth;
+  const payslipStartDate =
+    isSameMonth(joiningDate, parseDate(month, "MMMM-yyyy")) &&
+    isSameYear(joiningDate, parseDate(month, "MMMM-yyyy"))
+      ? joiningDate
+      : firstDayOfMonth;
 
   const months = eachMonthOfInterval({
     start: joiningDate,

@@ -7,7 +7,7 @@ import {
   eachWeekendOfInterval,
 } from "date-fns";
 import { generateId } from "lucia";
-import { and, between, desc, eq, getTableColumns, inArray, ne, or, sql } from "drizzle-orm";
+import { and, between, desc, eq, getTableColumns, inArray, isNotNull, ne, or, sql } from "drizzle-orm";
 // UTILS
 import { env } from "process";
 import { pbClient } from "@/server/pb/config";
@@ -152,7 +152,7 @@ export const adminRouter = createTRPCRouter({
     .input(GetCreatePayslipDataInput)
     .query(async ({ ctx, input }) => {
       const { empId, startDate, endDate } = input
-      const calendarDays = differenceInDays(endDate, startDate)
+      const calendarDays = differenceInDays(endDate, startDate) + 1
 
       // STEP 1: Leave encashment
       const empLeaveTypes = await ctx.db.query.empLeaveTypeTable.findMany({
@@ -233,7 +233,10 @@ export const adminRouter = createTRPCRouter({
       // STEP 2: Present days
       const attendance = await ctx.db.query.empAttendanceTable.findMany({
         where: and(
-          ne(empAttendanceTable.shift, "0"),
+          or(
+            ne(empAttendanceTable.shift, "0"),
+            isNotNull(empAttendanceTable.shift),
+          ),
           eq(empAttendanceTable.empId, empId),
           between(empAttendanceTable.date, startDate, endDate)
         ),

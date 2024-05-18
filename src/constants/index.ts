@@ -31,3 +31,12 @@ export const SHIFT_DISPLAY = {
   "0.75": "Late Login",
   "1": "Full Day",
 }
+
+export const TIME = {
+  second: 1000,
+  minute: 60 * 1000,
+  hour: 60 * 60 * 1000,
+  day: 24 * 60 * 60 * 1000,
+  week: 7 * 24 * 60 * 60 * 1000,
+  infinite: Infinity
+}

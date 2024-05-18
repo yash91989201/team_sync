@@ -5,6 +5,7 @@ import {
   isSameYear,
   startOfYear,
   startOfToday,
+  isSameMonth,
   eachMonthOfInterval,
 } from "date-fns";
 import Link from "next/link";
@@ -214,19 +215,21 @@ const InstantGeneratePayslip = ({
 }) => {
   const tooltip = useToggle(false);
   const apiUtils = api.useUtils();
-  const firstDayOfCurrentMonth = parseDate(selectedMonth, "MMMM-yyyy");
-  const lastDayOfCurrentMonth = endOfMonth(firstDayOfCurrentMonth);
+  const firstDayOfMonth = parseDate(selectedMonth, "MMMM-yyyy");
+  const lastDayOfMonth = endOfMonth(firstDayOfMonth);
 
-  const payslipStartDate = isSameYear(joiningDate, firstDayOfCurrentMonth)
-    ? joiningDate
-    : firstDayOfCurrentMonth;
+  const payslipStartDate =
+    isSameMonth(joiningDate, firstDayOfMonth) &&
+    isSameYear(joiningDate, firstDayOfMonth)
+      ? joiningDate
+      : firstDayOfMonth;
 
   const { data: createPayslipData, isFetching } =
     api.adminRouter.getCreatePayslipData.useQuery(
       {
         empId,
         startDate: payslipStartDate,
-        endDate: lastDayOfCurrentMonth,
+        endDate: lastDayOfMonth,
       },
       {
         enabled: tooltip.isShowing,
@@ -243,7 +246,7 @@ const InstantGeneratePayslip = ({
     if (createPayslipData === undefined) return;
     const actionResponse = await createEmpPayslip({
       empId,
-      date: lastDayOfCurrentMonth,
+      date: lastDayOfMonth,
       ...createPayslipData,
     });
     tooltip.hide();

@@ -126,7 +126,7 @@ export function PayslipDaysInfoSkeleton() {
   return (
     <div className="space-y-1.5 text-gray-600">
       <p className="text-base font-medium text-gray-600">Additional Info</p>
-      <div className="grid grid-cols-4 gap-3 text-base">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-3 text-base">
         <div className="flex items-center justify-between gap-3 rounded-lg bg-blue-100 p-3 text-blue-600">
           <Calendar className="size-4" />
           <span className="flex-1">Calendar Days</span>
