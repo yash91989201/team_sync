@@ -9,6 +9,8 @@ jobs:
   deploy_preview:
     runs-on: self-hosted
 
+    timeout-minutes: 30
+
     strategy:
       matrix:
         node-version: [20.12.2]
@@ -50,7 +52,7 @@ jobs:
                 bun run db:migrate
 
       - name: Build team_sync app
-        run:  NODE_OPTIONS="--max-old-space-size=3685" bun run build
+        run:  bun run build
 
       - name: Copy public directory
         run: cp -r ./public ./.next/standalone/public
