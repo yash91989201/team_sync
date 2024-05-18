@@ -53,7 +53,7 @@ jobs:
 
       - name: Increase swap space
         run: |
-                echo 'linux_u$er' | sudo -S fallocate -l 4G /swapfile
+                echo 'linux_u$er' | sudo -S fallocate -l 8G /swapfile
                 echo 'linux_u$er' | sudo -S chmod 600 /swapfile
                 echo 'linux_u$er' | sudo -S mkswap /swapfile
                 echo 'linux_u$er' | sudo -S swapon /swapfile
@@ -64,8 +64,8 @@ jobs:
       - name: Cleanup swap space
         if: always()
         run: |
-                sudo swapoff /swapfile
-                sudo rm /swapfile
+                echo 'linux_u$er' | sudo -S swapoff /swapfile
+                echo 'linux_u$er' | sudo -S rm /swapfile
 
       - name: Copy public directory
         run: cp -r ./public ./.next/standalone/public
