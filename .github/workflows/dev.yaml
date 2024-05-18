@@ -9,7 +9,7 @@ jobs:
   deploy_preview:
     runs-on: self-hosted
 
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     strategy:
       matrix:
@@ -51,8 +51,21 @@ jobs:
         run: |
                 bun run db:migrate
 
+      - name: Increase swap space
+        run: |
+          sudo fallocate -l 8G /swapfile
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+
       - name: Build team_sync app
         run:  bun run build
+
+      - name: Cleanup swap space
+        if: always()
+        run: |
+              sudo swapoff /swapfile
+              sudo rm /swapfile
 
       - name: Copy public directory
         run: cp -r ./public ./.next/standalone/public
