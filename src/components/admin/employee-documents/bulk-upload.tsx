@@ -176,7 +176,7 @@ export default function BulkUpload() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
           {empMissingDocs.map((empMissingDoc) => (
             <BulkUploadForm
               key={empMissingDoc.id}

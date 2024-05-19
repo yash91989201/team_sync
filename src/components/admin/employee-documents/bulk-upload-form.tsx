@@ -23,6 +23,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@ui/form";
+import { Input } from "@ui/input";
 import { Button } from "@ui/button";
 import { Checkbox } from "@ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/card";
@@ -93,6 +94,22 @@ export default function BulkUploadForm({
             className="space-y-3"
             onSubmit={handleSubmit(createDocumentTypeAction)}
           >
+            <FormField
+              control={control}
+              name="uniqueDocumentId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Unique Document id</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="For ex. Aadhar Card no. (optional)"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={control}
               name="files"
