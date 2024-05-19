@@ -14,13 +14,6 @@ import type { CreateHolidaySchemaType } from "@/lib/types";
 import type { SubmitHandler } from "react-hook-form";
 // UI
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
   Form,
   FormControl,
   FormField,
@@ -28,9 +21,16 @@ import {
   FormLabel,
   FormMessage,
 } from "@ui/form";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@ui/dialog";
+import { Input } from "@ui/input";
 import { Button } from "@ui/button";
 import { Calendar } from "@ui/calendar";
-import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
 // ICONS
 import { CalendarIcon, Loader2, Plus } from "lucide-react";
@@ -48,7 +48,10 @@ export default function CreateHolidayForm() {
 
   const { control, handleSubmit, formState, reset } = createHolidayForm;
 
-  const { refetch: refetchHolidays } = api.holidayRouter.getAll.useQuery();
+  const { refetch: refetchHolidays } = api.holidayRouter.getAll.useQuery(
+    undefined,
+    { enabled: false },
+  );
 
   const { mutateAsync: createNew } = api.holidayRouter.createNew.useMutation();
 

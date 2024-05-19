@@ -234,7 +234,7 @@ export function CurrentTimeSkeleton() {
       <div className="space-y-1.5">
         <Skeleton className="" />
         <p className="text-base text-gray-600">Time</p>
-        <Skeleton className="h-6 w-9" />
+        <Skeleton className="h-6 w-24" />
       </div>
     </div>
   );

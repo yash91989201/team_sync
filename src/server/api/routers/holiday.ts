@@ -1,4 +1,4 @@
-import { between, eq } from "drizzle-orm";
+import { asc, between, eq } from "drizzle-orm";
 // UTILS
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // SCHEMAS
@@ -12,7 +12,8 @@ export const holidayRouter = createTRPCRouter({
 
   getByMonth: protectedProcedure.input(GetHolidayByMonthInput).query(({ ctx, input }) => {
     return ctx.db.query.holidayTable.findMany({
-      where: between(holidayTable.date, input.start, input.end)
+      where: between(holidayTable.date, input.start, input.end),
+      orderBy: [asc(holidayTable.date)]
     });
   }),
 
