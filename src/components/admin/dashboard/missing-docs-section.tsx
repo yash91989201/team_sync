@@ -46,9 +46,9 @@ export function MissingDocsSection() {
             }),
             "h-fit w-fit items-center justify-between p-0 text-amber-500",
           )}
-          href="/admin/document-center/employee-documents"
+          href="/admin/document-center/bulk-upload"
         >
-          <span>Upload Now</span>
+          <span>Bulk Upload</span>
           <ChevronRight className="size-4" />
         </Link>
         <Button

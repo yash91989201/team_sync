@@ -1,4 +1,4 @@
-import { eq, inArray } from "drizzle-orm";
+import { eq, getTableColumns, inArray, isNull, and } from "drizzle-orm";
 // UTILS
 import { pbClient } from "@/server/pb/config";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
@@ -12,6 +12,7 @@ import {
   CreateEmployeeDocumentInputSchema,
   UpdateEmployeeDocumentSchema,
   DeleteDocumentTypeSchema,
+  GetEmployeeMissingDocsInput,
 } from "@/lib/schema";
 
 export const documentRouter = createTRPCRouter({
@@ -24,6 +25,22 @@ export const documentRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(documentTypeTable).values(input);
     }),
+
+  getEmployeeMissingDocs: protectedProcedure.input(GetEmployeeMissingDocsInput).query(({ ctx, input }) => {
+    return ctx.db
+      .select(
+        getTableColumns(documentTypeTable)
+      )
+      .from(documentTypeTable)
+      .leftJoin(
+        empDocumentTable,
+        and(
+          eq(empDocumentTable.empId, input.empId),
+          eq(documentTypeTable.id, empDocumentTable.documentTypeId)
+        )
+      )
+      .where(isNull(empDocumentTable.id))
+  }),
 
   getEmployeeDocuments: protectedProcedure.input(GetEmployeeDocumentsInput).query(({ ctx, input }) => {
     return ctx.db.query.empDocumentTable.findFirst({

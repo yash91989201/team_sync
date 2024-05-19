@@ -193,6 +193,26 @@ export const UpdateEmployeeDocumentSchema = z.object({
   verified: z.boolean().default(false),
 })
 
+export const GetEmployeeMissingDocsInput = z.object({
+  empId: z.string()
+})
+
+export const BulkUploadDocsFormSchema = z.object({
+  id: z.string(),
+  empId: z.string(),
+  uniqueDocumentId: z.string().optional(),
+  documentType: DocumentTypeSchema,
+  documentTypeId: z.string(),
+  files: z.array(z.instanceof(File)),
+  verified: z.boolean(),
+}).refine(
+  (schema) => schema.documentType.requiredFiles === schema.files.length,
+  (schema) => ({
+    message: `Min. ${schema.documentType.requiredFiles} files required.`,
+    path: ["files"]
+  })
+)
+
 // EMPLOYEE SCHEMAS
 export const GetEmployeeByQueryInput = z.object({ query: z.string() });
 export const GetEmployeeByIdInput = z.object({ empId: z.string() })

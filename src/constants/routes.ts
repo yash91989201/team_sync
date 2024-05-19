@@ -23,6 +23,7 @@ import {
   Files,
   TentTree,
   BadgeIndianRupee,
+  FileUp,
 } from "lucide-react";
 
 /* 
@@ -162,6 +163,14 @@ export const ADMIN_ROUTES: NavLinkProps[] = [
         Icon: Files,
         label: "Documents",
         href: "/admin/document-center/employee-documents",
+        matchExact: false,
+        isNested: false,
+        isChildLink: true,
+      },
+      {
+        Icon: FileUp,
+        label: "Bulk Upload",
+        href: "/admin/document-center/bulk-upload",
         matchExact: false,
         isNested: false,
         isChildLink: true,

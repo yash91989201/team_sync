@@ -46,6 +46,7 @@ import type {
   UpdateLeaveTypeSchema,
   UpdateEmployeeDocumentSchema,
   GeneratePayslipSchema,
+  BulkUploadDocsFormSchema,
 } from "@/lib/schema";
 // TYPES
 import type { z } from "zod";
@@ -126,6 +127,14 @@ export type UpdateEmployeeDocumentFormProps = EmployeeDocumentSchemaType & {
   documentFiles: EmployeeDocumentFileSchemaType[];
   documentType: DocumentTypeSchemaType;
 };
+export type BulkUploadDocsFormSchemaType = z.infer<typeof BulkUploadDocsFormSchema>
+export type BulkUploadFormProps = {
+  documentType: DocumentTypeSchemaType;
+  empId: string;
+};
+
+export type BulkUploadEmployeeSelectType = Pick<UserType, "id" | "name" | "code">
+
 export type CreateSalaryComponentSchemaType = z.infer<typeof CreateSalaryComponentSchema>
 export type UpdateDepartmentSchemaType = z.infer<typeof UpdateDepartmentSchema>
 export type UpdateDesignationchemaType = z.infer<typeof UpdateDesignationSchema>

@@ -60,6 +60,11 @@ export const employeeRouter = createTRPCRouter({
             like(userTable.code, `%${input.query}%`),
           ),
         ),
+        columns: {
+          id: true,
+          name: true,
+          code: true,
+        }
       });
     }),
 
