@@ -73,7 +73,7 @@ export function MissingDocsSection() {
               className="flex items-center gap-6 rounded-2xl  border bg-card p-3"
             >
               <div className="flex size-10 items-center justify-center rounded-xl bg-amber-100">
-                <FileQuestion className="size-6 animate-bounce text-amber-500" />
+                <FileQuestion className="animate-pulse text-amber-500" />
               </div>
               <div className="flex flex-col gap-1.5">
                 <p className="text-gray-600">{emp.name}</p>
