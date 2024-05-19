@@ -40,7 +40,7 @@ export default function BulkUpload() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const initialEmpId = searchParams.get("emp_id");
+  const employeeId = searchParams.get("emp_id") ?? "";
 
   const [selectedEmployee, setSelectedEmployee] = useState<
     BulkUploadEmployeeSelectType | undefined
@@ -86,23 +86,19 @@ export default function BulkUpload() {
   const { data: empMissingDocs = [], isLoading } =
     api.documentRouter.getEmployeeMissingDocs.useQuery(
       {
-        empId: initialEmpId ?? selectedEmployee?.id ?? "",
+        empId: employeeId,
       },
       {
-        enabled: !!selectedEmployee,
+        enabled: employeeId.length > 0,
       },
     );
 
   useEffect(() => {
-    if (
-      !isEmployeesLoading &&
-      employees.length > 0 &&
-      initialEmpId !== undefined
-    ) {
-      const employee = employees.find((emp) => emp.id === initialEmpId);
+    if (!isEmployeesLoading && employees.length > 0) {
+      const employee = employees.find((emp) => emp.id === employeeId);
       setSelectedEmployee(employee);
     }
-  }, [isEmployeesLoading, employees, initialEmpId]);
+  }, [isEmployeesLoading, employees, employeeId]);
 
   return (
     <>
