@@ -36,11 +36,12 @@ import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Check, ChevronsUpDown, CircleX } from "lucide-react";
 
 export default function BulkUpload() {
-  const empSelect = useToggle(false);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const employeeId = searchParams.get("emp_id") ?? "";
+
+  const empSelect = useToggle(false);
 
   const [selectedEmployee, setSelectedEmployee] = useState<
     BulkUploadEmployeeSelectType | undefined
