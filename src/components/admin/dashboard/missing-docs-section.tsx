@@ -9,7 +9,7 @@ import { Button } from "@ui/button";
 import { Separator } from "@ui/separator";
 import { Skeleton } from "@ui/skeleton";
 // ICONS
-import { ChevronRight, FileQuestion, FileX, RotateCcw } from "lucide-react";
+import { ChevronRight, FileQuestion, RotateCcw } from "lucide-react";
 
 export function MissingDocsSection() {
   const {
@@ -73,7 +73,7 @@ export function MissingDocsSection() {
               className="flex items-center gap-6 rounded-2xl  border bg-card p-3"
             >
               <div className="flex size-10 items-center justify-center rounded-xl bg-amber-100">
-                <FileX className="size-6 animate-bounce text-amber-500" />
+                <FileQuestion className="size-6 animate-bounce text-amber-500" />
               </div>
               <div className="flex flex-col gap-1.5">
                 <p className="text-gray-600">{emp.name}</p>
@@ -126,7 +126,7 @@ export function MissingDocsSectionSkeleton() {
             className="flex items-center gap-6 rounded-2xl  border bg-card p-3"
           >
             <div className="flex size-10 items-center justify-center rounded-xl bg-amber-100 ">
-              <FileX className="size-6 text-amber-500" />
+              <FileQuestion className="size-6 text-amber-500" />
             </div>
             <div className="flex flex-1 flex-col gap-3">
               <Skeleton className="h-4 w-3/4" />
