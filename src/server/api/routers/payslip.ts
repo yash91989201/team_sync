@@ -1,4 +1,4 @@
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 // UTILS
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // DB TABLES
@@ -11,13 +11,41 @@ import {
 } from "@/server/db/schema";
 // SCHEMAS
 import {
+  GetBulkPayrollEmpsInput,
   GetMonthPayslipInput,
   GetPayslipDataInput
 } from "@/lib/schema";
 // TYPES
 import type { GetMonthPayslipStatus, GetPayslipDataStatus } from "@/lib/types";
+import { formatDate } from "@/lib/date-time-utils";
 
 export const payslipRouter = createTRPCRouter({
+  getBulkPayrollEmps: protectedProcedure.input(GetBulkPayrollEmpsInput).query(({ ctx, input }) => {
+    return ctx.db
+      .select({
+        empId: userTable.id,
+        name: userTable.name,
+        joiningDate: empProfileTable.joiningDate
+      })
+      .from(userTable)
+      .innerJoin(
+        empProfileTable,
+        and(
+          eq(userTable.role, "EMPLOYEE"),
+          eq(userTable.id, empProfileTable.empId),
+          sql`MONTH(${empProfileTable.joiningDate}) <= MONTH(${formatDate(input.month)})`,
+        )
+      )
+      .leftJoin(
+        empPayslipTable,
+        and(
+          eq(userTable.id, empPayslipTable.empId),
+          sql`MONTH(${empPayslipTable.date}) = MONTH(${formatDate(input.month)})`
+        )
+      )
+      .where(isNull(empPayslipTable.id))
+  }),
+
   getMonthPayslip: protectedProcedure.input(GetMonthPayslipInput).query(async ({ ctx, input }): Promise<GetMonthPayslipStatus> => {
     const empMonthPayslip = await ctx.db.query.empPayslipTable.findFirst({
       where: and(

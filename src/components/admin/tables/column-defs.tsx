@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { format } from "date-fns";
 // UTILS
-import { cn, getLeaveDateString, getShiftTimeString } from "@/lib/utils";
+import {
+  cn,
+  formatSalary,
+  getLeaveDateString,
+  getShiftTimeString,
+} from "@/lib/utils";
 // TYPES
 import type {
   DepartmentTableProps,
@@ -36,6 +41,7 @@ import DeleteDocumentTypeForm from "@adminComponents/documents/delete-document-t
 import { ArrowUpDown, CornerUpRight } from "lucide-react";
 // CONSTANTS
 import { DOCUMENT_FILE_TYPES_DISPLAY, SHIFT_DISPLAY } from "@/constants";
+import { formatDate } from "@/lib/date-time-utils";
 
 export const DEPARTMENT_TABLE: ColumnDef<DepartmentTableProps>[] = [
   {
@@ -342,9 +348,22 @@ export const SALARIES_TABLE: ColumnDef<SalariesTableProps>[] = [
     cell: ({ row }) => row.original.name,
   },
   {
+    accessorKey: "employeeJoiningDate",
+    header: "Joining Date",
+    cell: ({ row }) =>
+      row.original.employeeProfile === null
+        ? ""
+        : formatDate(row.original.employeeProfile.joiningDate, "dd-MM-yyyy"),
+  },
+  {
     accessorKey: "employeeSalary",
     header: "Salary",
-    cell: ({ row }) => row.original.employeeProfile?.salary,
+    cell: ({ row }) =>
+      row.original.employeeProfile === null
+        ? ""
+        : formatSalary(row.original.employeeProfile.salary, {
+            notation: "compact",
+          }),
   },
   {
     accessorKey: "actions",
@@ -353,7 +372,7 @@ export const SALARIES_TABLE: ColumnDef<SalariesTableProps>[] = [
   },
   {
     accessorKey: "payslip",
-    header: "Generate Payslip",
+    header: "Generate / View Payslip",
     cell: ({ row }) => (
       <Link
         className={cn(

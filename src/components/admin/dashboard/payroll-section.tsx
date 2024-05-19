@@ -1,7 +1,7 @@
 "use client";
 import {
   format,
-  endOfMonth,
+  lastDayOfMonth,
   isSameYear,
   startOfYear,
   startOfToday,
@@ -216,7 +216,7 @@ const InstantGeneratePayslip = ({
   const tooltip = useToggle(false);
   const apiUtils = api.useUtils();
   const firstDayOfMonth = parseDate(selectedMonth, "MMMM-yyyy");
-  const lastDayOfMonth = endOfMonth(firstDayOfMonth);
+  const monthEnd = lastDayOfMonth(firstDayOfMonth);
 
   const payslipStartDate =
     isSameMonth(joiningDate, firstDayOfMonth) &&
@@ -229,7 +229,7 @@ const InstantGeneratePayslip = ({
       {
         empId,
         startDate: payslipStartDate,
-        endDate: lastDayOfMonth,
+        endDate: monthEnd,
       },
       {
         enabled: tooltip.isShowing,
@@ -246,7 +246,7 @@ const InstantGeneratePayslip = ({
     if (createPayslipData === undefined) return;
     const actionResponse = await createEmpPayslip({
       empId,
-      date: lastDayOfMonth,
+      date: monthEnd,
       ...createPayslipData,
     });
     tooltip.hide();

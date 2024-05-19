@@ -377,7 +377,8 @@ export const adminRouter = createTRPCRouter({
     return ctx.db.query.userTable.findMany({
       where: eq(userTable.role, "EMPLOYEE"),
       columns: {
-        password: false
+        id: true,
+        name: true,
       },
       with: {
         employeeProfile: true

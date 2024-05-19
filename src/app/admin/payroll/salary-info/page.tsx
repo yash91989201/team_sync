@@ -26,9 +26,11 @@ export default async function SalariesPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl text-primary">
-            Employees Salaries
+            Employees Payslip
           </CardTitle>
-          <CardDescription>salaries of employees</CardDescription>
+          <CardDescription>
+            update salary or generate employee payslip
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <HydrationBoundary state={employeesSalaries}>

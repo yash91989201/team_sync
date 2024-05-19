@@ -143,7 +143,6 @@ export default function GeneratePayslipForm({
               <TableHead className="w-40">Adjustment</TableHead>
               <TableHead className="w-40">Arrears</TableHead>
               <TableHead>Amount Paid</TableHead>
-              <TableHead>Remarks</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -201,7 +200,7 @@ export default function GeneratePayslipForm({
               <TableCell colSpan={4} className="text-lg font-semibold">
                 Total
               </TableCell>
-              <TableCell colSpan={2} className="text-lg font-semibold">
+              <TableCell className="text-lg font-semibold">
                 {formatSalary(totalSalary)}
               </TableCell>
             </TableRow>

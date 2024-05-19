@@ -1,18 +1,7 @@
 "use client";
-import {
-  parse,
-  format,
-  isSameYear,
-  endOfMonth,
-  startOfToday,
-  eachMonthOfInterval,
-  isSameMonth,
-  lastDayOfMonth,
-} from "date-fns";
-import { useState } from "react";
+import { lastDayOfMonth } from "date-fns";
 // UTILS
 import { api } from "@/trpc/react";
-import { parseDate } from "@/lib/date-time-utils";
 // TYPES
 import type { ReactNode } from "react";
 // UI
@@ -32,46 +21,22 @@ import {
   TableHeader,
   TableRow,
 } from "@ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@ui/select";
 import { Skeleton } from "@ui/skeleton";
 // CUSTOM COMPONENTS
 import GeneratePayslipForm from "./generate-payslip-form";
 import { PayslipDataTable } from "@sharedComponents/payslip-data-table";
 import { PayslipDaysInfoSkeleton } from "@sharedComponents/payslip-days-info";
 
-export default function GeneratePayslip({
+export default function BulkGeneratePayslipForm({
   empId,
-  joiningDate,
   employeeName,
-  initialDate,
+  payslipStartDate,
 }: {
   empId: string;
   employeeName: string;
-  joiningDate: Date;
-  initialDate?: Date;
+  payslipStartDate: Date;
 }) {
-  const today = startOfToday();
-  const [month, setMonth] = useState(format(initialDate ?? today, "MMMM-yyyy"));
-
-  const firstDayOfMonth = parse(month, "MMMM-yyyy", new Date());
-  const monthEnd = lastDayOfMonth(firstDayOfMonth);
-
-  const payslipStartDate =
-    isSameMonth(joiningDate, parseDate(month, "MMMM-yyyy")) &&
-    isSameYear(joiningDate, parseDate(month, "MMMM-yyyy"))
-      ? joiningDate
-      : firstDayOfMonth;
-
-  const months = eachMonthOfInterval({
-    start: joiningDate,
-    end: endOfMonth(today),
-  }).map((month) => format(month, "MMMM-yyyy"));
+  const monthEnd = lastDayOfMonth(payslipStartDate);
 
   const {
     data: payslipData,
@@ -122,21 +87,6 @@ export default function GeneratePayslip({
 
   return (
     <GeneratePayslipCardWrapper employeeName={employeeName}>
-      {/* month selector */}
-      <div className="flex items-center justify-end">
-        <Select value={month} onValueChange={setMonth}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Select month" />
-          </SelectTrigger>
-          <SelectContent>
-            {months.map((month) => (
-              <SelectItem key={month} value={month}>
-                {month}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
       {/* generate payslip form */}
       {payslipData &&
         (payslipData.status === "FAILED" ? (
@@ -146,13 +96,16 @@ export default function GeneratePayslip({
             payslipData={createPayslipData!}
           />
         ) : (
-          <PayslipDataTable payslip={payslipData.data} date={firstDayOfMonth} />
+          <PayslipDataTable
+            payslip={payslipData.data}
+            date={payslipStartDate}
+          />
         ))}
     </GeneratePayslipCardWrapper>
   );
 }
 
-export const GeneratePayslipFormSkeleton = () => {
+const GeneratePayslipFormSkeleton = () => {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-end ">
@@ -166,6 +119,7 @@ export const GeneratePayslipFormSkeleton = () => {
             <TableHead className="w-40">Adjustment</TableHead>
             <TableHead className="w-40">Arrears</TableHead>
             <TableHead>Amount Paid</TableHead>
+            <TableHead>Remarks</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -179,7 +133,7 @@ export const GeneratePayslipFormSkeleton = () => {
         </TableBody>
         <TableFooter>
           <TableRow>
-            <TableCell colSpan={3}>Total</TableCell>
+            <TableCell colSpan={4}>Total</TableCell>
             <TableCell colSpan={2} className="text-right">
               <Skeleton className="h-6 w-32" />
             </TableCell>
@@ -205,7 +159,7 @@ const GeneratePayslipCardWrapper = ({
     <Card>
       <CardHeader>
         <CardTitle className="text-2xl text-primary">
-          Generating Payslip for {employeeName}
+          Generate Payslip for {employeeName}
         </CardTitle>
         <CardDescription>Select a month and generate payslip</CardDescription>
       </CardHeader>

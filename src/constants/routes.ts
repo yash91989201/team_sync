@@ -22,6 +22,7 @@ import {
   ListOrdered,
   Files,
   TentTree,
+  BadgeIndianRupee,
 } from "lucide-react";
 
 /* 
@@ -124,8 +125,16 @@ export const ADMIN_ROUTES: NavLinkProps[] = [
     isChildLink: false,
     childrens: [
       {
+        Icon: BadgeIndianRupee,
+        label: "Bulk Generate",
+        href: "/admin/payroll/bulk-generate",
+        matchExact: false,
+        isNested: false,
+        isChildLink: true,
+      },
+      {
         Icon: HandCoins,
-        label: "Salary Info",
+        label: "Employees Payslip",
         href: "/admin/payroll/salary-info",
         matchExact: false,
         isNested: false,

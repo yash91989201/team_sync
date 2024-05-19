@@ -129,7 +129,9 @@ export type UpdateEmployeeDocumentFormProps = EmployeeDocumentSchemaType & {
 export type CreateSalaryComponentSchemaType = z.infer<typeof CreateSalaryComponentSchema>
 export type UpdateDepartmentSchemaType = z.infer<typeof UpdateDepartmentSchema>
 export type UpdateDesignationchemaType = z.infer<typeof UpdateDesignationSchema>
-export type GetEmployeesSalariesOutputType = UserType & {
+export type GetEmployeesSalariesOutputType = {
+  id: string;
+  name: string;
   employeeProfile: EmployeeProfileType | null
 }
 export type GeneratePayslipSchemaType = z.infer<typeof GeneratePayslipSchema>

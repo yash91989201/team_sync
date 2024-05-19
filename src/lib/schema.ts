@@ -440,3 +440,7 @@ export const GetCreatePayslipDataInput = z.object({
 export const GetMissingEmpPayslipByMonthInput = z.object({
   month: z.date()
 })
+
+export const GetBulkPayrollEmpsInput = z.object({
+  month: z.date()
+})
