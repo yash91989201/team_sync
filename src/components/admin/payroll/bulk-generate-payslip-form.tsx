@@ -97,8 +97,9 @@ export default function BulkGeneratePayslipForm({
           />
         ) : (
           <PayslipDataTable
-            payslip={payslipData.data}
+            empId={empId}
             date={payslipStartDate}
+            payslipId={payslipData.data.id}
           />
         ))}
     </GeneratePayslipCardWrapper>

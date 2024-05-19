@@ -1,15 +1,14 @@
 "use client";
 import {
-  eachMonthOfInterval,
-  endOfMonth,
   format,
+  endOfMonth,
   startOfToday,
+  lastDayOfMonth,
+  eachMonthOfInterval,
 } from "date-fns";
 import { useState } from "react";
 // UTILS
-import { parseDate } from "@/lib/date-time-utils";
 import { api } from "@/trpc/react";
-// TYPES
 // UI
 import {
   Card,
@@ -17,40 +16,40 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@ui/select";
 // CUSTOM COMPONENTS
-// ICONS
 import {
   NoPayslipData,
-  PayslipDataTableSkeleton,
   PayslipDataTable,
+  PayslipDataTableSkeleton,
 } from "@sharedComponents/payslip-data-table";
 
-export default function PayslipData({ empId }: { empId: string }) {
-  const today = new Date(startOfToday().setHours(8, 30, 0, 0));
-
-  const [currentMonth, setCurrentMonth] = useState(format(today, "MMMM-yyyy"));
-
-  const { data: employeeProfile } = api.adminRouter.getEmployeeProfile.useQuery(
-    { empId },
-  );
-  const joiningDate = employeeProfile?.joiningDate;
+export default function PayslipData({
+  empId,
+  joiningDate,
+}: {
+  empId: string;
+  joiningDate: Date;
+}) {
+  const today = startOfToday();
+  const [month, setMonth] = useState(format(today, "MMMM-yyyy"));
+  const monthEnd = lastDayOfMonth(month);
 
   const {
-    data: currentMonthPayslip,
+    data: monthPayslip,
     isLoading,
     isFetching,
   } = api.payslipRouter.getMonthPayslip.useQuery(
     {
       empId,
-      month: parseDate(currentMonth, "MMMM-yyyy"),
+      month: monthEnd,
     },
     {
       refetchOnReconnect: false,
@@ -59,7 +58,7 @@ export default function PayslipData({ empId }: { empId: string }) {
   );
 
   const months = eachMonthOfInterval({
-    start: joiningDate!,
+    start: joiningDate,
     end: endOfMonth(today),
   }).map((month) => format(month, "MMMM-yyyy"));
 
@@ -72,12 +71,9 @@ export default function PayslipData({ empId }: { empId: string }) {
       <CardContent className="space-y-3">
         {/* month selector */}
         <div className="flex items-center justify-end">
-          <Select value={currentMonth} onValueChange={setCurrentMonth}>
+          <Select value={month} onValueChange={setMonth}>
             <SelectTrigger className="w-[160px]">
-              <SelectValue
-                placeholder="Select month"
-                defaultValue={currentMonth}
-              />
+              <SelectValue placeholder="Select month" defaultValue={month} />
             </SelectTrigger>
             <SelectContent>
               {months.map((month) => (
@@ -88,17 +84,18 @@ export default function PayslipData({ empId }: { empId: string }) {
             </SelectContent>
           </Select>
         </div>
-        {/* generate payslip form */}
+        {/* payslip data table */}
         {isLoading || isFetching ? (
           <PayslipDataTableSkeleton />
-        ) : currentMonthPayslip === undefined ? (
+        ) : monthPayslip === undefined || monthPayslip?.status === "FAILED" ? (
           <NoPayslipData />
-        ) : currentMonthPayslip.status === "SUCCESS" ? (
+        ) : (
           <PayslipDataTable
-            payslip={currentMonthPayslip.data}
-            date={parseDate(currentMonth, "MMMM-yyyy")}
+            empId={empId}
+            date={monthEnd}
+            payslipId={monthPayslip.data.id}
           />
-        ) : null}
+        )}
       </CardContent>
     </Card>
   );

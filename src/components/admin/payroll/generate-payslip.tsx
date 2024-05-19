@@ -146,7 +146,11 @@ export default function GeneratePayslip({
             payslipData={createPayslipData!}
           />
         ) : (
-          <PayslipDataTable payslip={payslipData.data} date={firstDayOfMonth} />
+          <PayslipDataTable
+            empId={empId}
+            date={firstDayOfMonth}
+            payslipId={payslipData.data.id}
+          />
         ))}
     </GeneratePayslipCardWrapper>
   );
@@ -205,7 +209,7 @@ const GeneratePayslipCardWrapper = ({
     <Card>
       <CardHeader>
         <CardTitle className="text-2xl text-primary">
-          Generating Payslip for {employeeName}
+          {employeeName}&apos;s payslip
         </CardTitle>
         <CardDescription>Select a month and generate payslip</CardDescription>
       </CardHeader>

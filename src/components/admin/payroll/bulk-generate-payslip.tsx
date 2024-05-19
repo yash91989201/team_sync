@@ -10,7 +10,7 @@ import {
 import { useState } from "react";
 // UTILS
 import { api } from "@/trpc/react";
-import { parseDate } from "@/lib/date-time-utils";
+import { formatDate, parseDate } from "@/lib/date-time-utils";
 // UI
 import {
   Card,
@@ -34,6 +34,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function BulkGeneratePayslip() {
   const today = startOfToday();
   const [month, setMonth] = useState(format(today, "MMMM-yyyy"));
+  const monthStart = startOfMonth(parseDate(month, "MMMM-yyyy"));
 
   const months = eachMonthOfInterval({
     start: startOfYear(today),
@@ -108,7 +109,11 @@ export default function BulkGeneratePayslip() {
             key={payslipEmp.empId}
             empId={payslipEmp.empId}
             employeeName={payslipEmp.name}
-            payslipStartDate={startOfMonth(parseDate(month, "MMMM-yyyy"))}
+            payslipStartDate={
+              formatDate(payslipEmp.joiningDate, "MMMM-yyyy") === month
+                ? payslipEmp.joiningDate
+                : monthStart
+            }
           />
         ))
       )}

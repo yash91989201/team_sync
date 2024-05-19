@@ -6,8 +6,6 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { formatDate } from "@/lib/date-time-utils";
 import { cn, formatSalary } from "@/lib/utils";
 import { api } from "@/trpc/react";
-// TYPES
-import type { EmpPayslipType } from "@/lib/types";
 // CUSTOM HOOKS
 import useUser from "@/hooks/use-user";
 // UI
@@ -34,10 +32,12 @@ import { Download, Eye, Trash2 } from "lucide-react";
 
 export function PayslipDataTable({
   date,
-  payslip,
+  empId,
+  payslipId,
 }: {
   date: Date;
-  payslip: EmpPayslipType;
+  payslipId: string;
+  empId: string;
 }) {
   const { isAdmin } = useUser();
   const apiUtils = api.useUtils();
@@ -45,7 +45,7 @@ export function PayslipDataTable({
   const { data, isLoading, isFetching } =
     api.payslipRouter.getPayslipData.useQuery(
       {
-        payslipId: payslip.id,
+        payslipId,
       },
       {
         refetchOnReconnect: false,
@@ -63,7 +63,7 @@ export function PayslipDataTable({
       toast.success(actionResponse.message);
 
       await apiUtils.payslipRouter.getMonthPayslip.invalidate({
-        empId: payslip.empId,
+        empId,
         month: date,
       });
     } else {
@@ -79,7 +79,7 @@ export function PayslipDataTable({
     return <NoPayslipData />;
   }
 
-  const { empData, payslipComps, leaveEncashment } = data.data;
+  const { empData, payslipComps, leaveEncashment, payslip } = data.data;
 
   return (
     <div className="space-y-3">
