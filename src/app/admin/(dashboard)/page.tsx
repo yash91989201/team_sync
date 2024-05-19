@@ -55,7 +55,7 @@ export default async function AdminPage() {
 
   // missing docs section
   const missingDocsSectionHelper = await createApiHelper();
-  await missingDocsSectionHelper.statsRouter.missingEmpDocs.prefetch();
+  await missingDocsSectionHelper.statsRouter.missingEmpsDocs.prefetch();
   const missingDocsSectionState = dehydrate(
     missingDocsSectionHelper.queryClient,
   );

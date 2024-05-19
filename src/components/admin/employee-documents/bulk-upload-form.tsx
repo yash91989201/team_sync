@@ -40,6 +40,9 @@ export default function BulkUploadForm({
 }: BulkUploadFormProps) {
   const apiUtils = api.useUtils();
 
+  const { mutateAsync: createEmployeeDocument } =
+    api.documentRouter.createEmployeeDocument.useMutation();
+
   const bulkUploadForm = useForm<BulkUploadDocsFormSchemaType>({
     resolver: zodResolver(BulkUploadDocsFormSchema),
     defaultValues: {
@@ -53,9 +56,6 @@ export default function BulkUploadForm({
 
   const { control, handleSubmit, formState } = bulkUploadForm;
 
-  const { mutateAsync: createEmployeeDocument } =
-    api.documentRouter.createEmployeeDocument.useMutation();
-  console.log(formState.errors);
   const createDocumentTypeAction: SubmitHandler<
     BulkUploadDocsFormSchemaType
   > = async (formData) => {

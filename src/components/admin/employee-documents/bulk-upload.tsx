@@ -1,7 +1,8 @@
 "use client";
 import { CommandLoading } from "cmdk";
-import { useRef, useState } from "react";
 import { useDebounceValue } from "usehooks-ts";
+import { useEffect, useRef, useState } from "react";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 // UTILS
 import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
@@ -36,6 +37,10 @@ import { Check, ChevronsUpDown, CircleX } from "lucide-react";
 
 export default function BulkUpload() {
   const empSelect = useToggle(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const initialEmpId = searchParams.get("emp_id");
 
   const [selectedEmployee, setSelectedEmployee] = useState<
     BulkUploadEmployeeSelectType | undefined
@@ -54,9 +59,17 @@ export default function BulkUpload() {
   };
 
   const handleEmployeeSelect = async (empId: string) => {
+    const urlParams = new URLSearchParams(searchParams);
     const employee = employees.find((emp) => emp.id === empId);
+
     if (employee === undefined) return;
+
     setSelectedEmployee(employee);
+    // eslint-disable-next-line
+    urlParams.delete("emp_id");
+    urlParams.set("emp_id", empId);
+    router.push(`${pathname}?${urlParams.toString()}`);
+
     empSelect.close();
   };
 
@@ -73,12 +86,23 @@ export default function BulkUpload() {
   const { data: empMissingDocs = [], isLoading } =
     api.documentRouter.getEmployeeMissingDocs.useQuery(
       {
-        empId: selectedEmployee?.id ?? "",
+        empId: initialEmpId ?? selectedEmployee?.id ?? "",
       },
       {
         enabled: !!selectedEmployee,
       },
     );
+
+  useEffect(() => {
+    if (
+      !isEmployeesLoading &&
+      employees.length > 0 &&
+      initialEmpId !== undefined
+    ) {
+      const employee = employees.find((emp) => emp.id === initialEmpId);
+      setSelectedEmployee(employee);
+    }
+  }, [isEmployeesLoading, employees, initialEmpId]);
 
   return (
     <>

@@ -313,3 +313,12 @@ export type EmpsAttendanceStatType = {
   unPaidLeaves: number;
   department: string;
 }
+
+
+//  SQL QUERY RESULT TYPES
+export type MissingEmpsDocsSQLResult = {
+  id: string;
+  name: string;
+  imageUrl: string | null;
+  missingDocumentCount: number;
+}

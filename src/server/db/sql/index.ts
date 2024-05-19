@@ -1,29 +1,39 @@
 import { and, asc, eq, isNotNull, sql } from "drizzle-orm";
 // UTILS
 import { db } from "@/server/db";
+// TYPES
+import type { MissingEmpsDocsSQLResult } from "@/lib/types";
 // DB TABLES
 import {
   userTable,
   empProfileTable,
   empPayslipTable,
-  empDocumentTable,
-  documentTypeTable,
   leaveRequestTable,
   empAttendanceTable,
+  documentTypeTable,
+  empDocumentTable,
 } from "@/server/db/schema";
 
-export const missingEmpDocsQuery = db
-  .select({
-    type: documentTypeTable.type,
-    empCount: sql<number>`(SELECT COUNT(*) FROM ${userTable} WHERE ${userTable.role} = "EMPLOYEE") - COUNT(${empDocumentTable.empId}) as empCount`
-  })
-  .from(documentTypeTable)
-  .leftJoin(
-    empDocumentTable,
-    eq(documentTypeTable.id, empDocumentTable.documentTypeId)
-  )
-  .groupBy(documentTypeTable.id)
-  .prepare()
+
+export const missingEmpsDocsSQL = sql<MissingEmpsDocsSQLResult[]>`
+        SELECT 
+            ${userTable.id} AS id,
+            ${userTable.name} AS name,
+            ${userTable.imageUrl} AS imageUrl,
+            COUNT(${documentTypeTable.id}) AS missingDocumentCount
+        FROM 
+            ${userTable} 
+        CROSS JOIN 
+            ${documentTypeTable}
+        LEFT JOIN 
+            ${empDocumentTable} ON ${userTable.id} = ${empDocumentTable.empId} AND ${documentTypeTable.id} = ${empDocumentTable.documentTypeId}
+        WHERE 
+            ${empDocumentTable.id} IS NULL AND ${userTable.role} = 'EMPLOYEE'
+        GROUP BY 
+            ${userTable.id}
+        ORDER BY 
+            ${userTable.id};
+        `;
 
 export const missingEmpPayslipQuery = db
   .select({

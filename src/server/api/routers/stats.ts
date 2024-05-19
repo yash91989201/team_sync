@@ -2,9 +2,9 @@ import { and, count, eq, getTableColumns, sql, like } from "drizzle-orm";
 // UTILS
 import { formatDate, getWorkHours } from "@/lib/date-time-utils";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { empsAttendanceQuery, missingEmpDocsQuery, missingEmpPayslipQuery } from "@/server/db/sql";
+import { empsAttendanceQuery, missingEmpPayslipQuery, missingEmpsDocsSQL } from "@/server/db/sql";
 // TYPES
-import type { EmpsAttendanceStatType } from "@/lib/types";
+import type { EmpsAttendanceStatType, MissingEmpsDocsSQLResult } from "@/lib/types";
 // DB TABLES
 import {
   userTable,
@@ -14,6 +14,7 @@ import {
   leaveRequestTable,
   empAttendanceTable,
 } from "@/server/db/schema";
+// SCHEMAS
 import {
   GetAttendanceInput,
   GetAttendanceByDateInput,
@@ -261,8 +262,9 @@ export const statsRouter = createTRPCRouter({
   * Returns document types 
   * that are not added for employees
   */
-  missingEmpDocs: protectedProcedure.query(() => {
-    return missingEmpDocsQuery.execute()
+  missingEmpsDocs: protectedProcedure.query(async ({ ctx }) => {
+    const [data] = await ctx.db.execute(missingEmpsDocsSQL)
+    return data as unknown as MissingEmpsDocsSQLResult[]
   }),
   /**
    * Returns all employees payslip by given month

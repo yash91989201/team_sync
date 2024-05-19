@@ -13,10 +13,10 @@ import { ChevronRight, FileQuestion, FileX, RotateCcw } from "lucide-react";
 
 export function MissingDocsSection() {
   const {
-    data: empDocs = [],
+    data: missingEmpsDocs = [],
     isFetching,
-    refetch: refetchMissingEmpDocs,
-  } = api.statsRouter.missingEmpDocs.useQuery(undefined, {
+    refetch: refetchmissingEmpsDocs,
+  } = api.statsRouter.missingEmpsDocs.useQuery(undefined, {
     enabled: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
@@ -36,7 +36,7 @@ export function MissingDocsSection() {
         <div className="flex flex-1 flex-col gap-1.5 self-start font-semibold">
           <p className="text-xl text-amber-500">Missing Documents</p>
           <p className="flex-1 text-sm text-gray-500">
-            {empDocs.length}&nbsp; document types not added for employees
+            {missingEmpsDocs.length}&nbsp; employees have missing documents
           </p>
         </div>
         <Link
@@ -46,38 +46,53 @@ export function MissingDocsSection() {
             }),
             "h-fit w-fit items-center justify-between p-0 text-amber-500",
           )}
-          href="/admin/document-center/bulk-upload"
+          href="/admin/document-center/employee-documents"
         >
-          <span>Bulk Upload</span>
+          <span>Upload Now</span>
           <ChevronRight className="size-4" />
         </Link>
         <Button
           variant="outline"
           size="icon"
           className="rounded-xl"
-          onClick={() => refetchMissingEmpDocs()}
+          onClick={() => refetchmissingEmpsDocs()}
         >
           <RotateCcw className="size-4" />
         </Button>
       </div>
       <Separator />
-      {empDocs.length === 0 ? (
+      {missingEmpsDocs.length === 0 ? (
         <p className="rounded-2xl bg-card p-3 text-gray-600">
           All document types added for all employees
         </p>
       ) : (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-3">
-          {empDocs.map((document) => (
+          {missingEmpsDocs.map((emp) => (
             <div
-              key={document.type}
+              key={emp.id}
               className="flex items-center gap-6 rounded-2xl  border bg-card p-3"
             >
               <div className="flex size-10 items-center justify-center rounded-xl bg-amber-100">
-                <FileX className="size-6 text-amber-500" />
+                <FileX className="size-6 animate-bounce text-amber-500" />
               </div>
               <div className="flex flex-col gap-1.5">
-                <p className="text-gray-600">{document.type}</p>
-                <p className="font-semibold">{document.empCount}</p>
+                <p className="text-gray-600">{emp.name}</p>
+                <p className="space-x-3 font-semibold">
+                  <span>{emp.missingDocumentCount}</span>
+                  <Link
+                    href={`/admin/document-center/bulk-upload?emp_id=${emp.id}`}
+                    className={cn(
+                      buttonVariants({
+                        variant: "link",
+                        size: "sm",
+                      }),
+                      "h-fit w-fit gap-1.5 px-0",
+                    )}
+                  >
+                    <span>Bulk Upload</span>
+                    <ChevronRight className="size-3" />
+                  </Link>
+                </p>
               </div>
             </div>
           ))}
