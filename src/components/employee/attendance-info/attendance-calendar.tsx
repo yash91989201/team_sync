@@ -31,10 +31,10 @@ import type {
   EmployeeAttendanceType,
 } from "@/lib/types";
 // UI
-import { Button } from "@/components/ui/button";
+import { Skeleton } from "@ui/skeleton";
+import { Button } from "@ui/button";
 // ICONS
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 
 const colStartClasses = [
   "",

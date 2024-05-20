@@ -338,6 +338,11 @@ export const GetEmpsMonthlyAttendanceInput = z.object({
   month: z.date()
 })
 
+export const GetAttendanceGapsInput = z.object({
+  start: z.date(),
+  end: z.date()
+})
+
 // EMPLOYEE LEAVE SCHEMAS
 export const CreateLeaveTypeSchema = z.object({
   type: z

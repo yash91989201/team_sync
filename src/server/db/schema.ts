@@ -498,6 +498,57 @@ export const holidayTable = mysqlTable("holiday", {
   dateIdx: index("date_idx").on(table.date)
 }))
 
+export const regularizationTable = mysqlTable("regularization", {
+  id: varchar("id", {
+    length: 24,
+  }).primaryKey(),
+  createdAt: datetime("created_at", { mode: "date" }).notNull(),
+  remarks: varchar("remarks", { length: 1024 }).notNull(),
+  // FOREIGN KEY RELATIONS
+  empId: varchar("emp_id", {
+    length: 24,
+  })
+    .notNull()
+    .references(() => userTable.id),
+  reviewerId: varchar("reviewer_id", {
+    length: 24,
+  })
+    .notNull()
+    .references(() => userTable.id),
+})
+
+export const regularizationTableRelations = relations(regularizationTable, ({ one, many }) => ({
+  employee: one(userTable, {
+    fields: [regularizationTable.empId],
+    references: [userTable.id]
+  }),
+  regularizationDates: many(regularizationDateTable)
+}))
+
+export const regularizationDateTable = mysqlTable("regularization_date", {
+  id: varchar("id", {
+    length: 24,
+  }).primaryKey(),
+  date: date("date", { mode: "date" }),
+  punchIn: time("punch_in", { fsp: 0 }).notNull(),
+  punchOut: time("punch_out", { fsp: 0 }).notNull(),
+  reason: varchar("reason", { length: 1024 }).notNull(),
+  accepted: boolean("accepted").default(false),
+  // FOREIGN KEY RELATIONS
+  regularizationId: varchar("regularization_id", {
+    length: 24,
+  })
+    .notNull()
+    .references(() => regularizationTable.id),
+})
+
+export const regularizationDateTableRelations = relations(regularizationDateTable, ({ one }) => ({
+  regularization: one(regularizationTable, {
+    fields: [regularizationDateTable.regularizationId],
+    references: [regularizationTable.id]
+  })
+}))
+
 export const sessionTable = mysqlTable("session", {
   id: varchar("id", {
     length: 48,

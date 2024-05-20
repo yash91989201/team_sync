@@ -9,6 +9,7 @@ import { holidayRouter } from "@routers/holiday";
 import { employeeRouter } from "@routers/employee";
 import { documentRouter } from "@routers/document";
 import { departmentRouter } from "@routers/department";
+import { attendanceRouter } from "@routers/attendance";
 import { designationRouter } from "@routers/designation";
 
 export const appRouter = createTRPCRouter({
@@ -21,6 +22,7 @@ export const appRouter = createTRPCRouter({
   employeeRouter,
   documentRouter,
   departmentRouter,
+  attendanceRouter,
   designationRouter,
 });
 

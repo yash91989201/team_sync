@@ -24,6 +24,7 @@ import {
   TentTree,
   BadgeIndianRupee,
   FileUp,
+  Equal,
 } from "lucide-react";
 
 /* 
@@ -292,12 +293,30 @@ export const EMPLOYEE_ROUTES: NavLinkProps[] = [
     ],
   },
   {
-    Icon: SquareCheckBig,
-    label: "Attendance Info",
-    href: "/employee-portal/attendance-info",
-    matchExact: false,
-    isNested: false,
+    Icon: NotebookTabs,
+    label: "Attendance",
+    href: "/employee-portal/attendance",
+    matchExact: true,
+    isNested: true,
     isChildLink: false,
+    childrens: [
+      {
+        Icon: SquareCheckBig,
+        label: "Attendance Info",
+        href: "/employee-portal/attendance/attendance-info",
+        matchExact: true,
+        isNested: false,
+        isChildLink: true,
+      },
+      {
+        Icon: Equal,
+        label: "Regularizations",
+        href: "/employee-portal/attendance/regularizations",
+        matchExact: false,
+        isNested: false,
+        isChildLink: true,
+      },
+    ]
   },
   {
     Icon: Book,
