@@ -152,7 +152,7 @@ export const adminRouter = createTRPCRouter({
     .input(GetCreatePayslipDataInput)
     .query(async ({ ctx, input }) => {
       const { empId, startDate, endDate } = input
-      const calendarDays = differenceInDays(endDate, startDate) + 1
+      const calendarDays = differenceInDays(new Date(endDate.setHours(0, 0, 0, 0)), new Date(startDate.setHours(0, 0, 0, 0))) + 1
 
       // STEP 1: Leave encashment
       const empLeaveTypes = await ctx.db.query.empLeaveTypeTable.findMany({
