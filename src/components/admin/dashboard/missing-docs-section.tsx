@@ -77,22 +77,25 @@ export function MissingDocsSection() {
               </div>
               <div className="flex flex-col gap-1.5">
                 <p className="text-gray-600">{emp.name}</p>
-                <p className="space-x-3 font-semibold">
-                  <span>{emp.missingDocumentCount}</span>
-                  <Link
-                    href={`/admin/document-center/bulk-upload?emp_id=${emp.id}`}
-                    className={cn(
-                      buttonVariants({
-                        variant: "link",
-                        size: "sm",
-                      }),
-                      "h-fit w-fit gap-1.5 px-0",
-                    )}
-                  >
-                    <span>Bulk Upload</span>
-                    <ChevronRight className="size-3" />
-                  </Link>
+                <p className="space-x-1.5">
+                  <span className="font-semibold">
+                    {emp.missingDocumentCount}
+                  </span>
+                  <span className="text-sm">missing documents</span>
                 </p>
+                <Link
+                  href={`/admin/document-center/bulk-upload?emp_id=${emp.id}`}
+                  className={cn(
+                    buttonVariants({
+                      variant: "link",
+                      size: "sm",
+                    }),
+                    "h-fit w-fit gap-1.5 px-0",
+                  )}
+                >
+                  <span>Bulk Upload</span>
+                  <ChevronRight className="size-3" />
+                </Link>
               </div>
             </div>
           ))}
