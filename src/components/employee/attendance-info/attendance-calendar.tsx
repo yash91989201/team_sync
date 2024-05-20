@@ -1,27 +1,28 @@
 "use client";
 import {
+  sub,
   add,
-  eachDayOfInterval,
-  endOfMonth,
-  endOfWeek,
+  parse,
   format,
   getDay,
+  subDays,
+  isToday,
   isAfter,
   isBefore,
-  isSameDay,
-  isSameMonth,
   isSunday,
-  isToday,
-  isWithinInterval,
-  parse,
-  startOfToday,
+  isSameDay,
+  endOfWeek,
+  endOfMonth,
   startOfWeek,
-  sub,
-  subDays,
+  isSameMonth,
+  startOfToday,
+  isWithinInterval,
+  eachDayOfInterval,
 } from "date-fns";
 import { useState } from "react";
 // UTILS
 import { api } from "@/trpc/react";
+import { formatDate } from "@/lib/date-time-utils";
 import { cn, getShiftTimeString } from "@/lib/utils";
 // TYPES
 import type {
@@ -33,6 +34,7 @@ import type {
 import { Button } from "@/components/ui/button";
 // ICONS
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const colStartClasses = [
   "",
@@ -47,26 +49,45 @@ const colStartClasses = [
 export default function AttendanceCalendar() {
   const today = startOfToday();
   const [selectedDay, setSelectedDay] = useState(today);
-  const [currentMonth, setCurrentMonth] = useState(format(today, "MMMM-yyyy"));
+  const [month, setMonth] = useState(format(today, "MMMM-yyyy"));
 
-  const firstDayOfCurrentMonth = parse(currentMonth, "MMMM-yyyy", new Date());
-  const lastDayOfCurrentMonth = endOfMonth(firstDayOfCurrentMonth);
+  const firstDayOfMonth = parse(month, "MMMM-yyyy", new Date());
+  const lastDayOfMonth = endOfMonth(firstDayOfMonth);
 
-  const { data: employeeData } = api.employeeRouter.getData.useQuery();
+  const { data: employeeData, isFetching: isEmpDataLoading } =
+    api.employeeRouter.getData.useQuery(undefined, { staleTime: Infinity });
+  const joiningDate = employeeData?.joiningDate;
 
-  const { data: attendances = [] } =
-    api.employeeRouter.getAttendanceByMonth.useQuery({
-      start: firstDayOfCurrentMonth,
-      end: lastDayOfCurrentMonth,
-    });
+  const { data: attendances = [], isFetching: isAttendancesLoading } =
+    api.employeeRouter.getAttendanceByMonth.useQuery(
+      {
+        start: firstDayOfMonth,
+        end: lastDayOfMonth,
+      },
+      {
+        staleTime: 5 * 60 * 1000,
+      },
+    );
 
-  const { data: approvedLeaveApplications = [] } =
-    api.employeeRouter.getApprovedLeaveApplications.useQuery();
-
-  const { data: holidays = [] } = api.holidayRouter.getByMonth.useQuery({
-    start: firstDayOfCurrentMonth,
-    end: lastDayOfCurrentMonth,
+  const {
+    data: approvedLeaveApplications = [],
+    isFetching: isLeaveApplicationsLoading,
+  } = api.employeeRouter.getApprovedLeaveApplications.useQuery(undefined, {
+    staleTime: 5 * 60 * 1000,
   });
+
+  const { data: holidays = [] } = api.holidayRouter.getByMonth.useQuery(
+    {
+      start: firstDayOfMonth,
+      end: lastDayOfMonth,
+    },
+    {
+      staleTime: 5 * 60 * 1000,
+    },
+  );
+
+  const isLoading =
+    isEmpDataLoading || isAttendancesLoading || isLeaveApplicationsLoading;
 
   const getDayAttendance = (date: Date) => {
     return attendances.find((attendance) => isSameDay(date, attendance.date));
@@ -89,23 +110,23 @@ export default function AttendanceCalendar() {
   };
 
   const days = eachDayOfInterval({
-    start: startOfWeek(firstDayOfCurrentMonth),
-    end: endOfWeek(endOfMonth(firstDayOfCurrentMonth)),
+    start: startOfWeek(firstDayOfMonth),
+    end: endOfWeek(endOfMonth(firstDayOfMonth)),
   });
 
   const previousMonth = () => {
-    const firstDayOfPreviousMonth = sub(firstDayOfCurrentMonth, { months: 1 });
-    setCurrentMonth(format(firstDayOfPreviousMonth, "MMM-yyyy"));
+    const firstDayOfPreviousMonth = sub(firstDayOfMonth, { months: 1 });
+    setMonth(format(firstDayOfPreviousMonth, "MMMM-yyyy"));
   };
 
   const nextMonth = () => {
-    const firstDayOfNextMonth = add(firstDayOfCurrentMonth, { months: 1 });
-    setCurrentMonth(format(firstDayOfNextMonth, "MMM-yyyy"));
+    const firstDayOfNextMonth = add(firstDayOfMonth, { months: 1 });
+    setMonth(format(firstDayOfNextMonth, "MMMM-yyyy"));
   };
 
   const setToday = () => {
     setSelectedDay(today);
-    setCurrentMonth(format(today, "MMMM-yyyy"));
+    setMonth(format(today, "MMMM-yyyy"));
   };
 
   const shiftHourText = (shiftHours: "0" | "0.5" | "0.75" | "1" | null) => {
@@ -154,7 +175,7 @@ export default function AttendanceCalendar() {
     <div className="flex gap-3">
       <div className="flex-1 rounded-lg bg-white">
         <div className="mb-3 flex items-center gap-3 bg-primary-foreground bg-white">
-          <h2 className="flex-1 text-base font-semibold">{currentMonth}</h2>
+          <h2 className="flex-1 text-base font-semibold">{month}</h2>
           <div className="flex items-center gap-3">
             <div className="flex items-center rounded-lg border">
               <Button
@@ -162,6 +183,7 @@ export default function AttendanceCalendar() {
                 size="icon"
                 className="rounded-r-none"
                 onClick={previousMonth}
+                disabled={formatDate(joiningDate, "MMMM-yyyy") === month}
               >
                 <ChevronLeft className="size-4 text-gray-600" />
               </Button>
@@ -169,6 +191,7 @@ export default function AttendanceCalendar() {
                 variant="ghost"
                 className="rounded-none"
                 onClick={setToday}
+                disabled={formatDate(today, "MMMM-yyyy") === month}
               >
                 Today
               </Button>
@@ -176,6 +199,7 @@ export default function AttendanceCalendar() {
                 variant="ghost"
                 size="icon"
                 className="rounded-l-none"
+                disabled={formatDate(today, "MMMM-yyyy") === month}
                 onClick={nextMonth}
               >
                 <ChevronRight className="size-4 text-gray-600" />
@@ -199,33 +223,39 @@ export default function AttendanceCalendar() {
               className={cn(
                 dayIdx === 0 && colStartClasses[getDay(day)],
                 isToday(day) && "border-primary text-primary",
-                isSameMonth(day, firstDayOfCurrentMonth)
+                isSameMonth(day, firstDayOfMonth)
                   ? "bg-white text-gray-700 hover:bg-primary-foreground"
                   : "bg-gray-50 text-gray-400",
                 "flex aspect-video cursor-pointer flex-col justify-between gap-1.5 border p-3 text-sm",
               )}
               onClick={() => setSelectedDay(day)}
             >
-              <p
-                className={cn(
-                  isSameDay(day, selectedDay)
-                    ? "flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white"
-                    : "",
-                  "font-semibold",
-                )}
-              >
-                {format(day, "d")}
-              </p>
-              <AttendanceText
-                day={day}
-                sunday={isSunday(day)}
-                holiday={getHoliday(day)}
-                leaveDay={getLeaveDay(day)}
-                attendance={getDayAttendance(day)}
-                joiningDate={employeeData?.joiningDate}
-                firstDayOfCurrentMonth={firstDayOfCurrentMonth}
-                lastDayOfCurrentMonth={lastDayOfCurrentMonth}
-              />
+              {isLoading ? (
+                <Skeleton className="h-full w-full" />
+              ) : (
+                <>
+                  <p
+                    className={cn(
+                      isSameDay(day, selectedDay)
+                        ? "flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white"
+                        : "",
+                      "font-semibold",
+                    )}
+                  >
+                    {format(day, "d")}
+                  </p>
+                  <AttendanceText
+                    day={day}
+                    sunday={isSunday(day)}
+                    holiday={getHoliday(day)}
+                    leaveDay={getLeaveDay(day)}
+                    attendance={getDayAttendance(day)}
+                    joiningDate={employeeData?.joiningDate}
+                    firstDayOfMonth={firstDayOfMonth}
+                    lastDayOfMonth={lastDayOfMonth}
+                  />
+                </>
+              )}
             </div>
           ))}
         </div>
@@ -256,8 +286,8 @@ const AttendanceText = ({
   sunday,
   day,
   joiningDate,
-  firstDayOfCurrentMonth,
-  lastDayOfCurrentMonth,
+  firstDayOfMonth,
+  lastDayOfMonth,
 }: {
   attendance: EmployeeAttendanceType | undefined;
   holiday: HolidaySchemaType | undefined;
@@ -265,16 +295,16 @@ const AttendanceText = ({
   sunday: boolean;
   day: Date;
   joiningDate?: Date;
-  firstDayOfCurrentMonth: Date;
-  lastDayOfCurrentMonth: Date;
+  firstDayOfMonth: Date;
+  lastDayOfMonth: Date;
 }) => {
   const today = startOfToday();
 
   // isOutOfRange makes sure that day
   // lies between first day of month and day before today
   const isOutOfRange =
-    isBefore(day, firstDayOfCurrentMonth) ||
-    isAfter(day, lastDayOfCurrentMonth) ||
+    isBefore(day, firstDayOfMonth) ||
+    isAfter(day, lastDayOfMonth) ||
     isBefore(day, subDays(joiningDate!, 1)) ||
     isSameDay(day, today) ||
     isAfter(day, today);
