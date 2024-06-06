@@ -47,6 +47,7 @@ import type {
   UpdateEmployeeDocumentSchema,
   GeneratePayslipSchema,
   BulkUploadDocsFormSchema,
+  RegularizationFormSchema,
 } from "@/lib/schema";
 // TYPES
 import type { z } from "zod";
@@ -144,6 +145,7 @@ export type GetEmployeesSalariesOutputType = {
   employeeProfile: EmployeeProfileType | null
 }
 export type GeneratePayslipSchemaType = z.infer<typeof GeneratePayslipSchema>
+export type RegularizationFormSchemaType = z.infer<typeof RegularizationFormSchema>
 
 // ADMIN DATA TABLE TYPES
 export type EmployeesDocumentsTableProps = EmployeeDocumentSchemaType & {

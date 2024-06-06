@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AdminMainWrapper from "@adminLayouts/admin-main-wrapper";
 import DailyAttendanceTable from "@adminComponents/employee/attendance/daily-attendance-table";
 import MonthlyAttendanceTable from "@adminComponents/employee/attendance/monthly-attendance-table";
+import EmployeeAttendanceTable from "@adminComponents/employee/attendance/employee-attendance-table";
 
 export default async function AttendancePage({
   searchParams,
@@ -61,12 +62,16 @@ export default async function AttendancePage({
               <TabsList>
                 <TabsTrigger value="month">Monthly</TabsTrigger>
                 <TabsTrigger value="day">Daily</TabsTrigger>
+                <TabsTrigger value="employee">By Employee</TabsTrigger>
               </TabsList>
               <TabsContent value="month">
                 <MonthlyAttendanceTable />
               </TabsContent>
               <TabsContent value="day">
                 <DailyAttendanceTable />
+              </TabsContent>
+              <TabsContent value="employee">
+                <EmployeeAttendanceTable />
               </TabsContent>
             </Tabs>
           </HydrationBoundary>

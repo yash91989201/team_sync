@@ -7,7 +7,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@ui/card";
 // CUSTOM COMPONENTS
 import EmployeeMainWrapper from "@empComponents/layouts/employee-main-wrapper";
 import AttendanceCalendar from "@empComponents/attendance-info/attendance-calendar";

@@ -150,7 +150,10 @@ export default function CreateHolidayForm() {
               )}
             />
 
-            <Button className="gap-1" disabled={formState.isSubmitting}>
+            <Button
+              className="ml-auto block gap-1"
+              disabled={formState.isSubmitting}
+            >
               {formState.isSubmitting && <Loader2 className="animate-spin" />}
               <span>Add holiday</span>
             </Button>

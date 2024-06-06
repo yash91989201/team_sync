@@ -20,7 +20,8 @@ import {
   GetAttendanceByDateInput,
   GetEmpsMonthlyAttendanceInput,
   GetEmployeeCountByJoinDateInput,
-  GetMissingEmpPayslipByMonthInput
+  GetMissingEmpPayslipByMonthInput,
+  GetEmpAttendanceById
 } from "@/lib/schema";
 
 export const statsRouter = createTRPCRouter({
@@ -128,6 +129,32 @@ export const statsRouter = createTRPCRouter({
       empsPresent: empsPresent[0]?.count ?? 0,
       empsLateLogin: empsLateLogin[0]?.count ?? 0,
     }
+  }),
+  /**
+  * Returns employee attendance by given id
+  * along with filters like shift type and date 
+  */
+  empAttendanceById: protectedProcedure.input(GetEmpAttendanceById).query(async ({ ctx, input }) => {
+    const { id, query } = input
+
+    const empAttendanceDynamicQuery = ctx.db
+      .select()
+      .from(empAttendanceTable)
+      .$dynamic()
+
+    if (query !== undefined) {
+      await empAttendanceDynamicQuery
+        .where(
+          and(
+            eq(empAttendanceTable.empId, id),
+            query.month !== undefined ? sql`MONTH(${empAttendanceTable.date}) = MONTH(${formatDate(query.month)})` : undefined,
+            query.shift !== undefined ? eq(empAttendanceTable.shift, query.shift) : undefined,
+          )
+        )
+    }
+
+    const attendance = await empAttendanceDynamicQuery
+    return attendance;
   }),
   /**
   * Returns employee attendance by given date

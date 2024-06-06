@@ -13,6 +13,7 @@ import type {
   DesignationTableProps,
   DocumentTypeSchemaType,
   EmpShiftTableProps,
+  EmployeeAttendanceType,
   EmployeesDocumentsTableProps,
   EmployeesTableProps,
   EmpsAttendanceStatType,
@@ -398,6 +399,34 @@ export const EMP_SHIFT_TABLE: ColumnDef<EmpShiftTableProps>[] = [
     header: "Employee",
     cell: ({ row }) => row.original.employee.name,
   },
+  {
+    accessorKey: "punchIn",
+    header: "Punch-in time",
+    cell: ({ row }) => getShiftTimeString(row.original.punchIn),
+  },
+  {
+    accessorKey: "punchOut",
+    header: "Punch-out time",
+    cell: ({ row }) => {
+      return row.original.punchOut === null
+        ? "N/A"
+        : getShiftTimeString(row.original.punchOut);
+    },
+  },
+  {
+    accessorKey: "shift",
+    header: "Shift",
+    cell: ({ row }) =>
+      row.original.shift === null ? "N/A" : SHIFT_DISPLAY[row.original.shift],
+  },
+  {
+    accessorKey: "hours",
+    header: "Hours",
+    cell: ({ row }) => row.original.hours ?? "N/A",
+  },
+];
+
+export const EMP_ATTENDANCE_BY_ID_TABLE: ColumnDef<EmployeeAttendanceType>[] = [
   {
     accessorKey: "punchIn",
     header: "Punch-in time",

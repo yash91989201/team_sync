@@ -101,6 +101,14 @@ export const ADMIN_ROUTES: NavLinkProps[] = [
         isChildLink: true,
       },
       {
+        Icon: Equal,
+        label: "Regularizations",
+        href: "/admin/employees/regularizations",
+        matchExact: false,
+        isNested: false,
+        isChildLink: true,
+      },
+      {
         Icon: Tally5,
         label: "Leave Balances",
         href: "/admin/employees/leave-balances",

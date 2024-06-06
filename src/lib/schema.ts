@@ -321,6 +321,14 @@ export const GetAttendanceInput = z.object({
   date: z.date()
 })
 
+export const GetEmpAttendanceById = z.object({
+  id: z.string(),
+  query: z.object({
+    shift: z.enum(["0.5", "0.75", "1"]).optional(),
+    month: z.date().optional()
+  }).optional()
+})
+
 export const GetAttendanceByDateInput = z.object({
   date: z.date(),
   query: z.object({
@@ -341,6 +349,19 @@ export const GetEmpsMonthlyAttendanceInput = z.object({
 export const GetAttendanceGapsInput = z.object({
   start: z.date(),
   end: z.date()
+})
+
+export const RegularizationFormSchema = z.object({
+  reviewerId: z.string(),
+  regularizations: z.array(
+    z.object({
+      id: z.string(),
+      date: z.date(),
+      punchIn: z.date(),
+      punchOut: z.date(),
+      reason: z.string().min(6, { message: "A reason is required." })
+    })
+  )
 })
 
 // EMPLOYEE LEAVE SCHEMAS
@@ -468,4 +489,8 @@ export const GetMissingEmpPayslipByMonthInput = z.object({
 
 export const GetBulkPayrollEmpsInput = z.object({
   month: z.date()
+})
+
+export const GetRegularizationReviewersInput = z.object({
+  query: z.string()
 })

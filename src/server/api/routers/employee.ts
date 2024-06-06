@@ -78,6 +78,10 @@ export const employeeRouter = createTRPCRouter({
     })
   }),
 
+  getShift: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.query.empShiftTable.findFirst({ where: eq(empShiftTable.empId, ctx.session.user.id) })
+  }),
+
   getLeaveTypes: protectedProcedure.query(({ ctx }) => {
     return ctx.db
       .select({

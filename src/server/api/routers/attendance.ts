@@ -1,12 +1,12 @@
-import { eq, or, and, between, asc, sql } from "drizzle-orm";
+import { eq, or, and, between, asc, sql, like } from "drizzle-orm";
 import { eachDayOfInterval, isSameDay, isSunday, isWithinInterval } from "date-fns";
 // UTILS
 import { formatDate } from "@/lib/date-time-utils";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 // DB TABLES
-import { empAttendanceTable, holidayTable, leaveRequestTable } from "@/server/db/schema";
+import { empAttendanceTable, holidayTable, leaveRequestTable, userTable } from "@/server/db/schema";
 // SCHEMAS
-import { GetAttendanceGapsInput } from "@/lib/schema";
+import { GetAttendanceGapsInput, GetRegularizationReviewersInput } from "@/lib/schema";
 
 export const attendanceRouter = createTRPCRouter({
   getAttendanceGaps: protectedProcedure.input(GetAttendanceGapsInput).query(async ({ ctx, input }) => {
@@ -67,8 +67,6 @@ export const attendanceRouter = createTRPCRouter({
 
       return {
         date: formatDate(day),
-        present,
-        holiday, leaveDay,
         gap,
         isHoliday,
         isLeaveDay,
@@ -76,5 +74,23 @@ export const attendanceRouter = createTRPCRouter({
     })
 
     return regularizations
+  }),
+
+  getRegularizationReviewers: protectedProcedure.input(GetRegularizationReviewersInput).query(({ ctx, input }) => {
+    return ctx.db.query.userTable.findMany({
+      where: and(
+        eq(userTable.role, "ADMIN"),
+        or(
+          like(userTable.name, `%${input.query}%`),
+          like(userTable.code, `%${input.query}%`),
+        ),
+      ),
+      columns: {
+        id: true,
+        name: true,
+        code: true,
+        role: true
+      }
+    });
   })
 });
